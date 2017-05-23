@@ -1,8 +1,28 @@
-#ifndef UTILITYCODE_LIBRARY_H
-#define UTILITYCODE_LIBRARY_H
+#ifndef UTILITYCODE_ASTAR_H
+#define UTILITYCODE_ASTAR_H
 
-class Node {
+#include "Heuristics.h"
+#include "Coordinates.h"
+#include <vector>
+#define vector std::vector
 
+class AStarNode {
+public:
+    AStarNode();
+
+
+private:
+    double f, g, h;
+    CartesianCoordinates coords;
 };
 
-#endif
+class AStar{
+public:
+
+private:
+    Heuristic* heuristic;
+    vector<AStarNode> nodes;
+    AStarNode goal;
+};
+
+#endif //UTILITYCODE_ASTAR_H
