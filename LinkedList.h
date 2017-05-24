@@ -5,13 +5,15 @@
 #ifndef UTILITYCODE_LINKEDLIST_H
 #define UTILITYCODE_LINKEDLIST_H
 
+#include <ostream>
+
 template <class T> class Node {
 private:
     T data;
-    Node* next;
+    Node<T>* next;
 
 public:
-    Node(T d, Node* n) {
+    Node(T d, Node<T>* n) {
         data = d;
         next = n;
     }
@@ -26,16 +28,21 @@ public:
         next = node.next;
     }
 
-    Node* getNext() { return next; }
-    void setNext(Node* n) { next = n; }
+    Node<T>* getNext() { return next; }
+    void setNext(Node<T>* n) { next = n; }
     T getData() { return data; }
     void setData(T d) { data = d; }
+
+    friend std::ostream& operator<<(std::ostream& out, Node<T>& node){
+        out << node.getData();
+        return out;
+    }
 };
 
 template <class T> class LinkedList {
 private:
-    Node* head;
-    Node* tail;
+    Node<T>* head;
+    Node<T>* tail;
 
 public:
     LinkedList() {
@@ -43,7 +50,7 @@ public:
         tail = nullptr;
     }
 
-    LinkedList(Node* node) {
+    LinkedList(Node<T>* node) {
         head = node;
         tail = node;
     }
@@ -53,38 +60,60 @@ public:
     }
 
     ~LinkedList() {
-        Node* next = head->getNext();
+        if(!head)
+            return;
+        Node<T>* next = head->getNext();
         delete head;
         while(next) {
-            Node* temp = next;
+            Node<T>* temp = next;
             next = next->getNext();
             delete temp;
         }
     }
 
-    void addNode(Node* node) {
-        tail->setNext(node);
-        tail = tail->getNext();
+    void addNode(Node<T>* node) {
+        if(tail) {
+            tail->setNext(node);
+            tail = tail->getNext();
+        } else {
+            head = node;
+            tail = node;
+        }
+
     }
 
     void addNode(T value) {
         addNode(new Node<T>(value));
     }
 
-    Node* pop() {
-        Node* lead = head->getNext();
-        Node* trail = head;
+    Node<T>* pop() {
+        if(!head)
+            return nullptr;
+
+        Node<T>* lead = head->getNext();
+        Node<T>* trail = head;
+        Node<T>* end = head;
         while(lead) {
+            end = trail;
             trail = lead;
             lead = lead->getNext();
         }
-        tail = trail;
-        return lead;
+        Node<T>* temp = trail;
+        if(trail == head) {
+            head = nullptr;
+            tail = nullptr;
+        } else {
+            tail = end;
+            end->setNext(nullptr);
+        }
+        return temp;
     }
 
-    Node* pop(int index) {
-        Node* lead = head;
-        Node* trail = head;
+    Node<T>* pop(int index) {
+        if(!head)
+            return nullptr;
+        Node<T>* lead = head;
+        Node<T>* trail = head;
         int i = 0;
         while(i < index && lead) {
             trail = lead;
@@ -97,8 +126,8 @@ public:
         return lead;
     }
 
-    Node* getNodeAtIndex(int index) {
-        Node* search = head;
+    Node<T>* getNodeAtIndex(int index) {
+        Node<T>* search = head;
         int i = 0;
         while(i < index && search) {
             search = search->getNext();
@@ -106,34 +135,44 @@ public:
         return search;
     }
 
-    Node* getNode(T value) {
-        Node* search = head;
+    Node<T>* getNode(T value) {
+        Node<T>* search = head;
         while(search && search->getData() != value) {
             search = search->getNext();
         }
         return search;
     }
 
-    Node* getNode(Node node) {
+    Node<T>* getNode(Node<T> node) {
         return getNode(node.getData());
     }
 
-    Node* getHead() {
+    Node<T>* getHead() {
         return head;
     }
 
-    Node* getTail() {
+    Node<T>* getTail() {
         return tail;
     }
 
     int length() {
-        Node* search = head;
+        Node<T>* search = head;
         int len = 0;
         while(search) {
             search = search->getNext();
             len++;
         }
         return len;
+    }
+
+    friend std::ostream& operator<<(std::ostream& out, LinkedList<T>& list){
+        Node<T>* node = list.getHead();
+        while(node) {
+            out << "[" << *node << "]->";
+            node = node->getNext();
+        }
+        out << "[ ]" << std::endl;
+        return out;
     }
 };
 
