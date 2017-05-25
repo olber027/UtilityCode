@@ -25,9 +25,11 @@ namespace linked_list {
             next = nullptr;
         }
 
-        Node(const Node &node) {
-            data = node.data;
-            next = node.next;
+        Node(const Node<T> &node) {
+            if (this != &node) {
+                data = node.data;
+                next = node.next;
+            }
         }
 
         Node<T> *getNext() { return next; }
@@ -57,12 +59,51 @@ namespace linked_list {
         }
 
         LinkedList(Node<T> *node) {
-            head = node;
-            tail = node;
+            if(!node) {
+                LinkedList<T>();
+                return;
+            }
+            head = new Node<T>(node->getData());
+            tail = head;
+            while(node->getNext()) {
+                node = node->getNext();
+                addNode(node->getData());
+            }
         }
 
         LinkedList(T value) {
             LinkedList(new Node<T>(value));
+        }
+
+        LinkedList(const LinkedList<T> &list) {
+            if(list.head == nullptr) {
+                head = nullptr;
+                tail = nullptr;
+            } else if(&list != this) {
+                Node<T>* node = list.head->getNext();
+                head = new Node<T>(list.head->getData());
+                tail = head;
+                while(node) {
+                    addNode(node->getData());
+                    node = node->getNext();
+                }
+            }
+        }
+
+        LinkedList<T>& operator=(const LinkedList<T> &rhs) {
+            if(rhs.head == nullptr) {
+                head = nullptr;
+                tail = nullptr;
+            } else if(&rhs != this) {
+                Node<T>* node = rhs.head->getNext();
+                head = new Node<T>(rhs.head->getData());
+                tail = head;
+                while(node) {
+                    addNode(node->getData());
+                    node = node->getNext();
+                }
+            }
+            return *this;
         }
 
         ~LinkedList() {
@@ -85,7 +126,6 @@ namespace linked_list {
                 head = node;
                 tail = node;
             }
-
         }
 
         void addNode(T value) {
@@ -98,9 +138,9 @@ namespace linked_list {
 
             Node<T> *lead = head->getNext();
             Node<T> *trail = head;
-            Node<T> *end = head;
+            Node<T> *last = head;
             while (lead) {
-                end = trail;
+                last = trail;
                 trail = lead;
                 lead = lead->getNext();
             }
@@ -109,8 +149,8 @@ namespace linked_list {
                 head = nullptr;
                 tail = nullptr;
             } else {
-                tail = end;
-                end->setNext(nullptr);
+                tail = last;
+                last->setNext(nullptr);
             }
             return temp;
         }
@@ -118,13 +158,21 @@ namespace linked_list {
         Node<T> *pop(int index) {
             if (!head)
                 return nullptr;
+            if (index == 0) {
+                Node<T>* temp = head;
+                head = head->getNext();
+                if (tail == temp) {
+                    tail = head;
+                }
+                return temp;
+            }
+
             Node<T> *lead = head;
             Node<T> *trail = head;
             int i = 0;
-            while (i < index && lead) {
+            while (i++ < index && lead) {
                 trail = lead;
                 lead = lead->getNext();
-                i++;
             }
 
             trail->setNext(lead ? lead->getNext() : nullptr);
@@ -133,9 +181,12 @@ namespace linked_list {
         }
 
         Node<T> *getNodeAtIndex(int index) {
+            if(index < 0) {
+                return nullptr;
+            }
             Node<T> *search = head;
             int i = 0;
-            while (i < index && search) {
+            while (i++ < index && search) {
                 search = search->getNext();
             }
             return search;

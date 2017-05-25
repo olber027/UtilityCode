@@ -3,5 +3,5 @@ project(UtilityCode)
 
 set(CMAKE_CXX_STANDARD 11)
 
-set(SOURCE_FILES AStar.cpp AStar.h Heuristics.h Heuristics.cpp Coordinates.h LinkedList.h)
-add_library(UtilityCode SHARED ${SOURCE_FILES})
+set(SOURCE_FILES SearchAlgorithms/AStar.cpp SearchAlgorithms/AStar.h SearchAlgorithms/Heuristics.h SearchAlgorithms/Heuristics.cpp SearchAlgorithms/Coordinates.h DataStructures/LinkedList.h main.cpp Testing/TestDriver.h Testing/LinkedListTestDriver.h)
+add_executable(UtilityCode ${SOURCE_FILES})
