@@ -57,6 +57,17 @@ public:
 
         output << "Checking adding Functionality...\n";
         list = LinkedList<int>();
+        assert(false, list.addNodeAt(-1, 5));
+        assert(true, list.addNodeAt(0, 1));
+        assert(1, list.getHead()->getData());
+        assert(true, list.addNodeAt(0, 2));
+        assert(2, list.getHead()->getData());
+        assert(true, list.addNodeAt(2, 3));
+        assert(3, list.getTail()->getData());
+        assert(true, list.addNodeAt(1, 4));
+        assert(4, list.getHead()->getNext()->getData());
+        assert(false, list.addNodeAt(500, 5));
+        list = LinkedList<int>();
         list.addNode(1);
         assert(1, list.getHead()->getData());
         list.addNode(2);

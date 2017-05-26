@@ -132,6 +132,43 @@ namespace linked_list {
             addNode(new Node<T>(value));
         }
 
+        bool addNodeAt(int index, T value) {
+            if(index < 0)
+                return false;
+            if(!head) {
+                if(index > 0) {
+                    return false;
+                } else {
+                    addNode(value);
+                    return true;
+                }
+            } else {
+                if(index == 0) {
+                    Node<T>* next = head;
+                    head = new Node<T>(value, next);
+                    return true;
+                }
+            }
+
+            int i = 0;
+            Node<T>* node = head;
+            Node<T>* next;
+            while(++i < index && node) {
+                node = node->getNext();
+            }
+
+            if(node) {
+                next = node->getNext();
+                node->setNext(new Node<T>(value, next));
+                if(next == nullptr) {
+                    tail = node->getNext();
+                }
+                return true;
+            }
+
+            return false;
+        }
+
         Node<T> *pop() {
             if (!head)
                 return nullptr;
