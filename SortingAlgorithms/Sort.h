@@ -6,12 +6,21 @@
 #define UTILITYCODE_SORT_H
 
 #include <cstdlib>
+#include <iostream>
+#include <vector>
 
 class Sort {
 private:
     Sort() {}
+
+    template<typename T> static void swap(T* array, int i, int j) {
+        T temp = array[j];
+        array[j] = array[i];
+        array[i] = temp;
+    }
+
     template<typename T> static void quicksortHelper(T* array, int left, int right) {
-        if (left > right) {
+        if (left >= right) {
             return;
         }
         int pivotValue = array[right];
@@ -21,25 +30,51 @@ private:
             if(array[i] <= pivotValue) {
                 i++;
             } else {
-                T temp = array[j];
-                array[j] = array[i];
-                array[i] = temp;
+                swap(array,i,j);
                 j--;
             }
         }
-        T temp = array[i];
-        array[right] = temp;
-        array[i] = pivotValue;
+        swap(array,i,right);
 
-        quicksortHelper<T>(array, 0, i-1);
+        quicksortHelper<T>(array, left, i-1);
         quicksortHelper<T>(array, i+1, right);
     }
 
 public:
     template<typename T> static void quicksort(T* array, int size) {
-        int left = 0;
-        int right = size-1;
-        quicksortHelper<T>(array, left, right);
+        quicksortHelper<T>(array, 0, size-1);
+    }
+
+    template<typename T> static void bubblesort(T* array, int size) {
+        bool swapped;
+        do {
+            swapped = false;
+            for(int i = 0; i < size-1; i++) {
+                if(array[i] > array[i+1]) {
+                    swap(array, i, i+1);
+                    swapped = true;
+                }
+            }
+        } while(swapped);
+    }
+
+    template<typename T> static void insertionsort(T* array, int size) {
+        for(int i = 1; i < size; i++) {
+            int j = i;
+            while(j > 0 && array[j-1] > array[j]) {
+                swap(array,j, j-1);
+                j--;
+            }
+        }
+    }
+
+    template<typename T> static bool isSorted(T* array, int size) {
+        for(int i = 0; i < size-1; i++) {
+            if(array[i] > array[i+1]) {
+                return false;
+            }
+        }
+        return true;
     }
 };
 

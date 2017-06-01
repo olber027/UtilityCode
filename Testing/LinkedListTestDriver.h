@@ -18,6 +18,7 @@ public:
     LinkedListTestDriver() : node(Node<int>(0)) {
         passed = 0;
         failed = 0;
+        total = 0;
         output = std::stringstream();
         list = LinkedList<int>();
         for(int i = 0; i < 80; i++) {
