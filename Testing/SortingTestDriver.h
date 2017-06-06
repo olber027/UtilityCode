@@ -13,6 +13,7 @@ private:
     int* ints;
     double* doubles;
     int size;
+    int iterations;
 
     template<typename T> bool isSorted(T* array) {
         for(int i = 0; i < size-1; i++) {
@@ -28,10 +29,11 @@ public:
         passed = 0;
         failed = 0;
         total = 0;
-        size = 20;
+        size = 50;
         str = new char[size];
         ints = new int[size];
         doubles = new double[size];
+        iterations = 50;
         srand(time(NULL));
 
         for(int i = 0; i < 80; i++) {
@@ -52,16 +54,6 @@ public:
 
     void verifyQuickSort() {
         output << "Checking Quicksort functionality..." << std::endl;
-        output << "\tChecking with characters" << std::endl;
-        int iterations = 50;
-        for(int i = 0; i < iterations; i++) {
-            for(int j = 0; j < size; j++) {
-                str[j] = (char) ((rand() % 26) + 97);
-            }
-            Sort::quicksort<char>(str, size);
-            assert(true, isSorted<char>(str));
-        }
-        output << "\tChecking with ints" << std::endl;
         for(int i = 0; i < iterations; i++) {
             for(int j = 0; j < size; j++) {
                 ints[j] = rand();
@@ -73,7 +65,6 @@ public:
 
     void verifyBubbleSort() {
         output << "Checking bubblesort functionality..." << std::endl;
-        int iterations = 50;
         for(int i = 0; i < iterations; i++) {
             for(int j = 0; j < size; j++) {
                 ints[j] = rand();
@@ -85,7 +76,6 @@ public:
 
     void verifyInsertionSort() {
         output << "Checking insertionsort functionality..." << std::endl;
-        int iterations = 50;
         for(int i = 0; i < iterations; i++) {
             for(int j = 0; j < size; j++) {
                 ints[j] = rand();
@@ -95,9 +85,19 @@ public:
         }
     }
 
+    void verifyMergeSort() {
+        output << "Checking mergesort functionality..." << std::endl;
+        for(int i = 0; i < iterations; i++) {
+            for(int j = 0; j < size; j++) {
+                ints[j] = rand();
+            }
+            Sort::mergesort<int>(ints, size);
+            assert(true, isSorted<int>(ints));
+        }
+    }
+
     void compareTimings() {
 
-        int iterations = 50;
         int arraySize = 2000;
 
         int* arr = new int[arraySize];
@@ -135,15 +135,28 @@ public:
 
         insertionsortTime = (clock() - insertionsortTime);
 
+        clock_t mergesortTime = clock();
+
+        for (int i = 0; i < iterations; i++) {
+            for (int j = 0; j < arraySize; j++) {
+                arr[j] = rand() % 2000;
+            }
+            Sort::mergesort<int>(arr, arraySize);
+        }
+
+        mergesortTime = (clock() - mergesortTime);
+
         output << "quicksort time was: " << quicksortTime << std::endl;
         output << "bubblesort time was: " << bubblesortTime << std::endl;
         output << "insertionsort time was: " << insertionsortTime << std::endl;
+        output << "mergesort time was: " << mergesortTime << std::endl;
     }
 
     void run() {
         verifyQuickSort();
         verifyBubbleSort();
         verifyInsertionSort();
+        verifyMergeSort();
 
         compareTimings();
     }

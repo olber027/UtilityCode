@@ -40,6 +40,51 @@ private:
         quicksortHelper<T>(array, i+1, right);
     }
 
+    template<typename T> static T* mergesortHelper(T* array, int size) {
+        if(size <= 1) {
+            return array;
+        }
+        int midpoint = size/2;
+        T* left = new T[midpoint];
+        T* right = new T[size-midpoint];
+        for(int i = 0; i < size; i++) {
+            if(i < midpoint) {
+                left[i] = array[i];
+            } else {
+                right[i-midpoint] = array[i];
+            }
+        }
+
+        left = mergesortHelper(left, midpoint);
+        right = mergesortHelper(right, size-midpoint);
+        T* result = combineArrays<T>(left, midpoint, right, size-midpoint);
+        delete left;
+        delete right;
+        return result;
+    }
+
+    template<typename T> static T* combineArrays(T* left, int leftSize, T* right, int rightSize) {
+        int totalSize = leftSize + rightSize;
+        T* result = new T[totalSize];
+        int leftIndex = 0;
+        int rightIndex = 0;
+        while((leftIndex + rightIndex < totalSize) && (leftIndex < leftSize) && (rightIndex < rightSize)) {
+            if(left[leftIndex] < right[rightIndex]) {
+                result[leftIndex + rightIndex] = left[leftIndex++];
+            } else {
+                result[leftIndex + rightIndex] = right[rightIndex++];
+            }
+        }
+        while(leftIndex < leftSize) {
+            result[leftIndex + rightIndex] = left[leftIndex++];
+        }
+        while(rightIndex < rightSize) {
+            result[leftIndex + rightIndex] = right[rightIndex++];
+        }
+
+        return result;
+    }
+
 public:
     template<typename T> static void quicksort(T* array, int size) {
         quicksortHelper<T>(array, 0, size-1);
@@ -66,6 +111,14 @@ public:
                 j--;
             }
         }
+    }
+
+    template<typename T> static void mergesort(T* array, int size) {
+        T* temp = mergesortHelper<T>(array, size);
+        for(int i = 0; i < size; i++) {
+            array[i] = temp[i];
+        }
+        delete temp;
     }
 
     template<typename T> static bool isSorted(T* array, int size) {
