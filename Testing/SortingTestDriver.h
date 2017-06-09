@@ -29,7 +29,7 @@ public:
         passed = 0;
         failed = 0;
         total = 0;
-        size = 50;
+        size = 2000;
         str = new char[size];
         ints = new int[size];
         doubles = new double[size];
@@ -54,102 +54,176 @@ public:
 
     void verifyQuickSort() {
         output << "Checking Quicksort functionality..." << std::endl;
+        clock_t fastestTime = 1000000;
+        clock_t slowestTime = 0;
+        int average = 0;
+        clock_t totalTime = clock();
         for(int i = 0; i < iterations; i++) {
             for(int j = 0; j < size; j++) {
                 ints[j] = rand();
             }
+            clock_t time = clock();
             Sort::quicksort<int>(ints, size);
+            time = clock() - time;
+            if(time < fastestTime) {
+                fastestTime = time;
+            }
+            if(time > slowestTime) {
+                slowestTime = time;
+            }
+            average += (int) time;
             assert(true, isSorted<int>(ints));
         }
+        totalTime = clock() - totalTime;
+        output << "\tFastest: " << fastestTime << std::endl;
+        output << "\tSlowest: " << slowestTime << std::endl;
+        output << "\tAverage: " << (double) average / (double) iterations << std::endl;
+        output << "\tTotal: " << totalTime << std::endl;
     }
 
     void verifyBubbleSort() {
         output << "Checking bubblesort functionality..." << std::endl;
+        clock_t fastestTime = 1000000;
+        clock_t slowestTime = 0;
+        int average = 0;
+        clock_t totalTime = clock();
         for(int i = 0; i < iterations; i++) {
             for(int j = 0; j < size; j++) {
                 ints[j] = rand();
             }
+            clock_t time = clock();
             Sort::bubblesort<int>(ints, size);
+            time = clock() - time;
+            if(time < fastestTime) {
+                fastestTime = time;
+            }
+            if(time > slowestTime) {
+                slowestTime = time;
+            }
+            average += (int) time;
             assert(true, isSorted<int>(ints));
         }
+        totalTime = clock() - totalTime;
+        output << "\tFastest: " << fastestTime << std::endl;
+        output << "\tSlowest: " << slowestTime << std::endl;
+        output << "\tAverage: " << (double) average / (double) iterations << std::endl;
+        output << "\tTotal: " << totalTime << std::endl;
     }
 
     void verifyInsertionSort() {
         output << "Checking insertionsort functionality..." << std::endl;
+        clock_t fastestTime = 1000000;
+        clock_t slowestTime = 0;
+        int average = 0;
+        clock_t totalTime = clock();
         for(int i = 0; i < iterations; i++) {
             for(int j = 0; j < size; j++) {
                 ints[j] = rand();
             }
+            clock_t time = clock();
             Sort::insertionsort<int>(ints, size);
+            time = clock() - time;
+            if(time < fastestTime) {
+                fastestTime = time;
+            }
+            if(time > slowestTime) {
+                slowestTime = time;
+            }
+            average += (int) time;
             assert(true, isSorted<int>(ints));
         }
+        totalTime = clock() - totalTime;
+        output << "\tFastest: " << fastestTime << std::endl;
+        output << "\tSlowest: " << slowestTime << std::endl;
+        output << "\tAverage: " << (double) average / (double) iterations << std::endl;
+        output << "\tTotal: " << totalTime << std::endl;
     }
 
     void verifyMergeSort() {
         output << "Checking mergesort functionality..." << std::endl;
+        clock_t fastestTime = 1000000;
+        clock_t slowestTime = 0;
+        int average = 0;
+        clock_t totalTime = clock();
         for(int i = 0; i < iterations; i++) {
             for(int j = 0; j < size; j++) {
                 ints[j] = rand();
             }
+            clock_t time = clock();
             Sort::mergesort<int>(ints, size);
+            time = clock() - time;
+            if(time < fastestTime) {
+                fastestTime = time;
+            }
+            if(time > slowestTime) {
+                slowestTime = time;
+            }
+            average += (int) time;
             assert(true, isSorted<int>(ints));
         }
+        totalTime = clock() - totalTime;
+        output << "\tFastest: " << fastestTime << std::endl;
+        output << "\tSlowest: " << slowestTime << std::endl;
+        output << "\tAverage: " << (double) average / (double) iterations << std::endl;
+        output << "\tTotal: " << totalTime << std::endl;
     }
 
-    void compareTimings() {
-
-        int arraySize = 2000;
-
-        int* arr = new int[arraySize];
-
-        clock_t quicksortTime = clock();
-
-        for (int i = 0; i < iterations; i++) {
-            for (int j = 0; j < arraySize; j++) {
-                arr[j] = rand() % 2000;
+    void verifyRadixSort() {
+        output << "Checking radixsort functionality..." << std::endl;
+        clock_t fastestTime = 1000000;
+        clock_t slowestTime = 0;
+        int average = 0;
+        clock_t totalTime = clock();
+        for(int i = 0; i < iterations; i++) {
+            for(int j = 0; j < size; j++) {
+                ints[j] = rand();
             }
-            Sort::quicksort<int>(arr, arraySize);
-        }
-
-        quicksortTime = (clock() - quicksortTime);
-
-        clock_t bubblesortTime = clock();
-
-        for (int i = 0; i < iterations; i++) {
-            for (int j = 0; j < arraySize; j++) {
-                arr[j] = rand() % 2000;
+            clock_t time = clock();
+            Sort::radixsort<int>(ints, size);
+            time = clock() - time;
+            if(time < fastestTime) {
+                fastestTime = time;
             }
-            Sort::bubblesort<int>(arr, arraySize);
-        }
-
-        bubblesortTime = (clock() - bubblesortTime);
-
-        clock_t insertionsortTime = clock();
-
-        for (int i = 0; i < iterations; i++) {
-            for (int j = 0; j < arraySize; j++) {
-                arr[j] = rand() % 2000;
+            if(time > slowestTime) {
+                slowestTime = time;
             }
-            Sort::insertionsort<int>(arr, arraySize);
+            average += (int) time;
+            assert(true, isSorted<int>(ints));
         }
+        totalTime = clock() - totalTime;
+        output << "\tFastest: " << fastestTime << std::endl;
+        output << "\tSlowest: " << slowestTime << std::endl;
+        output << "\tAverage: " << (double) average / (double) iterations << std::endl;
+        output << "\tTotal: " << totalTime << std::endl;
+    }
 
-        insertionsortTime = (clock() - insertionsortTime);
-
-        clock_t mergesortTime = clock();
-
-        for (int i = 0; i < iterations; i++) {
-            for (int j = 0; j < arraySize; j++) {
-                arr[j] = rand() % 2000;
+    void verifyShellSort() {
+        output << "Checking shellsort functionality..." << std::endl;
+        clock_t fastestTime = 1000000;
+        clock_t slowestTime = 0;
+        int average = 0;
+        clock_t totalTime = clock();
+        for(int i = 0; i < iterations; i++) {
+            for(int j = 0; j < size; j++) {
+                ints[j] = rand();
             }
-            Sort::mergesort<int>(arr, arraySize);
+            clock_t time = clock();
+            Sort::shellsort<int>(ints, size);
+            time = clock() - time;
+            if(time < fastestTime) {
+                fastestTime = time;
+            }
+            if(time > slowestTime) {
+                slowestTime = time;
+            }
+            average += (int) time;
+            assert(true, isSorted<int>(ints));
         }
-
-        mergesortTime = (clock() - mergesortTime);
-
-        output << "quicksort time was: " << quicksortTime << std::endl;
-        output << "bubblesort time was: " << bubblesortTime << std::endl;
-        output << "insertionsort time was: " << insertionsortTime << std::endl;
-        output << "mergesort time was: " << mergesortTime << std::endl;
+        totalTime = clock() - totalTime;
+        output << "\tFastest: " << fastestTime << std::endl;
+        output << "\tSlowest: " << slowestTime << std::endl;
+        output << "\tAverage: " << (double) average / (double) iterations << std::endl;
+        output << "\tTotal: " << totalTime << std::endl;
     }
 
     void run() {
@@ -157,7 +231,7 @@ public:
         verifyBubbleSort();
         verifyInsertionSort();
         verifyMergeSort();
-
-        compareTimings();
+        verifyRadixSort();
+        verifyShellSort();
     }
 };
