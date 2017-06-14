@@ -18,14 +18,14 @@ private:
 
 public:
 
-    GraphTestDriver() : vertex(Coordinates2D(3,4)), graph(Graph<Coordinates2D>()) {
+    GraphTestDriver() : vertex(Coordinates2D(1,1)), graph(Graph<Coordinates2D>()) {
         passed = 0;
         failed = 0;
         total = 0;
     }
 
     void run() {
-        output << vertex.getCostTo(Coordinates2D(1,2)) << std::endl;
+
     }
 
 };
