@@ -17,8 +17,8 @@ protected:
 public:
     virtual void run() = 0;
     virtual std::string getOutput() {
-        output << "Test Run Results were: \n";
-        output << "\tpassed: " << passed;
+        output << "Test Run Results were:";
+        output << "\n\tpassed: " << passed;
         output << "\n\tfailed: " << failed;
         output << "\n\ttotal: " << total << std::endl;
         return output.str();

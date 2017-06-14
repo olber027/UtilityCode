@@ -198,7 +198,7 @@ public:
     }
 
     template<typename T> static void shellsort(T* array, int size) {
-        int gapListSize = (log(50)/log(2)) + 1;
+        int gapListSize = (log(size)/log(2)) + 1;
         int* gapList = new int[gapListSize];
         gapList[0] = 1;
         for(int i = 1; i < gapListSize; i++) {
