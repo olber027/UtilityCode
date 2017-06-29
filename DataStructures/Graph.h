@@ -23,6 +23,13 @@ namespace graph {
         Vertex() : vertexType(T()), numNeighbors(0), neighbors(nullptr) {}
         Vertex(T init) : vertexType(init), numNeighbors(0), neighbors(nullptr) {}
 
+        ~Vertex() {
+            for(int i = 0; i < numNeighbors; i++) {
+                disconnect(neighbors[i]);
+            }
+            delete neighbors;
+        }
+
         double getCostTo(T other) {
             return vertexType.getCostTo((VertexType *) &other);
         }
@@ -90,7 +97,7 @@ namespace graph {
                 result << "\n\t";
                 result << neighbors[i]->getVertexType().getRepresentation();
             }
-            if(numNeighbors > 0) {
+            if(numNeighbors) {
                 result << std::endl;
             }
             result << "]\n";
@@ -109,6 +116,37 @@ namespace graph {
             numVertices = 0;
             numEdges = 0;
             vertices = nullptr;
+        }
+
+        ~Graph() {
+            for(int i = 0; i < numVertices; i++) {
+                delete vertices[i];
+            }
+            delete vertices;
+        }
+
+        Graph(const Graph<T> &graph) {
+            if(&graph != this) {
+                numVertices = graph.numVertices;
+                numEdges = graph.numEdges;
+                vertices = new Vertex<T>*[numVertices];
+                for(int i = 0; i < numVertices; i++) {
+                    vertices[i] = graph.vertices[i];
+                }
+            }
+        }
+
+        Graph<T> operator=(const Graph<T> &rhs) {
+            if(&rhs != this) {
+                numVertices = rhs.numVertices;
+                numEdges = rhs.numEdges;
+                vertices = new Vertex<T>*[numVertices];
+                for(int i = 0; i < numVertices; i++) {
+                    vertices[i] = rhs.vertices[i];
+                }
+            }
+
+            return *this;
         }
 
         bool areAdjacent(Vertex<T>* a, Vertex<T>* b) {
@@ -174,21 +212,34 @@ namespace graph {
         }
 
         void addEdge(Vertex<T>* from, Vertex<T>* to) {
+            if(!contains(from)) {
+                addVertex(from);
+            }
+            if(!contains(to)) {
+                addVertex(to);
+            }
             from->connect(to);
+            numEdges++;
         }
 
         void addBidirectionalEdge(Vertex<T>* a, Vertex<T>* b) {
-            a->connect(b);
+            addEdge(a,b);
             b->connect(a);
         }
 
         void removeEdge(Vertex<T>* from, Vertex<T>* to) {
             from->disconnect(to);
+            numEdges--;
         }
 
         void removeEdgeBidirectionally(Vertex<T>* a, Vertex<T>* b) {
             a->disconnect(b);
             b->disconnect(a);
+            numEdges--;
+        }
+
+        double getCost(Vertex<T>* from, Vertex<T>* to) {
+            return from->getCostTo(to);
         }
     };
 }

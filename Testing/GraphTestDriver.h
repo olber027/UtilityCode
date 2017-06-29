@@ -13,15 +13,24 @@ using namespace graph;
 class GraphTestDriver : public TestDriver {
 
 private:
-    Graph<Coordinates2D> graph;
-    Vertex<Coordinates2D> vertex;
+    Graph<Grid> graph;
+    Vertex<Grid> vertex;
 
 public:
 
-    GraphTestDriver() : vertex(Coordinates2D(1,1)), graph(Graph<Coordinates2D>()) {
+    GraphTestDriver() : vertex(Grid(0,0)), graph(Graph<Grid>()) {
         passed = 0;
         failed = 0;
         total = 0;
+
+        for(int i = 0; i < 80; i++) {
+            output << "=";
+        }
+        output << std::endl << "Start of Graph Testing\n";
+        for(int i = 0; i < 80; i++) {
+            output << "=";
+        }
+        output << std::endl;
     }
 
     void run() {
