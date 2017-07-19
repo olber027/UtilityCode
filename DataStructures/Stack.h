@@ -6,7 +6,7 @@
 #define UTILITYCODE_STACK_H
 
 namespace stack {
-    template<class T>
+    template<typename T>
     class Stack {
     private:
         class Item {

@@ -8,7 +8,7 @@
 #include <ostream>
 
 namespace linked_list {
-    template<class T>
+    template<typename T>
     class Node {
     private:
         T data;

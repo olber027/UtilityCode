@@ -11,7 +11,7 @@
 
 namespace graph {
 
-    template<class T>
+    template<typename T>
     class Vertex {
         static_assert(std::is_base_of<VertexType, T>::value, "T must derive from VertexType");
         static_assert(std::is_default_constructible<T>::value, "T must have a default constructor");
