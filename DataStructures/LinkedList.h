@@ -8,6 +8,7 @@
 #include <ostream>
 
 namespace linked_list {
+
     template<typename T>
     class Node {
     private:
@@ -215,6 +216,10 @@ namespace linked_list {
             trail->setNext(lead ? lead->getNext() : nullptr);
 
             return lead;
+        }
+
+        Node<T> *operator[](int index) {
+            return getNodeAtIndex(index);
         }
 
         Node<T> *getNodeAtIndex(int index) {

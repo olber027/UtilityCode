@@ -6,9 +6,11 @@
 #define UTILITYCODE_STACK_H
 
 namespace stack {
+
     template<typename T>
     class Stack {
     private:
+
         class Item {
         public:
             Item(T* dat, Item* n) : data(dat), next(n) {}
@@ -23,6 +25,7 @@ namespace stack {
 
         Item* top;
         int size;
+
     public:
         Stack() : top(nullptr), size(0) {}
         Stack(T* init) : top(new Item(init, nullptr)), size(1) {}

@@ -10,7 +10,6 @@
 
 namespace graph {
 
-
     class VertexType {
     public:
         virtual double getCostTo(VertexType *other) = 0;
@@ -90,8 +89,6 @@ namespace graph {
             return result.str();
         }
     };
-
-
 };
 
 #endif //UTILITYCODE_VERTEX_H

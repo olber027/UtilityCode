@@ -18,19 +18,8 @@ private:
     BinaryTree<double> tree;
 public:
     BinaryTreeTestDriver() {
+        init("Binary Tree");
         tree = BinaryTree<double>();
-        passed = 0;
-        failed = 0;
-        total = 0;
-        output = std::stringstream();
-        for(int i = 0; i < 80; i++) {
-            output << "=";
-        }
-        output << std::endl << "Start of Binary Tree Testing\n";
-        for(int i = 0; i < 80; i++) {
-            output << "=";
-        }
-        output << std::endl;
         srand(time(NULL));
     }
 

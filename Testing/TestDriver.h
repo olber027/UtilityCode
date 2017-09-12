@@ -16,6 +16,23 @@ protected:
     std::stringstream output;
 public:
     virtual void run() = 0;
+
+    virtual void init(std::string driverName) {
+        passed = 0;
+        failed = 0;
+        total = 0;
+
+        output = std::stringstream();
+        for(int i = 0; i < 80; i++) {
+            output << "=";
+        }
+        output << std::endl << "Start of " << driverName<< " Testing\n";
+        for(int i = 0; i < 80; i++) {
+            output << "=";
+        }
+        output << std::endl;
+    }
+
     virtual std::string getOutput() {
         output << "Test Run Results were:";
         output << "\n\tpassed: " << passed;

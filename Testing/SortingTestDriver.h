@@ -26,24 +26,13 @@ private:
 
 public:
     SortingTestDriver() {
-        passed = 0;
-        failed = 0;
-        total = 0;
+        init("Sorting");
         size = 2000;
         str = new char[size];
         ints = new int[size];
         doubles = new double[size];
         iterations = 50;
         srand(time(NULL));
-
-        for(int i = 0; i < 80; i++) {
-            output << "=";
-        }
-        output << std::endl << "Start of Sorting Testing\n";
-        for(int i = 0; i < 80; i++) {
-            output << "=";
-        }
-        output << std::endl;
     }
 
     ~SortingTestDriver() {

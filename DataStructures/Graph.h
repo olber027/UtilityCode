@@ -19,6 +19,7 @@ namespace graph {
         T vertexType;
         Vertex<T>** neighbors;
         int numNeighbors;
+
     public:
         Vertex() : vertexType(T()), numNeighbors(0), neighbors(nullptr) {}
         Vertex(T init) : vertexType(init), numNeighbors(0), neighbors(nullptr) {}

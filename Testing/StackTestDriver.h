@@ -20,19 +20,8 @@ private:
     Stack<TestItem> stack;
 public:
     StackTestDriver() {
-        passed = 0;
-        failed = 0;
-        total = 0;
-        output = std::stringstream();
+        init("Stack");
         stack = Stack<TestItem>();
-        for(int i = 0; i < 80; i++) {
-            output << "=";
-        }
-        output << std::endl << "Start of Stack Testing\n";
-        for(int i = 0; i < 80; i++) {
-            output << "=";
-        }
-        output << std::endl;
     }
 
     void run() {

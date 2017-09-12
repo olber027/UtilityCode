@@ -16,19 +16,8 @@ private:
     Node<int> node;
 public:
     LinkedListTestDriver() : node(Node<int>(0)) {
-        passed = 0;
-        failed = 0;
-        total = 0;
-        output = std::stringstream();
+        init("Linked List");
         list = LinkedList<int>();
-        for(int i = 0; i < 80; i++) {
-            output << "=";
-        }
-        output << std::endl << "Start of Linked List Testing\n";
-        for(int i = 0; i < 80; i++) {
-            output << "=";
-        }
-        output << std::endl;
     }
 
     void verifyContructors() {
