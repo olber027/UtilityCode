@@ -8,7 +8,9 @@
 #include <vector>
 
 namespace set {
-
+    //Provides basic set functionality, including unions,
+    //intersections and complements. Does not allow
+    //duplicate elements.
     template<typename T>
     class Set {
     private:
@@ -59,12 +61,14 @@ namespace set {
             return false;
         }
 
-        bool addItem(T item) {
-            if(!contains(item)) {
-                items.push_back(item);
-                return true;
+        T* addItem(T item) {
+            for(int i = 0; i < items.size(); i++) {
+                if(items[i] == item) {
+                    return &items[i];
+                }
             }
-            return false;
+            items.push_back(item);
+            return &items[items.size()-1];
         }
 
         bool removeItem(T item) {
@@ -77,6 +81,12 @@ namespace set {
             return false;
         }
 
+        T pop() {
+            T result = items.back();
+            items.pop_back();
+            return result;
+        }
+
         T operator[](int index) {
             return items[index];
         }
@@ -85,6 +95,8 @@ namespace set {
             return items.size();
         }
 
+        //Provides the union of two sets.
+        //e.g. {1, 2} U {2, 3} = {1, 2, 3}
         Set<T> Union(Set<T> other) {
             Set<T> result = Set<T>();
             for(int i = 0; i < size(); i++) {
@@ -97,6 +109,8 @@ namespace set {
             return result;
         }
 
+        //provides the intersection of two sets.
+        //e.g. {1, 2} I {2, 3} = {2}
         Set<T> Intersection(Set<T> other) {
             Set<T> result = Set<T>();
             for(int i = 0; i < size(); i++) {
@@ -107,6 +121,9 @@ namespace set {
             return result;
         }
 
+        // provides the complement of the calling set
+        // with regards to the set passed in.
+        // e.g. {1, 2, 3} / {2, 3} = {1}
         Set<T> Complement(Set<T> other) {
             Set<T> result = Set<T>();
             for(int i = 0; i < size(); i++) {
@@ -138,7 +155,7 @@ namespace set {
             return *this;
         }
 
-        bool isSubSet(Set<T> other) {
+        bool isSubSetOf(Set<T> other) {
             for(int i = 0; i < size(); i++) {
                 if(!other.contains(items[i])) {
                     return false;
@@ -147,7 +164,7 @@ namespace set {
             return true;
         }
 
-        bool isSuperSet(Set<T> other) {
+        bool isSuperSetOf(Set<T> other) {
             for(int i = 0; i < other.size(); i++) {
                 if(!contains(other[i])) {
                     return false;

@@ -5,8 +5,7 @@
 #include "Testing/StackTestDriver.h"
 #include "Testing/BinaryTreeTestDriver.h"
 #include "Testing/SmartPointerTestDriver.h"
-#include <iostream>
-
+#include "Testing/SmartStringTestDriver.h"
 
 using namespace std;
 
@@ -21,6 +20,7 @@ int main() {
     testDrivers.push_back(new StackTestDriver());
     testDrivers.push_back(new BinaryTreeTestDriver());
     testDrivers.push_back(new SmartPointerTestDriver());
+    testDrivers.push_back(new SmartStringTestDriver());
 
     for(int i = 0; i < testDrivers.size(); i++) {
         driver = testDrivers[i];
@@ -28,9 +28,9 @@ int main() {
         cout << driver->getOutput();
     }
 
-//    for(int i = 0; i < testDrivers.size(); i++) {
-//        delete testDrivers[i];
-//    }
+    for(int i = 0; i < testDrivers.size(); i++) {
+        delete testDrivers[i];
+    }
 
     return 0;
 }
