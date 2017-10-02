@@ -26,7 +26,7 @@ public:
         for(int i = 0; i < 80; i++) {
             output << "=";
         }
-        output << std::endl << "Start of " << driverName<< " Testing\n";
+        output << std::endl << "Start of " << driverName << " Testing\n";
         for(int i = 0; i < 80; i++) {
             output << "=";
         }
@@ -40,6 +40,7 @@ public:
         output << "\n\ttotal: " << total << std::endl;
         return output.str();
     }
+
     template<typename T> bool assert(T expected, T actual) {
         bool result = expected == actual;
         if(result) {

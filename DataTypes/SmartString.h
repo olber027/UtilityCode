@@ -6,6 +6,7 @@
 #define UTILITYCODE_SMARTSTRING_H
 
 #include <string>
+#include <iostream>
 #include <sstream>
 #include <cstdarg>
 
@@ -18,12 +19,23 @@ namespace smart_string {
 
         void destroy() {
             if(backingString != nullptr) {
-                delete backingString;
+                delete [] backingString;
                 stringSize = 0;
             }
         }
 
+        void initialize(int size) {
+            if(backingString != nullptr) {
+                destroy();
+            }
+            stringSize = size;
+            backingString = new char[size];
+        }
+
         void initialize(int newSize, char* newString) {
+            if(backingString != nullptr) {
+                destroy();
+            }
             stringSize = newSize;
             backingString = newString;
         }
@@ -80,64 +92,66 @@ namespace smart_string {
         }
 
     public:
-        SmartString() : backingString(nullptr), stringSize(0) {}
-        SmartString(SmartString init) {
-            if(init.length() == 0) {
-                initialize(0, nullptr);
-                return;
-            }
-            initialize(init.length(), new char[init.length()]);
-            for(int i = 0; i < stringSize; i++) {
-                backingString[i] = init[i];
-            }
+        SmartString() : backingString(nullptr), stringSize(0) {
+            std::cout << "SmartString()" << std::endl;
         }
-        SmartString(std::string init) {
+        SmartString(const std::string init) {
+            std::cout << "SmartString(const std::string init)" << std::endl;
             if(init.length() == 0) {
                 initialize(0, nullptr);
                 return;
             }
-            initialize(init.length(), new char[init.length()]);
+            initialize(init.length());
             for(int i = 0; i < stringSize; i++) {
                 backingString[i] = init[i];
             }
         }
         SmartString(const char* init) {
+            std::cout << "SmartString(const char* init)" << std::endl;
             if(init == nullptr) {
                 initialize(0, nullptr);
                 return;
             }
             int size = calculateSize(init);
-            initialize(size, new char[size]);
+            initialize(size);
             for(int i = 0; i < stringSize; i++) {
                 backingString[i] = init[i];
             }
         }
         SmartString(int numChars, char fill) {
-            initialize(numChars, new char[numChars]);
+            std::cout << "SmartString(int numChars, char fill)" << std::endl;
+            initialize(numChars);
             for(int i = 0; i < numChars; i++) {
                 backingString[i] = fill;
             }
         }
         SmartString(const SmartString& other) {
+            std::cout << "SmartString(const SmartString& other)" << std::endl;
             if(&other != this) {
                 destroy();
-                initialize(other.stringSize, new char[other.stringSize]);
+                initialize(other.stringSize);
                 for(int i = 0; i < stringSize; i++) {
                     backingString[i] = other.backingString[i];
                 }
             }
         }
         ~SmartString() {
+            std::cout << "~SmartString(): ";
+            for(int i = 0; i < stringSize; i++) {
+                std::cout << backingString[i];
+            }
+            std::cout << std::endl;
             destroy();
         }
 
         operator std::string() { return str(); }
         operator char*() { return c_str(); }
 
-        SmartString operator=(const SmartString& rhs) {
+        SmartString& operator=(const SmartString& rhs) {
+            std::cout << "SmartString operator=(const SmartString& rhs)" << std::endl;
             if(&rhs != this) {
                 destroy();
-                initialize(rhs.stringSize, new char[rhs.stringSize]);
+                initialize(rhs.stringSize);
                 for(int i = 0; i < stringSize; i++) {
                     backingString[i] = rhs.backingString[i];
                 }
@@ -145,26 +159,28 @@ namespace smart_string {
             return *this;
         }
 
-        SmartString operator=(const std::string& rhs) {
+        SmartString& operator=(const std::string& rhs) {
+            std::cout << "SmartString operator=(const std::string& rhs)" << std::endl;
             destroy();
-            initialize(rhs.length(), new char[rhs.length()]);
+            initialize(rhs.length());
             for(int i = 0; i < stringSize; i++) {
                 backingString[i] = rhs[i];
             }
             return *this;
         }
 
-        SmartString operator=(const char* rhs) {
+        SmartString& operator=(const char* rhs) {
+            std::cout << "SmartString operator=(const char* rhs)" << std::endl;
             destroy();
             int size = calculateSize(rhs);
-            initialize(size, new char[size]);
+            initialize(size);
             for(int i = 0; i < stringSize; i++) {
                 backingString[i] = rhs[i];
             }
             return *this;
         }
 
-        SmartString append(std::string str) {
+        SmartString append(const std::string str) {
             if(str.length() == 0) {
                 return *this;
             }
@@ -184,7 +200,7 @@ namespace smart_string {
             return *this;
         }
 
-        SmartString prepend(std::string str) {
+        SmartString prepend(const std::string str) {
             if(str.length() == 0) {
                 return *this;
             }
@@ -252,7 +268,7 @@ namespace smart_string {
             return *this;
         }
 
-        SmartString append(char c) {
+        SmartString append(const char c) {
             int newSize = stringSize + 1;
             char* tempPointer = new char[newSize];
             for(int i = 0; i < stringSize; i++) {
@@ -266,7 +282,7 @@ namespace smart_string {
             return *this;
         }
 
-        SmartString prepend(char c) {
+        SmartString prepend(const char c) {
             int newSize = stringSize + 1;
             char* tempPointer = new char[newSize];
             tempPointer[0] = c;
@@ -280,19 +296,30 @@ namespace smart_string {
             return *this;
         }
 
-        SmartString append(int val) {
+        SmartString append(const int val) {
+            SmartString temp("");
+            bool isNegative = val < 0;
+            int num = abs(val);
+            do {
+                int digit = val % 10;
+                temp.prepend(digitToChar(digit));
+                num /= 10;
+            } while ( val > 0 );
+            if(isNegative) {
+                temp.prepend("-");
+            }
+            append(temp);
+        }
+
+        SmartString append(const double val) {
 
         }
 
-        SmartString append(double val) {
+        SmartString append(const float val) {
 
         }
 
-        SmartString append(float val) {
-
-        }
-
-        SmartString operator<<(std::string str) {
+        SmartString operator<<(const std::string str) {
             append(str);
             return *this;
         }
@@ -302,17 +329,17 @@ namespace smart_string {
             return *this;
         }
 
-        SmartString operator<<(int val) {
+        SmartString operator<<(const int val) {
             append(val);
             return *this;
         }
 
-        SmartString operator<<(double val) {
+        SmartString operator<<(const double val) {
             append(val);
             return *this;
         }
 
-        SmartString operator<<(float val) {
+        SmartString operator<<(const float val) {
             append(val);
             return *this;
         }
@@ -321,7 +348,7 @@ namespace smart_string {
             return append(str);
         }
 
-        SmartString operator+(std::string str) {
+        SmartString operator+(const std::string str) {
             return append(str);
         }
 
@@ -329,32 +356,36 @@ namespace smart_string {
             return append(str);
         }
 
-        SmartString operator+(char c) {
+        SmartString operator+(const char c) {
             return append(c);
         }
 
-        SmartString operator+(int val) {
+        SmartString operator+(const int val) {
             return append(val);
         }
 
-        SmartString operator+(double val) {
+        SmartString operator+(const double val) {
             return append(val);
         }
 
-        SmartString operator+(float val) {
+        SmartString operator+(const float val) {
             return append(val);
         }
 
-        char operator[](int index) {
+        char& operator[](const int index) {
             return backingString[index];
         }
 
-        friend std::ostream& operator<<(std::ostream& out, SmartString string) {
+        friend std::ostream& operator<<(std::ostream& out, SmartString& string) {
             out << string.str();
             return out;
         }
 
-        bool replace(std::string target, std::string newSubString) {
+        bool contains(const std::string target) {
+            return findSubstring(target) < 0;
+        }
+
+        bool replace(const std::string target, const std::string newSubString) {
             int newSize = stringSize + newSubString.length() - target.length();
             char* tempPointer = new char[newSize];
 
@@ -379,7 +410,7 @@ namespace smart_string {
             return true;
         }
 
-        int findSubstring(std::string target) {
+        int findSubstring(const std::string target) {
             for(int i = 0; i < stringSize; i++) {
                 if(target[0] == backingString[i]) {
                     bool match = true;
@@ -397,7 +428,7 @@ namespace smart_string {
             return -1;
         }
 
-        bool replaceAll(std::string target, std::string newSubString) {
+        bool replaceAll(const std::string target, const std::string newSubString) {
             bool result = false;
             while(replace(target, newSubString)) {
                 result = true;
@@ -420,12 +451,19 @@ namespace smart_string {
         }
 
         std::string str() {
-            return std::string(backingString);
+            char* temp = c_str();
+            std::string result = std::string(temp);
+            delete temp;
+            return result;
         }
 
         char* c_str() {
-            append('\0');
-            return backingString;
+            char* result = new char[stringSize+1];
+            for(int i = 0; i < stringSize; i++) {
+                result[i] = backingString[i];
+            }
+            result[stringSize] = '\0';
+            return result;
         }
 
         int length() {
