@@ -87,13 +87,13 @@ namespace smart_string {
             return count;
         }
 
-        int getNumArguments(SmartString& str) {
+        int getNumArguments() {
             int location = -1;
             int count = 0;
             do {
                 SmartString arg;
                 arg << "{" << count << "}";
-                location = str.findSubstring(arg);
+                location = this->findSubstring(arg);
                 if(location >= 0) {
                     count++;
                 }
@@ -315,23 +315,69 @@ namespace smart_string {
         }
 
         SmartString& prepend(const int val) {
-            // TODO
+            SmartString temp("");
+            temp.append(val);
+            return prepend(temp);
+        }
+
+        SmartString& append(const double val, const int precision) {
+            SmartString temp("");
+            int leftOfDecimal = (int) val;
+
+            temp.append(leftOfDecimal);
+            temp.append(".");
+
+            double rightOfDecimal = abs(val) - abs(leftOfDecimal);
+            for(int i = 0; i < precision; i++) {
+                int digit = (int) (rightOfDecimal * 10);
+                temp.append(digitToChar(digit));
+                rightOfDecimal = (rightOfDecimal*10) - digit;
+            }
+            return append(temp);
         }
 
         SmartString& append(const double val) {
-            // TODO
+            return append(val, 5);
+        }
+
+        SmartString& prepend(const double val, const int precision) {
+            SmartString temp("");
+            temp.append(val, precision);
+            return prepend(temp);
         }
 
         SmartString& prepend(const double val) {
-            // TODO
+            return prepend(val, 5);
+        }
+
+        SmartString& append(const float val, const int precision) {
+            SmartString temp("");
+            int leftOfDecimal = (int) val;
+
+            temp.append(leftOfDecimal);
+            temp.append(".");
+
+            float rightOfDecimal = val - leftOfDecimal;
+            for(int i = 0; i < precision; i++) {
+                int digit = (int) rightOfDecimal * 10;
+                temp.append(digitToChar(digit));
+                rightOfDecimal = (rightOfDecimal*10) - digit;
+            }
+            return append(temp);
         }
 
         SmartString& append(const float val) {
-            // TODO
+            return append(val, 5);
+        }
+
+        SmartString& prepend(const float val, const int precision) {
+            SmartString temp("");
+            temp.append(val, precision);
+            return prepend(temp);
         }
 
         SmartString& prepend(const float val) {
-            // TODO
+            return prepend(val, 5);
         }
 
         SmartString& operator<<(const std::string& str) {
@@ -444,6 +490,20 @@ namespace smart_string {
             return in;
         }
 
+        // start and end are both inclusive.
+        SmartString getSubstring(int start, int end) {
+            SmartString result("");
+            for(int i = start; i <= end; i++) {
+                result.append(backingString[i]);
+            }
+            return result;
+        }
+
+        template<typename T>
+        T getSubstring(int start, int end) {
+            return (T) getSubstring(start, end);
+        }
+
         int findSubstring(SmartString& target) {
             for(int i = 0; i < stringSize; i++) {
                 if(target[0] == backingString[i]) {
@@ -468,8 +528,62 @@ namespace smart_string {
             return findSubstring(targ);
         }
 
-        bool contains(const std::string& target) {
+        template<typename T>
+        bool contains(T target) {
             return findSubstring(target) >= 0;
+        }
+
+        template<typename T>
+        int count(T target) {
+            int numInstances = 0;
+            SmartString temp(*this);
+            SmartString targ(target);
+            int location = temp.findSubstring(targ);
+            while(location >= 0) {
+                numInstances++;
+                temp.remove(0, location + targ.length() - 1);
+                location = temp.findSubstring(targ);
+            }
+            return numInstances;
+        }
+
+        template<typename T, typename U>
+        std::vector<T> split(U target) {
+            std::vector<T> result = std::vector<T>();
+            SmartString temp(*this);
+            SmartString targ(target);
+            int location = temp.findSubstring(targ);
+            while(location >= 0) {
+                result.push_back(temp.getSubstring<T>(0, location-1));
+                temp.remove(0, location + targ.length() - 1);
+                location = temp.findSubstring(targ);
+            }
+            if(temp.length() > 0) {
+                result.push_back((T) temp);
+            }
+            return result;
+        };
+
+        template<typename T, typename U> static
+        T join(std::vector<T> list, U separator) {
+            SmartString temp("");
+            for(int i = 0; i < list.size()-1; i++) {
+                temp.append(list[i]);
+                temp.append(separator);
+            }
+            temp.append(list[list.size()-1]);
+            return (T) temp;
+        };
+
+        // start and end are both inclusive.
+        void remove(int start, int end) {
+            SmartString temp("");
+            for(int i = 0; i < length(); i++) {
+                if(i < start || i > end) {
+                    temp.append(backingString[i]);
+                }
+            }
+            *this = temp;
         }
 
         bool remove(SmartString& target) {
@@ -544,9 +658,9 @@ namespace smart_string {
         }
 
         SmartString format(...) {
-            int numArgs = getNumArguments(*this);
+            int numArgs = getNumArguments();
             va_list arguments;
-            va_start(arguments, numArgs);
+            va_start(arguments, nullptr);
             for(int i = 0; i < numArgs; i++) {
                 SmartString target;
                 target << "{" << i << "}";
@@ -575,14 +689,14 @@ namespace smart_string {
         template<typename T>
         T getFormatted(...) {
             SmartString result(*this);
-            int numArgs = getNumArguments(result);
+            int numArgs = result.getNumArguments();
             va_list arguments;
-            va_start(arguments, numArgs);
+            va_start(arguments, nullptr);
             for(int i = 0; i < numArgs; i++) {
                 SmartString target;
                 target << "{" << i << "}";
                 char* argument = va_arg(arguments, char*);
-                result.replaceAll(target.str(), argument);
+                result.replaceAll(target, argument);
             }
             va_end(arguments);
 
@@ -598,7 +712,7 @@ namespace smart_string {
                 SmartString target;
                 target << "{" << i << "}";
                 char* argument = va_arg(arguments, char*);
-                result.replaceAll(target.str(), argument);
+                result.replaceAll(target, argument);
             }
             va_end(arguments);
 
@@ -608,24 +722,15 @@ namespace smart_string {
         template<typename T, typename U> static
         T format(U str, ...) {
             SmartString result(str);
-            int location = -1;
-            int count = 0;
-            do {
-                SmartString arg;
-                arg << "{" << count << "}";
-                location = result.findSubstring(arg);
-                if(location >= 0) {
-                    count++;
-                }
-            } while(location >= 0);
+            int count = result.getNumArguments();
 
             va_list(arguments);
-            va_start(arguments, count);
+            va_start(arguments, str);
             for(int i = 0; i < count; i++) {
                 SmartString target;
                 target << "{" << i << "}";
                 char* argument = va_arg(arguments, char*);
-                result.replaceAll(target.str(), argument);
+                result.replaceAll(target, argument);
             }
             va_end(arguments);
 

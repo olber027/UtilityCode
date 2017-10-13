@@ -68,6 +68,14 @@ public:
         smart = "123";
         temp.prepend(smart);
         assert(std::string("1234567890123456789"), temp.str());
+
+        temp = "";
+        temp.append(1.0, 1);
+        assert(std::string("1.0"), temp.str());
+        temp.append(", ").append(-2.123456, 6);
+        assert(std::string("1.0, -2.123456"), temp.str());
+        temp.prepend(", ").prepend(-105.12345);
+        assert(std::string("-105.12345, 1.0, -2.123456"), temp.str());
     }
 
     void testOperators() {
@@ -130,6 +138,13 @@ public:
         assert(std::string("a b c a"), std::string(charStr));
         temp = formatString.getFormatted<SmartString>(3, "a", "b", "c");
         assert(std::string("a b c a"), temp.str());
+
+        str = formatString.getFormatted<std::string>("a", "b", "c");
+        assert(std::string("a b c a"), str);
+        charStr = formatString.getFormatted<char *>("a", "b", "c");
+        assert(std::string("a b c a"), std::string(charStr));
+        temp = formatString.getFormatted<SmartString>("a", "b", "c");
+        assert(std::string("a b c a"), temp.str());
     }
 
     void testRemove() {
@@ -138,6 +153,38 @@ public:
         assert(std::string("1411"), temp.str());
         temp.removeAll("1");
         assert(std::string("4"), temp.str());
+        temp = "123456";
+        temp.remove(0, 0);
+        assert(std::string("23456"), temp.str());
+        temp.remove(0, 2);
+        assert(std::string("56"), temp.str());
+        temp.remove(1,1);
+        assert(std::string("5"), temp.str());
+    }
+
+    void testSubstrings() {
+        SmartString temp("1212121");
+        assert(4, temp.count("1"));
+        assert(3, temp.count("12"));
+        temp = "12314516";
+        assert(std::string("1"), temp.getSubstring<std::string>(0,0));
+        std::vector<SmartString> list = temp.split<SmartString>("1");
+        assert(4, (int) list.size());
+        assert(std::string(""), list[0].str());
+        assert(std::string("23"), list[1].str());
+        assert(std::string("45"), list[2].str());
+        assert(std::string("6"), list[3].str());
+        temp = "this is a multi-line piece of text.\n";
+        temp.append("it's way longer than it has any right to be.\n");
+        temp.append("....that's what she said.\n");
+        list = temp.split<SmartString>("\n");
+        assert(3, (int) list.size());
+        assert(std::string("this is a multi-line piece of text."), list[0].str());
+        assert(std::string("it's way longer than it has any right to be."), list[1].str());
+        assert(std::string("....that's what she said."), list[2].str());
+        temp = "";
+        temp = SmartString::join(list, "\n");
+        assert(std::string("this is a multi-line piece of text.\nit's way longer than it has any right to be.\n....that's what she said."), temp.str());
     }
 
     void run() {
@@ -146,6 +193,7 @@ public:
         testOperators();
         testReplaceAndFormat();
         testRemove();
+        testSubstrings();
     }
 };
 #endif //UTILITYCODE_SMARTSTRINGTESTDRIVER_H
