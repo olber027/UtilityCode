@@ -5,8 +5,6 @@
 #ifndef UTILITYCODE_SMARTPOINTER_H
 #define UTILITYCODE_SMARTPOINTER_H
 
-#include <iostream>
-
 namespace smart_pointer {
 
     template<typename T>
@@ -36,18 +34,22 @@ namespace smart_pointer {
             referenceCounter = new ReferenceCounter(1);
         }
 
-        SmartPointer(const SmartPointer<T>& smartPointer) {
-            pointer = smartPointer.pointer;
-            referenceCounter = smartPointer.referenceCounter;
-            referenceCounter->addRef();
+        SmartPointer(const SmartPointer<T>& smartPointer) : SmartPointer() {
+            if(&smartPointer != this) {
+                destroy();
+                pointer = smartPointer.pointer;
+                referenceCounter = smartPointer.referenceCounter;
+                referenceCounter->addRef();
+            }
         }
 
         void destroy() {
-            if(referenceCounter->removeRef() == 0) {
+            if(referenceCounter != nullptr && referenceCounter->removeRef() == 0) {
                 delete referenceCounter;
                 delete pointer;
-                pointer = nullptr;
             }
+            pointer = nullptr;
+            referenceCounter = nullptr;
         }
 
         ~SmartPointer() {
@@ -62,7 +64,6 @@ namespace smart_pointer {
         SmartPointer<T>& operator=(const SmartPointer<T>& rhs) {
             if(&rhs != this) {
                 destroy();
-
                 pointer = rhs.pointer;
                 referenceCounter = rhs.referenceCounter;
                 referenceCounter->addRef();

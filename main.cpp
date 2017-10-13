@@ -17,10 +17,10 @@ int main() {
     testDrivers.push_back(new LinkedListTestDriver());
     testDrivers.push_back(new SortingTestDriver());
     testDrivers.push_back(new GraphTestDriver());
-    testDrivers.push_back(new StackTestDriver());
     testDrivers.push_back(new BinaryTreeTestDriver());
-    testDrivers.push_back(new SmartStringTestDriver());
+    testDrivers.push_back(new StackTestDriver());
     testDrivers.push_back(new SmartPointerTestDriver());
+    testDrivers.push_back(new SmartStringTestDriver());
 
     for(int i = 0; i < testDrivers.size(); i++) {
         driver = testDrivers[i];

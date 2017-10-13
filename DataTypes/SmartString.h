@@ -177,6 +177,14 @@ namespace smart_string {
             return *this;
         }
 
+        SmartString& append(SmartString& str) {
+            return append(str.str());
+        }
+
+        SmartString& prepend(SmartString& str) {
+            return prepend(str.str());
+        }
+
         SmartString& append(const std::string str) {
             if(str.length() == 0) {
                 return *this;
@@ -217,14 +225,6 @@ namespace smart_string {
             initialize(newSize, tempPointer);
 
             return *this;
-        }
-
-        SmartString& append(SmartString str) {
-            return append(str.str());
-        }
-
-        SmartString& prepend(SmartString str) {
-            return prepend(str.str());
         }
 
         SmartString& append(const char* str) {
@@ -404,7 +404,7 @@ namespace smart_string {
             return result;
         }
 
-        SmartString operator+(SmartString str) {
+        SmartString operator+(SmartString& str) {
             SmartString result(backingString);
             result.append(str);
             return result;
@@ -527,7 +527,7 @@ namespace smart_string {
         bool replace(T target, U newSubstring) {
             SmartString targ(target); SmartString newSubstr(newSubstring);
             return replace(targ, newSubstr);
-        };
+        }
 
         bool replaceAll(SmartString& target, SmartString& newSubstring) {
             bool result = false;
@@ -541,7 +541,7 @@ namespace smart_string {
         bool replaceAll(T target, U newSubstring) {
             SmartString targ(target); SmartString newSubstr(newSubstring);
             return replaceAll(targ, newSubstr);
-        };
+        }
 
         SmartString format(...) {
             int numArgs = getNumArguments(*this);

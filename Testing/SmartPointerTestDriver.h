@@ -22,18 +22,17 @@ public:
 
 class SmartPointerTestDriver : public TestDriver {
 private:
-    SmartPointer<int> intPointer;
-    SmartPointer<TestObject> testObjectPointer;
 public:
 
     SmartPointerTestDriver() {
         init("Smart Pointer");
-        int* temp = new int(5);
-        intPointer = SmartPointer<int>(temp);
-        testObjectPointer = SmartPointer<TestObject>(new TestObject(7));
     }
 
     void run() {
+        int* temp = new int(5);
+        SmartPointer<int> intPointer = SmartPointer<int>(temp);
+        SmartPointer<TestObject> testObjectPointer = SmartPointer<TestObject>(new TestObject(7));
+
         assert(5, *intPointer);
         assert(7, testObjectPointer->get());
         for(int i = 0; i < 5; i++) {
