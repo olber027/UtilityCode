@@ -71,7 +71,8 @@ namespace smart_string {
             }
         }
 
-        template<typename T> T abs(T val) {
+        template<typename T>
+        T abs(T val) {
             if(val < 0) {
                 val *= -1;
             }
@@ -380,73 +381,30 @@ namespace smart_string {
             return prepend(val, 5);
         }
 
-        SmartString& operator<<(const std::string& str) {
+        template<typename T>
+        SmartString& operator<<(const T& t) {
+            append(t);
+            return *this;
+        }
+
+        SmartString& operator<<(SmartString& str) {
             append(str);
             return *this;
         }
 
-        SmartString& operator<<(const char* str) {
-            append(str);
-            return *this;
+        template<typename T>
+        SmartString& operator+=(const T& t) {
+            append(t);
         }
 
-        SmartString& operator<<(const char c) {
-            append(c);
-            return *this;
-        }
-
-        SmartString& operator<<(const int val) {
-            append(val);
-            return *this;
-        }
-
-        SmartString& operator<<(const double val) {
-            append(val);
-            return *this;
-        }
-
-        SmartString& operator<<(const float val) {
-            append(val);
-            return *this;
-        }
-
-        SmartString& operator+=(SmartString str) {
+        SmartString& operator+=(SmartString& str) {
             return append(str);
         }
 
-        SmartString& operator+=(const std::string str) {
-            return append(str);
-        }
-
-        SmartString& operator+=(const char* str) {
-            return append(str);
-        }
-
-        SmartString& operator+=(const char c) {
-            return append(c);
-        }
-
-        SmartString& operator+=(const int val) {
-            return append(val);
-        }
-
-        SmartString& operator+=(const double val) {
-            return append(val);
-        }
-
-        SmartString& operator+=(const float val) {
-            return append(val);
-        }
-
-        SmartString operator+(const std::string str) {
+        template<typename T>
+        SmartString operator+(const T& t) {
             SmartString result(backingString);
-            result.append(str);
-            return result;
-        }
-
-        SmartString operator+(const char* str) {
-            SmartString result(backingString);
-            result.append(str);
+            result.append(t);
             return result;
         }
 
@@ -456,26 +414,105 @@ namespace smart_string {
             return result;
         }
 
-        SmartString operator+(const char c) {
-            SmartString result(backingString);
-            result.append(c);
-            return result;
+        bool operator!=(SmartString& str) {
+            return !(*this == str);
+        }
+
+        template<typename T>
+        bool operator!=(T str) {
+            SmartString rhs = str;
+            return (*this != rhs);
+        }
+
+        bool operator==(SmartString& str) {
+            return this->str() == str.str();
+        }
+
+        template<typename T>
+        bool operator==(T str) {
+            SmartString rhs = str;
+            return (*this == rhs);
+        }
+
+        bool operator<(SmartString& str) {
+            return (this->str() < str.str());
+        }
+
+        template<typename T>
+        bool operator<(T str) {
+            SmartString rhs = str;
+            return (*this < rhs);
+        }
+
+        bool operator<=(SmartString& str) {
+            return (this->str() <= str.str());
+        }
+
+        template<typename T>
+        bool operator<=(T str) {
+            SmartString rhs = str;
+            return (*this <= rhs);
+        }
+
+        bool operator>(SmartString& str) {
+            return (this->str() > str.str());
+        }
+
+        template<typename T>
+        bool operator>(T str) {
+            SmartString rhs = str;
+            return (*this > rhs);
+        }
+
+        bool operator>=(SmartString& str) {
+            return (this->str() >= str.str());
+        }
+
+        template<typename T>
+        bool operator>=(T str) {
+            SmartString rhs = str;
+            return (*this >= rhs);
         }
 
         char& operator[](const int index) {
             return backingString[index];
         }
 
-        friend char* operator+(const char* left, SmartString& right) {
+        template<typename T> friend
+        T operator+(const T left, SmartString& right) {
             SmartString result(left);
             result.append(right);
-            return result.c_str();
+            return (T) result;
         }
 
-        friend std::string operator+(const std::string& left, SmartString& right) {
-            SmartString result(left);
-            result.append(right);
-            return result.str();
+        template<typename T> friend
+        bool operator==(const T left, SmartString& right) {
+            return (right == left);
+        }
+
+        template<typename T> friend
+        bool operator!=(const T left, SmartString& right) {
+            return (right != left);
+        }
+
+        template<typename T> friend
+        bool operator<(const T left, SmartString& right) {
+            return (right > left);
+        }
+
+        template<typename T> friend
+        bool operator>(const T left, SmartString& right) {
+            return (right < left);
+        }
+
+        template<typename T> friend
+        bool operator<=(const T left, SmartString& right) {
+            return (right >= left);
+        }
+
+        template<typename T> friend
+        bool operator>=(const T left, SmartString& right) {
+            return (right <= left);
         }
 
         friend std::ostream& operator<<(std::ostream& out, SmartString& string) {
@@ -564,8 +601,8 @@ namespace smart_string {
             return result;
         };
 
-        template<typename T, typename U> static
-        T join(std::vector<T> list, U separator) {
+        template<typename T, typename U, typename V> static
+        T join(std::vector<U> list, V separator) {
             SmartString temp("");
             for(int i = 0; i < list.size()-1; i++) {
                 temp.append(list[i]);
@@ -575,8 +612,64 @@ namespace smart_string {
             return (T) temp;
         };
 
+        template<typename T, typename U, typename V> static
+        T join(U* list, int listSize, V separator) {
+            SmartString temp("");
+            for(int i = 0; i < listSize-1; i++) {
+                temp.append(list[i]);
+                temp.append(separator);
+            }
+            temp.append(list[listSize-1]);
+            return (T) temp;
+        };
+
+        SmartString& lstrip() {
+            lstrip(whitespace());
+            return *this;
+        }
+
+        SmartString& rstrip() {
+            rstrip(whitespace());
+            return *this;
+        }
+
+        SmartString& strip() {
+            lstrip(whitespace());
+            rstrip(whitespace());
+            return *this;
+        }
+
+        template<typename T>
+        SmartString& lstrip(T chars) {
+            SmartString toStrip = chars;
+            int index = 0;
+            while(index < stringSize && toStrip.contains(backingString[index])) {
+                index++;
+            }
+            remove(0, index-1);
+            return *this;
+        }
+
+        template<typename T>
+        SmartString& rstrip(T chars) {
+            SmartString toStrip = chars;
+            int index = stringSize-1;
+            while(index >= 0 && toStrip.contains(backingString[index])) {
+                index--;
+            }
+            remove(index+1, stringSize-1);
+            return *this;
+        }
+
+        template<typename T>
+        SmartString& strip(T chars) {
+            lstrip(chars);
+            rstrip(chars);
+            return *this;
+        }
+
         // start and end are both inclusive.
-        void remove(int start, int end) {
+        SmartString& remove(int start, int end) {
             SmartString temp("");
             for(int i = 0; i < length(); i++) {
                 if(i < start || i > end) {
@@ -584,40 +677,43 @@ namespace smart_string {
                 }
             }
             *this = temp;
+            return *this;
         }
 
-        bool remove(SmartString& target) {
+        SmartString& remove(SmartString& target) {
             SmartString blank = "";
             return replace(target, blank);
         }
 
         template<typename T>
-        bool remove(T target) {
+        SmartString& remove(T target) {
             SmartString targ(target);
             return remove(targ);
         }
 
-        bool removeAll(SmartString& target) {
-            bool result = false;
-            while(remove(target)) {
-                result = true;
-            }
-            return result;
+        SmartString& removeAll(SmartString& target) {
+            bool changed = false;
+            do {
+                SmartString old = *this;
+                remove(target);
+                changed = (old != *this);
+            } while(changed);
+            return *this;
         }
 
         template<typename T>
-        bool removeAll(T target) {
+        SmartString& removeAll(T target) {
             SmartString targ(target);
             return removeAll(targ);
         }
 
-        bool replace(SmartString& target, SmartString& newSubstring) {
+        SmartString& replace(SmartString& target, SmartString& newSubstring) {
             int newSize = stringSize + newSubstring.length() - target.length();
             char* tempPointer = new char[newSize+1];
 
             int location = findSubstring(target);
             if(location < 0) {
-                return false;
+                return *this;
             }
 
             for(int i = 0; i < location; i++) {
@@ -634,25 +730,28 @@ namespace smart_string {
             destroy();
             initialize(newSize, tempPointer);
 
-            return true;
+            return *this;
         }
 
         template<typename T, typename U>
-        bool replace(T target, U newSubstring) {
+        SmartString& replace(T target, U newSubstring) {
             SmartString targ(target); SmartString newSubstr(newSubstring);
             return replace(targ, newSubstr);
         }
 
-        bool replaceAll(SmartString& target, SmartString& newSubstring) {
-            bool result = false;
-            while(replace(target, newSubstring)) {
-                result = true;
-            }
-            return result;
+        SmartString& replaceAll(SmartString& target, SmartString& newSubstring) {
+            bool changed = false;
+            do {
+                SmartString old = *this;
+                replace(target, newSubstring);
+                changed = (old != *this);
+            } while(changed);
+
+            return *this;
         }
 
         template<typename T, typename U>
-        bool replaceAll(T target, U newSubstring) {
+        SmartString& replaceAll(T target, U newSubstring) {
             SmartString targ(target); SmartString newSubstr(newSubstring);
             return replaceAll(targ, newSubstr);
         }
@@ -734,6 +833,37 @@ namespace smart_string {
             }
             va_end(arguments);
 
+            return (T) result;
+        }
+
+        SmartString& toUpper() {
+            for(int i = 0; i < length(); i++) {
+                int letterVal = (int) backingString[i];
+                if(letterVal > 96 && letterVal < 123) {
+                    backingString[i] = (char) (letterVal - 32);
+                }
+            }
+            return *this;
+        }
+
+        SmartString& toLower() {
+            for(int i = 0; i < length(); i++) {
+                int letterVal = (int) backingString[i];
+                if(letterVal > 64 && letterVal < 91) {
+                    backingString[i] = (char) (letterVal + 32);
+                }
+            }
+            return *this;
+        }
+
+        static SmartString whitespace() {
+            SmartString result = " \t\n\r\x0b\x0c";
+            return result;
+        }
+
+        template<typename T> static
+        T whitespace() {
+            SmartString result = " \t\n\r\x0b\x0c";
             return (T) result;
         }
 

@@ -87,6 +87,12 @@ public:
         std::string var = "789";
         temp << var;
         assert(std::string("123456789"), temp.str());
+        temp = "";
+        temp << 1.23456;
+        assert(std::string("1.23456"), temp.str());
+        SmartString test = " + 2";
+        temp << test;
+        assert(std::string("1.23456 + 2"), temp.str());
 
         temp = "2";
         temp.prepend('1').append("345").prepend("0");
@@ -107,6 +113,41 @@ public:
 
         assert(true, temp.contains("123"));
         assert(4, temp.findSubstring("123"));
+
+        temp = "123";
+        std::string str = "123";
+        SmartString smartStr = "123";
+        assert(true, (temp == smartStr));
+        assert(true, (smartStr == temp));
+        assert(true, (temp == str));
+        assert(true, (str == temp));
+        assert(true, (temp == "123"));
+        assert(true, ("123" == temp));
+
+        assert(false, (temp != smartStr));
+        assert(false, (smartStr != temp));
+        assert(false, (temp != str));
+        assert(false, (str != temp));
+        assert(false, (temp != "123"));
+        assert(false, ("123" != temp));
+
+        temp = "1";
+
+        assert(true, (temp == '1'));
+        assert(false, (temp != '1'));
+
+        temp = "a";
+        smartStr = "b";
+        assert(true, (temp < smartStr));
+        assert(false, (temp > smartStr));
+        assert(true, (temp <= smartStr));
+        assert(false, (temp >= smartStr));
+
+        temp = "c";
+        assert(true, ("a" < temp));
+        assert(true, ("d" > temp));
+        assert(true, ("c" >= temp));
+        assert(true, ("c" <= temp));
     }
 
     void testReplaceAndFormat() {
@@ -160,6 +201,21 @@ public:
         assert(std::string("56"), temp.str());
         temp.remove(1,1);
         assert(std::string("5"), temp.str());
+
+        temp = " \t1234 \n";
+        assert(std::string("1234 \n"), temp.lstrip().str());
+        assert(std::string("1234"), temp.rstrip().str());
+        temp = " \t1234 \n";
+        assert(std::string("1234"), temp.strip().str());
+
+        temp = "aaa1234vvvv";
+        assert(std::string("1234vvvv"), temp.lstrip("a").str());
+        assert(std::string("1234"), temp.rstrip("v").str());
+
+        temp = "12121";
+        assert(std::string("2121"), temp.lstrip("1").str());
+        assert(std::string("212"), temp.rstrip("1").str());
+        assert(std::string("1"), temp.strip("2").str());
     }
 
     void testSubstrings() {
@@ -182,9 +238,23 @@ public:
         assert(std::string("this is a multi-line piece of text."), list[0].str());
         assert(std::string("it's way longer than it has any right to be."), list[1].str());
         assert(std::string("....that's what she said."), list[2].str());
-        temp = "";
-        temp = SmartString::join(list, "\n");
-        assert(std::string("this is a multi-line piece of text.\nit's way longer than it has any right to be.\n....that's what she said."), temp.str());
+        std::string tempStr = SmartString::join<std::string>(list, "\n");
+        assert(std::string("this is a multi-line piece of text.\nit's way longer than it has any right to be.\n....that's what she said."), tempStr);
+
+        SmartString* array = new SmartString[3];
+        for(int i = 0; i < 3; i++) {
+            array[i] = list[i];
+        }
+        SmartString result = SmartString::join<SmartString>(array, 3, "\n");
+        assert(std::string("this is a multi-line piece of text.\nit's way longer than it has any right to be.\n....that's what she said."), result.str());
+    }
+
+    void testMiscFunctions() {
+        SmartString temp(".';,!@#$%aBcDeFgHiJkLmNoPqRsTuVwXyZ0123456789");
+        temp.toUpper();
+        assert(std::string(".';,!@#$%ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"), temp.str());
+        temp.toLower();
+        assert(std::string(".';,!@#$%abcdefghijklmnopqrstuvwxyz0123456789"), temp.str());
     }
 
     void run() {
@@ -194,6 +264,7 @@ public:
         testReplaceAndFormat();
         testRemove();
         testSubstrings();
+        testMiscFunctions();
     }
 };
 #endif //UTILITYCODE_SMARTSTRINGTESTDRIVER_H

@@ -47,7 +47,7 @@ public:
             passed++;
         } else {
             output << "TestFailed\n__________\n";
-            output << "\texpected: " << expected << "\n\tactual: " << actual << std::endl;
+            output << "\texpected: " << expected << "\n\tactual  : " << actual << std::endl;
             failed++;
         }
         total++;
