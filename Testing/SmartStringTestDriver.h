@@ -91,6 +91,10 @@ public:
         temp = "";
         temp += 2.5467;
         assert(std::string("2.54"), temp.str());
+
+        temp = "";
+        temp += 2.00;
+        assert(std::string("2.0"), temp.str());
     }
 
     void testOperators() {

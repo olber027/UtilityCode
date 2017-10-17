@@ -343,9 +343,11 @@ namespace smart_string {
              * use the append method which specifies the precision.
              */
             append(val, precision);
-            char lastDigit = backingString[stringSize-1];
-            if(lastDigit == '0') {
-                rstrip(lastDigit);
+            if(getLast() == '0') {
+                rstrip('0');
+            }
+            if(getLast() == '.') {
+                append('0');
             }
             return *this;
         }
@@ -546,6 +548,20 @@ namespace smart_string {
 
         int getPrecision() {
             return precision;
+        }
+
+        char getLast() {
+            if(stringSize > 0) {
+                return backingString[stringSize-1];
+            }
+            return '\0';
+        }
+
+        char getFirst() {
+            if(stringSize > 0) {
+                return backingString[0];
+            }
+            return '\0';
         }
 
         // start and end are both inclusive.
