@@ -76,6 +76,21 @@ public:
         assert(std::string("1.0, -2.123456"), temp.str());
         temp.prepend(", ").prepend(-105.12345);
         assert(std::string("-105.12345, 1.0, -2.123456"), temp.str());
+
+        temp = "";
+        temp.append(2.5);
+        assert(std::string("2.5"), temp.str());
+        temp += 2.5200000;
+        assert(std::string("2.52.52"), temp.str());
+
+        temp = "";
+        temp.append(2.54234235235);
+        assert(std::string("2.54234"), temp.str());
+
+        temp.setPrecision(2);
+        temp = "";
+        temp += 2.5467;
+        assert(std::string("2.54"), temp.str());
     }
 
     void testOperators() {

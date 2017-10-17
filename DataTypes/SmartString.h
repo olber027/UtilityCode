@@ -14,6 +14,7 @@ namespace smart_string {
     private:
         char* backingString;
         int stringSize;
+        int precision = 5;
 
         void destroy() {
             if(backingString != nullptr) {
@@ -71,21 +72,16 @@ namespace smart_string {
             }
         }
 
+        int charToDigit(char c) {
+            return ((int) c) - 48;
+        }
+
         template<typename T>
         T abs(T val) {
             if(val < 0) {
                 val *= -1;
             }
             return val;
-        }
-
-        int numDigits(int val) {
-            int count = 1;
-            while(val / 10 > 0) {
-                count++;
-                val /= 10;
-            }
-            return count;
         }
 
         int getNumArguments() {
@@ -103,7 +99,7 @@ namespace smart_string {
         }
 
     public:
-        SmartString() : backingString(nullptr), stringSize(0) { }
+        SmartString() : backingString(nullptr), stringSize(0), precision(5) { }
         SmartString(const std::string init) : SmartString() {
             if(init.length() != 0) {
                 initialize(init.length());
@@ -139,6 +135,7 @@ namespace smart_string {
                 for(int i = 0; i < stringSize; i++) {
                     backingString[i] = other.backingString[i];
                 }
+                precision = other.precision;
             }
         }
         ~SmartString() {
@@ -155,6 +152,7 @@ namespace smart_string {
                 for(int i = 0; i < stringSize; i++) {
                     backingString[i] = rhs.backingString[i];
                 }
+                precision = rhs.precision;
             }
             return *this;
         }
@@ -186,7 +184,7 @@ namespace smart_string {
             return prepend(str.str());
         }
 
-        SmartString& append(const std::string str) {
+        SmartString& append(const std::string& str) {
             if(str.length() == 0) {
                 return *this;
             }
@@ -207,7 +205,7 @@ namespace smart_string {
             return *this;
         }
 
-        SmartString& prepend(const std::string str) {
+        SmartString& prepend(const std::string& str) {
             if(str.length() == 0) {
                 return *this;
             }
@@ -338,7 +336,18 @@ namespace smart_string {
         }
 
         SmartString& append(const double val) {
-            return append(val, 5);
+            /*
+             * Any trailing zeroes will be removed when this method is used,
+             * unless there are only trailing zeroes, in which case one zero
+             * will be left. If you would like to include trailing zeroes,
+             * use the append method which specifies the precision.
+             */
+            append(val, precision);
+            char lastDigit = backingString[stringSize-1];
+            if(lastDigit == '0') {
+                rstrip(lastDigit);
+            }
+            return *this;
         }
 
         SmartString& prepend(const double val, const int precision) {
@@ -527,6 +536,18 @@ namespace smart_string {
             return in;
         }
 
+        bool setPrecision(int newPrecision) {
+            if(newPrecision >= 0) {
+                precision = newPrecision;
+                return true;
+            }
+            return false;
+        }
+
+        int getPrecision() {
+            return precision;
+        }
+
         // start and end are both inclusive.
         SmartString getSubstring(int start, int end) {
             SmartString result("");
@@ -599,7 +620,7 @@ namespace smart_string {
                 result.push_back((T) temp);
             }
             return result;
-        };
+        }
 
         template<typename T, typename U, typename V> static
         T join(std::vector<U> list, V separator) {
@@ -610,7 +631,7 @@ namespace smart_string {
             }
             temp.append(list[list.size()-1]);
             return (T) temp;
-        };
+        }
 
         template<typename T, typename U, typename V> static
         T join(U* list, int listSize, V separator) {
@@ -621,7 +642,7 @@ namespace smart_string {
             }
             temp.append(list[listSize-1]);
             return (T) temp;
-        };
+        }
 
         SmartString& lstrip() {
             lstrip(whitespace());
