@@ -7,6 +7,8 @@
 
 #include <string>
 #include <cstdarg>
+#include <fstream>
+
 
 namespace smart_string {
 
@@ -532,6 +534,30 @@ namespace smart_string {
         }
 
         friend std::istream& operator>>(std::istream& in, SmartString& string) {
+            std::string temp;
+            in >> temp;
+            string = SmartString(temp);
+            return in;
+        }
+
+        friend std::ofstream& operator<<(std::ofstream& out, SmartString& string) {
+            out << string.str();
+            return out;
+        }
+
+        friend std::ifstream& operator>>(std::ifstream& in, SmartString& string) {
+            std::string temp;
+            in >> temp;
+            string = SmartString(temp);
+            return in;
+        }
+
+        friend std::fstream& operator<<(std::fstream& out, SmartString& string) {
+            out << string.str();
+            return out;
+        }
+
+        friend std::fstream& operator>>(std::fstream& in, SmartString& string) {
             std::string temp;
             in >> temp;
             string = SmartString(temp);
