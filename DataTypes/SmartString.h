@@ -8,6 +8,7 @@
 #include <string>
 #include <cstdarg>
 #include <fstream>
+#include <sstream>
 
 
 namespace smart_string {
@@ -101,6 +102,15 @@ namespace smart_string {
                 }
             }
         }
+        SmartString(const std::stringstream& init) : SmartString() {
+            std::string str = init.str();
+            if(str.length() != 0) {
+                initialize(str.length());
+                for(int i = 0; i < stringSize; i++) {
+                    backingString[i] = str[i];
+                }
+            }
+        }
         SmartString(const int numChars, const char fill) : SmartString() {
             initialize(numChars);
             for(int i = 0; i < numChars; i++) {
@@ -123,6 +133,11 @@ namespace smart_string {
 
         explicit operator std::string() { return str(); }
         explicit operator char*() { return c_str(); }
+        explicit operator std::stringstream() {
+            std::stringstream result;
+            result << str();
+            return result;
+        }
 
         SmartString& operator=(const SmartString& rhs) {
             if(&rhs != this) {
@@ -151,6 +166,16 @@ namespace smart_string {
             initialize(size);
             for(int i = 0; i < stringSize; i++) {
                 backingString[i] = rhs[i];
+            }
+            return *this;
+        }
+
+        SmartString& operator=(const std::stringstream& rhs) {
+            destroy();
+            std::string str = rhs.str();
+            initialize(str.length());
+            for(int i = 0; i < stringSize; i++) {
+                backingString[i] = str[i];
             }
             return *this;
         }
@@ -541,6 +566,16 @@ namespace smart_string {
             return in;
         }
 
+        friend std::stringstream& operator<<(std::stringstream& out, SmartString& string) {
+            out << string.str();
+            return out;
+        }
+
+        friend std::stringstream& operator>>(std::stringstream& in, SmartString& string) {
+            string = in;
+            return in;
+        }
+
         bool setPrecision(int newPrecision) {
             if(newPrecision >= 0) {
                 precision = newPrecision;
@@ -916,6 +951,12 @@ namespace smart_string {
             for(int i = 0; i < stringSize+1; i++) {
                 result[i] = backingString[i];
             }
+            return result;
+        }
+
+        std::stringstream sstream() {
+            std::stringstream result;
+            result << this->str();
             return result;
         }
 

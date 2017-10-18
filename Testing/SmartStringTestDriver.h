@@ -45,6 +45,13 @@ public:
         assert(std::string("operator="), fillConstructor.str());
         charConstructor = var;
         assert(var, charConstructor.str());
+
+        std::stringstream stream;
+        stream << "this is some text";
+        SmartString temp = stream;
+        SmartString otherTemp(stream);
+        assert(std::string("this is some text"), temp.str());
+        assert(std::string("this is some text"), otherTemp.str());
     }
 
     void testAppendPrepend() {
