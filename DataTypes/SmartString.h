@@ -17,7 +17,7 @@ namespace smart_string {
     private:
         char* backingString;
         int stringSize;
-        int precision = 5;
+        int precision;
 
         void destroy() {
             if(backingString != nullptr) {
@@ -49,11 +49,11 @@ namespace smart_string {
         }
 
         char digitToChar(int digit) {
-            return (char) (digit + 48);
+            return (char) (digit + ((int) '0'));
         }
 
         int charToDigit(char c) {
-            return ((int) c) - 48;
+            return ((int) c) - ((int) '0');
         }
 
         template<typename T>
@@ -325,8 +325,11 @@ namespace smart_string {
 
         SmartString& append(const double val, const int precision) {
             SmartString temp("");
-            int leftOfDecimal = (int) val;
+            int leftOfDecimal = (int) abs(val);
 
+            if(val < 0) {
+                temp.append("-");
+            }
             temp.append(leftOfDecimal);
             temp.append(".");
 
@@ -363,13 +366,18 @@ namespace smart_string {
         }
 
         SmartString& prepend(const double val) {
-            return prepend(val, 5);
+            SmartString temp("");
+            temp.append(val);
+            return prepend(temp);
         }
 
         SmartString& append(const float val, const int precision) {
             SmartString temp("");
-            int leftOfDecimal = (int) val;
+            int leftOfDecimal = (int) abs(val);
 
+            if(val < 0) {
+                temp.append("-");
+            }
             temp.append(leftOfDecimal);
             temp.append(".");
 
@@ -383,7 +391,14 @@ namespace smart_string {
         }
 
         SmartString& append(const float val) {
-            return append(val, 5);
+            append(val, precision);
+            if(getLast() == '0') {
+                rstrip('0');
+            }
+            if(getLast() == '.') {
+                append('0');
+            }
+            return *this;
         }
 
         SmartString& prepend(const float val, const int precision) {
@@ -393,7 +408,9 @@ namespace smart_string {
         }
 
         SmartString& prepend(const float val) {
-            return prepend(val, 5);
+            SmartString temp("");
+            temp.append(val);
+            return prepend(temp);
         }
 
         template<typename T>
@@ -572,7 +589,9 @@ namespace smart_string {
         }
 
         friend std::stringstream& operator>>(std::stringstream& in, SmartString& string) {
-            string = in;
+            std::string temp;
+            in >> temp;
+            string = temp;
             return in;
         }
 
@@ -648,13 +667,17 @@ namespace smart_string {
         template<typename T>
         int count(T target) {
             int numInstances = 0;
-            SmartString temp(*this);
             SmartString targ(target);
-            int location = temp.findSubstring(targ);
-            while(location >= 0) {
+            int location = findSubstring(targ);
+            while(location < length()) {
                 numInstances++;
-                temp.remove(0, location + targ.length() - 1);
-                location = temp.findSubstring(targ);
+                SmartString temp = getSubstring(++location, length());
+                int newLocation = temp.findSubstring(targ);
+                if(newLocation >= 0) {
+                    location += newLocation;
+                } else {
+                    break;
+                }
             }
             return numInstances;
         }
@@ -911,21 +934,29 @@ namespace smart_string {
             return (T) result;
         }
 
+        // Assumes a-z and A-Z are contiguous. will break if they aren't.
         SmartString& toUpper() {
+            int a = (int) 'a';
+            int A = (int) 'A';
+            int z = (int) 'z';
             for(int i = 0; i < length(); i++) {
                 int letterVal = (int) backingString[i];
-                if(letterVal > 96 && letterVal < 123) {
-                    backingString[i] = (char) (letterVal - 32);
+                if(letterVal >= a && letterVal <= z) {
+                    backingString[i] = (char) (letterVal - a + A);
                 }
             }
             return *this;
         }
 
+        // Assumes a-z and A-Z are contiguous. will break if they aren't.
         SmartString& toLower() {
+            int a = (int) 'a';
+            int A = (int) 'A';
+            int Z = (int) 'Z';
             for(int i = 0; i < length(); i++) {
                 int letterVal = (int) backingString[i];
-                if(letterVal > 64 && letterVal < 91) {
-                    backingString[i] = (char) (letterVal + 32);
+                if(letterVal >= A && letterVal <= Z) {
+                    backingString[i] = (char) (letterVal - A + a);
                 }
             }
             return *this;
@@ -962,6 +993,13 @@ namespace smart_string {
 
         int length() {
             return stringSize;
+        }
+
+        bool isEmpty() {
+            if(stringSize == 0) {
+                return true;
+            }
+            return false;
         }
     };
 }
