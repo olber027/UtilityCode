@@ -635,8 +635,8 @@ namespace smart_string {
             return (T) getSubstring(start, end);
         }
 
-        int findSubstring(SmartString& target) {
-            for(int i = 0; i < stringSize; i++) {
+        int findSubstring(int startingLocation, SmartString& target) {
+            for(int i = startingLocation; i < stringSize && i >= 0; i++) {
                 if(target[0] == backingString[i]) {
                     bool match = true;
                     for(int j = 1; j < target.length(); j++) {
@@ -653,10 +653,14 @@ namespace smart_string {
             return -1;
         }
 
+        int findSubstring(SmartString& target) {
+            return findSubstring(0, target);
+        }
+
         template<typename T>
         int findSubstring(T target) {
             SmartString targ(target);
-            return findSubstring(targ);
+            return findSubstring(0, targ);
         }
 
         template<typename T>
