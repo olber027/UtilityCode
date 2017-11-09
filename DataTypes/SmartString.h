@@ -18,6 +18,7 @@ namespace smart_string {
         char* backingString;
         int stringSize;
         int precision;
+        int memorySize;
 
         void destroy() {
             if(backingString != nullptr) {
@@ -32,12 +33,65 @@ namespace smart_string {
             stringSize = size;
             backingString = new char[stringSize+1];
             backingString[stringSize] = '\0';
+            memorySize = stringSize+1;
         }
 
         void initialize(int newSize, char* newString) {
             destroy();
             stringSize = newSize;
             backingString = newString;
+            memorySize = stringSize + 1;
+        }
+
+        void extend(int charsToAdd, bool addToFront) {
+            if(charsToAdd <= 0) {
+                return;
+            }
+
+            int newSize = stringSize + charsToAdd + 1;
+            char* newBackingString = nullptr;
+
+            if(memorySize <= newSize) {
+                if (memorySize <= 0) {
+                    memorySize = 1;
+                }
+                while (memorySize <= newSize) {
+                    memorySize *= 2;
+                }
+                newBackingString = new char[memorySize];
+            }
+
+            if(newBackingString != nullptr) {
+                int offset = 0;
+                if(addToFront) {
+                    offset += charsToAdd;
+                }
+                int i = offset;
+                for (i; i < stringSize + offset; i++) {
+                    newBackingString[i] = backingString[i - offset];
+                }
+                newBackingString[i] = '\0';
+                delete[] backingString;
+                backingString = newBackingString;
+            } else if(addToFront) {
+                for(int i = stringSize; i >= 0; i--) {
+                    backingString[i + charsToAdd] = backingString[i];
+                }
+            }
+
+            stringSize += charsToAdd;
+        }
+
+        void extend(int charsToAdd) {
+            extend(charsToAdd, false);
+        }
+
+        int calculateSize(const std::string& str) {
+            return str.length();
+        }
+
+        int calculateSize(SmartString& str) {
+            return str.length();
         }
 
         int calculateSize(const char* str) {
@@ -79,7 +133,7 @@ namespace smart_string {
         }
 
     public:
-        SmartString() : backingString(nullptr), stringSize(0), precision(5) { }
+        SmartString() : backingString(nullptr), stringSize(0), precision(5), memorySize(0) { }
         SmartString(const std::string init) : SmartString() {
             if(init.length() != 0) {
                 initialize(init.length());
@@ -110,6 +164,7 @@ namespace smart_string {
                     backingString[i] = str[i];
                 }
             }
+            precision = init.precision();
         }
         SmartString(const int numChars, const char fill) : SmartString() {
             initialize(numChars);
@@ -126,6 +181,14 @@ namespace smart_string {
                 }
                 precision = other.precision;
             }
+        }
+        SmartString(SmartString&& other) : SmartString() {
+            backingString = other.backingString;
+            stringSize = other.stringSize;
+            precision = other.precision;
+            other.precision = 5;
+            other.stringSize = 0;
+            other.backingString = nullptr;
         }
         ~SmartString() {
             destroy();
@@ -147,6 +210,19 @@ namespace smart_string {
                     backingString[i] = rhs.backingString[i];
                 }
                 precision = rhs.precision;
+            }
+            return *this;
+        }
+
+        SmartString& operator=(SmartString&& rhs) {
+            if(&rhs != this) {
+                destroy();
+                precision = rhs.precision;
+                stringSize = rhs.stringSize;
+                backingString = rhs.backingString;
+                rhs.precision = 5;
+                rhs.stringSize = 0;
+                rhs.backingString = nullptr;
             }
             return *this;
         }
@@ -180,124 +256,59 @@ namespace smart_string {
             return *this;
         }
 
+        template<typename T>
+        SmartString& append(const T& str) {
+            int numCharactersToAdd = calculateSize(str);
+            int initialSize = stringSize;
+            extend(numCharactersToAdd);
+            for(int i = initialSize; i < stringSize; i++) {
+                backingString[i] = str[i-initialSize];
+            }
+            backingString[stringSize] = '\0';
+            return *this;
+        }
+
+        template<typename T>
+        SmartString& prepend(const T& str) {
+            int numCharactersToAdd = calculateSize(str);
+            int initialSize = stringSize;
+            extend(numCharactersToAdd, true);
+            for(int i = 0; i < numCharactersToAdd; i++) {
+                backingString[i] = str[i];
+            }
+            return *this;
+        }
+
         SmartString& append(SmartString& str) {
-            return append(str.str());
+            int initialSize = stringSize;
+            extend(str.length());
+            for(int i = initialSize; i < stringSize; i++) {
+                backingString[i] = str[i-initialSize];
+            }
+            backingString[stringSize] = '\0';
+            return *this;
         }
 
         SmartString& prepend(SmartString& str) {
-            return prepend(str.str());
-        }
-
-        SmartString& append(const std::string& str) {
-            if(str.length() == 0) {
-                return *this;
-            }
-
-            int newSize = stringSize + str.length();
-            char* tempPointer = new char[newSize+1];
-            for(int i = 0; i < stringSize; i++) {
-                tempPointer[i] = backingString[i];
-            }
-            for(int i = stringSize; i < newSize; i++) {
-                tempPointer[i] = str[i - stringSize];
-            }
-            tempPointer[newSize] = '\0';
-
-            destroy();
-            initialize(newSize, tempPointer);
-
-            return *this;
-        }
-
-        SmartString& prepend(const std::string& str) {
-            if(str.length() == 0) {
-                return *this;
-            }
-
-            int newSize = stringSize + str.length();
-            char* tempPointer = new char[newSize+1];
+            int initialSize = stringSize;
+            extend(str.length(), true);
             for(int i = 0; i < str.length(); i++) {
-                tempPointer[i] = str[i];
+                backingString[i] = str[i];
             }
-            for(int i = str.length(); i < newSize; i++) {
-                tempPointer[i] = backingString[i - str.length()];
-            }
-            tempPointer[newSize] = '\0';
-
-            destroy();
-            initialize(newSize, tempPointer);
-
-            return *this;
-        }
-
-        SmartString& append(const char* str) {
-            int size = calculateSize(str);
-            if(size == 0) {
-                return *this;
-            }
-            int newSize = stringSize + size;
-            char* tempPointer = new char[newSize+1];
-            for(int i = 0; i < stringSize; i++) {
-                tempPointer[i] = backingString[i];
-            }
-            for(int i = stringSize; i < newSize; i++) {
-                tempPointer[i] = str[i - stringSize];
-            }
-            tempPointer[newSize] = '\0';
-
-            destroy();
-            initialize(newSize, tempPointer);
-
-            return *this;
-        }
-
-        SmartString& prepend(const char* str) {
-            int size = calculateSize(str);
-            if(size == 0) {
-                return *this;
-            }
-            int newSize = stringSize + size;
-            char* tempPointer = new char[newSize+1];
-            for(int i = 0; i < size; i++) {
-                tempPointer[i] = str[i];
-            }
-            for(int i = size; i < newSize; i++) {
-                tempPointer[i] = backingString[i - size];
-            }
-            tempPointer[newSize] = '\0';
-
-            destroy();
-            initialize(newSize, tempPointer);
-
             return *this;
         }
 
         SmartString& append(const char c) {
-            int newSize = stringSize + 1;
-            char* tempPointer = new char[newSize+1];
-            for(int i = 0; i < stringSize; i++) {
-                tempPointer[i] = backingString[i];
-            }
-            tempPointer[stringSize] = c;
-            tempPointer[newSize] = '\0';
-
-            destroy();
-            initialize(newSize, tempPointer);
+            extend(1);
+            backingString[stringSize-1] = c;
+            backingString[stringSize] = '\0';
 
             return *this;
         }
 
         SmartString& prepend(const char c) {
-            int newSize = stringSize + 1;
-            char* tempPointer = new char[newSize+1];
-            tempPointer[0] = c;
-            for(int i = 0; i < stringSize; i++) {
-                tempPointer[i+1] = backingString[i];
-            }
-            tempPointer[newSize] = '\0';
-
-            destroy();
-            initialize(newSize, tempPointer);
+            extend(1, true);
+            backingString[0] = c;
 
             return *this;
         }
@@ -810,13 +821,13 @@ namespace smart_string {
         }
 
         SmartString& replace(SmartString& target, SmartString& newSubstring) {
-            int newSize = stringSize + newSubstring.length() - target.length();
-            char* tempPointer = new char[newSize+1];
-
             int location = findSubstring(target);
             if(location < 0) {
                 return *this;
             }
+
+            int newSize = stringSize + newSubstring.length() - target.length();
+            char* tempPointer = new char[newSize+1];
 
             for(int i = 0; i < location; i++) {
                 tempPointer[i] = backingString[i];
@@ -1004,6 +1015,10 @@ namespace smart_string {
                 return true;
             }
             return false;
+        }
+
+        size_t memoryFootPrint() {
+            return memorySize*sizeof(char);
         }
     };
 }
