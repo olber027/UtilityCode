@@ -36,13 +36,6 @@ namespace smart_string {
             memorySize = stringSize+1;
         }
 
-        void initialize(int newSize, char* newString) {
-            destroy();
-            stringSize = newSize;
-            backingString = newString;
-            memorySize = stringSize + 1;
-        }
-
         void extend(int charsToAdd, bool addToFront) {
             if(charsToAdd <= 0) {
                 return;
@@ -822,12 +815,15 @@ namespace smart_string {
 
         SmartString& replace(SmartString& target, SmartString& newSubstring) {
             int location = findSubstring(target);
-            if(location < 0) {
+            if(location < 0 || isEmpty() || target.isEmpty()) {
                 return *this;
             }
 
             int newSize = stringSize + newSubstring.length() - target.length();
-            char* tempPointer = new char[newSize+1];
+            while(memorySize <= newSize) {
+                memorySize *= 2;
+            }
+            char* tempPointer = new char[memorySize];
 
             for(int i = 0; i < location; i++) {
                 tempPointer[i] = backingString[i];
@@ -840,8 +836,9 @@ namespace smart_string {
             }
             tempPointer[newSize] = '\0';
 
-            destroy();
-            initialize(newSize, tempPointer);
+            delete [] backingString;
+            backingString = tempPointer;
+            stringSize = newSize;
 
             return *this;
         }
