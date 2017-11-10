@@ -36,7 +36,7 @@ namespace smart_string {
             memorySize = stringSize+1;
         }
 
-        void extend(int charsToAdd, bool addToFront) {
+        void extend(const int charsToAdd, const bool addToFront) {
             if(charsToAdd <= 0) {
                 return;
             }
@@ -75,19 +75,19 @@ namespace smart_string {
             stringSize += charsToAdd;
         }
 
-        void extend(int charsToAdd) {
+        void extend(const int charsToAdd) {
             extend(charsToAdd, false);
         }
 
-        int calculateSize(const std::string& str) {
+        int calculateSize(const std::string& str) const {
             return str.length();
         }
 
-        int calculateSize(SmartString& str) {
+        int calculateSize(const SmartString& str) const {
             return str.length();
         }
 
-        int calculateSize(const char* str) {
+        int calculateSize(const char* str) const {
             int size = 0;
             while(str[size] != '\0') {
                 size++;
@@ -95,23 +95,23 @@ namespace smart_string {
             return size;
         }
 
-        char digitToChar(int digit) {
+        char digitToChar(const int digit) const {
             return (char) (digit + ((int) '0'));
         }
 
-        int charToDigit(char c) {
+        int charToDigit(const char c) const {
             return ((int) c) - ((int) '0');
         }
 
         template<typename T>
-        T abs(T val) {
+        T abs(const T val) const {
             if(val < 0) {
-                val *= -1;
+                return (val * -1);
             }
             return val;
         }
 
-        int getNumArguments() {
+        int getNumArguments() const {
             int location = -1;
             int count = 0;
             do {
@@ -187,9 +187,9 @@ namespace smart_string {
             destroy();
         }
 
-        explicit operator std::string() { return str(); }
-        explicit operator char*() { return c_str(); }
-        explicit operator std::stringstream() {
+        explicit operator std::string() const { return str(); }
+        explicit operator char*() const { return c_str(); }
+        explicit operator std::stringstream() const {
             std::stringstream result;
             result << str();
             return result;
@@ -272,7 +272,7 @@ namespace smart_string {
             return *this;
         }
 
-        SmartString& append(SmartString& str) {
+        SmartString& append(const SmartString& str) {
             int initialSize = stringSize;
             extend(str.length());
             for(int i = initialSize; i < stringSize; i++) {
@@ -282,7 +282,7 @@ namespace smart_string {
             return *this;
         }
 
-        SmartString& prepend(SmartString& str) {
+        SmartString& prepend(const SmartString& str) {
             int initialSize = stringSize;
             extend(str.length(), true);
             for(int i = 0; i < str.length(); i++) {
@@ -423,7 +423,7 @@ namespace smart_string {
             return *this;
         }
 
-        SmartString& operator<<(SmartString& str) {
+        SmartString& operator<<(const SmartString& str) {
             append(str);
             return *this;
         }
@@ -433,125 +433,125 @@ namespace smart_string {
             append(t);
         }
 
-        SmartString& operator+=(SmartString& str) {
+        SmartString& operator+=(const SmartString& str) {
             return append(str);
         }
 
         template<typename T>
-        SmartString operator+(const T& t) {
+        SmartString operator+(const T& t) const {
             SmartString result(backingString);
             result.append(t);
             return result;
         }
 
-        SmartString operator+(SmartString& str) {
+        SmartString operator+(const SmartString& str) const {
             SmartString result(backingString);
             result.append(str);
             return result;
         }
 
-        bool operator!=(SmartString& str) {
+        bool operator!=(const SmartString& str) const {
             return !(*this == str);
         }
 
         template<typename T>
-        bool operator!=(T str) {
+        bool operator!=(const T str) const {
             SmartString rhs = str;
             return (*this != rhs);
         }
 
-        bool operator==(SmartString& str) {
+        bool operator==(const SmartString& str) const {
             return this->str() == str.str();
         }
 
         template<typename T>
-        bool operator==(T str) {
+        bool operator==(const T str) const {
             SmartString rhs = str;
             return (*this == rhs);
         }
 
-        bool operator<(SmartString& str) {
+        bool operator<(const SmartString& str) const {
             return (this->str() < str.str());
         }
 
         template<typename T>
-        bool operator<(T str) {
+        bool operator<(const T str) const {
             SmartString rhs = str;
             return (*this < rhs);
         }
 
-        bool operator<=(SmartString& str) {
+        bool operator<=(const SmartString& str) const {
             return (this->str() <= str.str());
         }
 
         template<typename T>
-        bool operator<=(T str) {
+        bool operator<=(const T str) const {
             SmartString rhs = str;
             return (*this <= rhs);
         }
 
-        bool operator>(SmartString& str) {
+        bool operator>(const SmartString& str) const {
             return (this->str() > str.str());
         }
 
         template<typename T>
-        bool operator>(T str) {
+        bool operator>(const T str) const {
             SmartString rhs = str;
             return (*this > rhs);
         }
 
-        bool operator>=(SmartString& str) {
+        bool operator>=(const SmartString& str) const {
             return (this->str() >= str.str());
         }
 
         template<typename T>
-        bool operator>=(T str) {
+        bool operator>=(const T str) const {
             SmartString rhs = str;
             return (*this >= rhs);
         }
 
-        char& operator[](const int index) {
+        char& operator[](const int index) const {
             return backingString[index];
         }
 
         template<typename T> friend
-        T operator+(const T left, SmartString& right) {
+        T operator+(const T left, const SmartString& right) {
             SmartString result(left);
             result.append(right);
             return (T) result;
         }
 
         template<typename T> friend
-        bool operator==(const T left, SmartString& right) {
+        bool operator==(const T left, const SmartString& right) {
             return (right == left);
         }
 
         template<typename T> friend
-        bool operator!=(const T left, SmartString& right) {
+        bool operator!=(const T left, const SmartString& right) {
             return (right != left);
         }
 
         template<typename T> friend
-        bool operator<(const T left, SmartString& right) {
+        bool operator<(const T left, const SmartString& right) {
             return (right > left);
         }
 
         template<typename T> friend
-        bool operator>(const T left, SmartString& right) {
+        bool operator>(const T left, const SmartString& right) {
             return (right < left);
         }
 
         template<typename T> friend
-        bool operator<=(const T left, SmartString& right) {
+        bool operator<=(const T left, const SmartString& right) {
             return (right >= left);
         }
 
         template<typename T> friend
-        bool operator>=(const T left, SmartString& right) {
+        bool operator>=(const T left, const SmartString& right) {
             return (right <= left);
         }
 
-        friend std::ostream& operator<<(std::ostream& out, SmartString& string) {
+        friend std::ostream& operator<<(std::ostream& out, const SmartString& string) {
             out << string.str();
             return out;
         }
@@ -563,7 +563,7 @@ namespace smart_string {
             return in;
         }
 
-        friend std::ofstream& operator<<(std::ofstream& out, SmartString& string) {
+        friend std::ofstream& operator<<(std::ofstream& out, const SmartString& string) {
             out << string.str();
             return out;
         }
@@ -575,7 +575,7 @@ namespace smart_string {
             return in;
         }
 
-        friend std::fstream& operator<<(std::fstream& out, SmartString& string) {
+        friend std::fstream& operator<<(std::fstream& out, const SmartString& string) {
             out << string.str();
             return out;
         }
@@ -587,7 +587,7 @@ namespace smart_string {
             return in;
         }
 
-        friend std::stringstream& operator<<(std::stringstream& out, SmartString& string) {
+        friend std::stringstream& operator<<(std::stringstream& out, const SmartString& string) {
             out << string.str();
             return out;
         }
@@ -599,7 +599,7 @@ namespace smart_string {
             return in;
         }
 
-        bool setPrecision(int newPrecision) {
+        bool setPrecision(const int newPrecision) {
             if(newPrecision >= 0) {
                 precision = newPrecision;
                 return true;
@@ -626,7 +626,7 @@ namespace smart_string {
         }
 
         // start and end are both inclusive.
-        SmartString getSubstring(int start, int end) {
+        SmartString getSubstring(const int start, const int end) const {
             SmartString result("");
             for(int i = start; i <= end; i++) {
                 result.append(backingString[i]);
@@ -635,11 +635,11 @@ namespace smart_string {
         }
 
         template<typename T>
-        T getSubstring(int start, int end) {
+        T getSubstring(const int start, const int end) const {
             return (T) getSubstring(start, end);
         }
 
-        int findSubstring(int startingLocation, SmartString& target) {
+        int findSubstring(const int startingLocation, const SmartString& target) const {
             for(int i = startingLocation; i < stringSize && i >= 0; i++) {
                 if(target[0] == backingString[i]) {
                     bool match = true;
@@ -657,23 +657,23 @@ namespace smart_string {
             return -1;
         }
 
-        int findSubstring(SmartString& target) {
+        int findSubstring(const SmartString& target) const {
             return findSubstring(0, target);
         }
 
         template<typename T>
-        int findSubstring(T target) {
+        int findSubstring(const T target) const {
             SmartString targ(target);
             return findSubstring(0, targ);
         }
 
         template<typename T>
-        bool contains(T target) {
+        bool contains(const T target) const {
             return findSubstring(target) >= 0;
         }
 
         template<typename T>
-        int count(T target) {
+        int count(const T target) const {
             int numInstances = 0;
             SmartString targ(target);
             int location = findSubstring(targ);
@@ -691,7 +691,7 @@ namespace smart_string {
         }
 
         template<typename T, typename U>
-        std::vector<T> split(U target) {
+        std::vector<T> split(const U target) const {
             std::vector<T> result = std::vector<T>();
             SmartString temp(*this);
             SmartString targ(target);
@@ -708,7 +708,7 @@ namespace smart_string {
         }
 
         template<typename T, typename U, typename V> static
-        T join(std::vector<U> list, V separator) {
+        T join(const std::vector<U> list, const V separator) {
             SmartString temp("");
             for(int i = 0; i < list.size()-1; i++) {
                 temp.append(list[i]);
@@ -719,7 +719,7 @@ namespace smart_string {
         }
 
         template<typename T, typename U, typename V> static
-        T join(U* list, int listSize, V separator) {
+        T join(const U* list, const int listSize, const V separator) {
             SmartString temp("");
             for(int i = 0; i < listSize-1; i++) {
                 temp.append(list[i]);
@@ -746,7 +746,7 @@ namespace smart_string {
         }
 
         template<typename T>
-        SmartString& lstrip(T chars) {
+        SmartString& lstrip(const T chars) {
             SmartString toStrip = chars;
             int index = 0;
             while(index < stringSize && toStrip.contains(backingString[index])) {
@@ -757,7 +757,7 @@ namespace smart_string {
         }
 
         template<typename T>
-        SmartString& rstrip(T chars) {
+        SmartString& rstrip(const T chars) {
             SmartString toStrip = chars;
             int index = stringSize-1;
             while(index >= 0 && toStrip.contains(backingString[index])) {
@@ -768,14 +768,14 @@ namespace smart_string {
         }
 
         template<typename T>
-        SmartString& strip(T chars) {
+        SmartString& strip(const T chars) {
             lstrip(chars);
             rstrip(chars);
             return *this;
         }
 
         // start and end are both inclusive.
-        SmartString& remove(int start, int end) {
+        SmartString& remove(const int start, const int end) {
             SmartString temp("");
             for(int i = 0; i < length(); i++) {
                 if(i < start || i > end) {
@@ -786,18 +786,18 @@ namespace smart_string {
             return *this;
         }
 
-        SmartString& remove(SmartString& target) {
+        SmartString& remove(const SmartString& target) {
             SmartString blank = "";
             return replace(target, blank);
         }
 
         template<typename T>
-        SmartString& remove(T target) {
+        SmartString& remove(const T target) {
             SmartString targ(target);
             return remove(targ);
         }
 
-        SmartString& removeAll(SmartString& target) {
+        SmartString& removeAll(const SmartString& target) {
             bool changed = false;
             do {
                 SmartString old = *this;
@@ -808,12 +808,12 @@ namespace smart_string {
         }
 
         template<typename T>
-        SmartString& removeAll(T target) {
+        SmartString& removeAll(const T target) {
             SmartString targ(target);
             return removeAll(targ);
         }
 
-        SmartString& replace(SmartString& target, SmartString& newSubstring) {
+        SmartString& replace(const SmartString& target, const SmartString& newSubstring) {
             int location = findSubstring(target);
             if(location < 0 || isEmpty() || target.isEmpty()) {
                 return *this;
@@ -844,12 +844,12 @@ namespace smart_string {
         }
 
         template<typename T, typename U>
-        SmartString& replace(T target, U newSubstring) {
+        SmartString& replace(const T target, const U newSubstring) {
             SmartString targ(target); SmartString newSubstr(newSubstring);
             return replace(targ, newSubstr);
         }
 
-        SmartString& replaceAll(SmartString& target, SmartString& newSubstring) {
+        SmartString& replaceAll(const SmartString& target, const SmartString& newSubstring) {
             bool changed = false;
             do {
                 SmartString old = *this;
@@ -861,7 +861,7 @@ namespace smart_string {
         }
 
         template<typename T, typename U>
-        SmartString& replaceAll(T target, U newSubstring) {
+        SmartString& replaceAll(const T target, const U newSubstring) {
             SmartString targ(target); SmartString newSubstr(newSubstring);
             return replaceAll(targ, newSubstr);
         }
@@ -881,7 +881,7 @@ namespace smart_string {
             return *this;
         }
 
-        SmartString format(int count, ...) {
+        SmartString format(const int count, ...) {
             va_list arguments;
             va_start(arguments, count);
             for(int i = 0; i < count; i++) {
@@ -896,7 +896,7 @@ namespace smart_string {
         }
 
         template<typename T>
-        T getFormatted(...) {
+        T getFormatted(...) const {
             SmartString result(*this);
             int numArgs = result.getNumArguments();
             va_list arguments;
@@ -913,7 +913,7 @@ namespace smart_string {
         }
 
         template<typename T>
-        T getFormatted(int count, ...) {
+        T getFormatted(int count, ...) const {
             SmartString result(*this);
             va_list arguments;
             va_start(arguments, count);
@@ -985,11 +985,11 @@ namespace smart_string {
             return (T) result;
         }
 
-        std::string str() {
+        std::string str() const {
             return std::string(backingString);
         }
 
-        char* c_str() {
+        char* c_str() const {
             char* result = new char[stringSize+1];
             for(int i = 0; i < stringSize+1; i++) {
                 result[i] = backingString[i];
@@ -997,24 +997,24 @@ namespace smart_string {
             return result;
         }
 
-        std::stringstream sstream() {
+        std::stringstream sstream() const {
             std::stringstream result;
             result << this->str();
             return result;
         }
 
-        int length() {
+        int length() const {
             return stringSize;
         }
 
-        bool isEmpty() {
+        bool isEmpty() const {
             if(stringSize == 0) {
                 return true;
             }
             return false;
         }
 
-        size_t memoryFootPrint() {
+        size_t memoryFootPrint() const {
             return memorySize*sizeof(char);
         }
     };
