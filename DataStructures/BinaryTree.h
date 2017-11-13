@@ -44,19 +44,19 @@ namespace binary_tree {
             return *this;
         }
 
-        T getData() {
+        T getData() const {
             return data;
         }
 
-        Node<T>* getLeft() {
+        Node<T>* getLeft() const {
             return left;
         }
 
-        Node<T>* getRight() {
+        Node<T>* getRight() const {
             return right;
         }
 
-        void setData(T newData) {
+        void setData(const T newData) {
             data = newData;
         }
 
@@ -76,14 +76,14 @@ namespace binary_tree {
     private:
         Node<T>* root;
 
-        int max(int a, int b) {
+        int max(const int a, const int b) const {
             if(a > b) {
                 return a;
             }
             return b;
         }
 
-        int abs(int a) {
+        int abs(const int a) const {
             if(a < 0) {
                 return a*-1;
             }
@@ -94,7 +94,7 @@ namespace binary_tree {
         BinaryTree() : root(nullptr) {}
         BinaryTree(Node<T>* r) : root(r) {}
 
-        void insert(T item) {
+        void insert(const T item) {
             Node<T>* newNode = new Node<T>(item);
             Node<T>* currentNode = root;
             Node<T>* trailingNode = nullptr;
@@ -119,11 +119,11 @@ namespace binary_tree {
             }
         }
 
-        Node<T>* find(T item) {
+        Node<T>* find(const T item) {
             return find(root, item);
         }
 
-        Node<T>* find(Node<T>* start, T item) {
+        Node<T>* find(Node<T>* start, const T item) const {
             if(start == nullptr) {
                 return nullptr;
             }
@@ -138,11 +138,11 @@ namespace binary_tree {
             return currentNode;
         }
 
-        bool contains(Node<T>* target) {
+        bool contains(const Node<T>* target) const {
             return contains(root, target);
         }
 
-        bool contains(Node<T>* start, Node<T>* target) {
+        bool contains(const Node<T>* start, const Node<T>* target) const {
             if(start == nullptr) {
                 return false;
             }
@@ -152,11 +152,11 @@ namespace binary_tree {
             return (contains(start->getLeft(), target) || contains(start->getRight(), target));
         }
 
-        int getDepth() {
+        int getDepth() const {
             return getDepth(root);
         }
 
-        int getDepth(Node<T>* node) {
+        int getDepth(const Node<T>* node) const {
             if(node != nullptr) {
                 return 1 + max(getDepth(node->getLeft()), getDepth(node->getRight()));
             }
@@ -167,7 +167,7 @@ namespace binary_tree {
             return getParent(root, target);
         }
 
-        Node<T>* getParent(Node<T>* start, Node<T>* target) {
+        Node<T>* getParent(Node<T>* start, const Node<T>* target) const {
             if(start == nullptr || target == nullptr) {
                 return nullptr;
             }
@@ -287,15 +287,15 @@ namespace binary_tree {
             }
         }
 
-        Node<T>* getRoot() {
+        Node<T>* getRoot() const {
             return root;
         }
 
-        void print() {
+        void print() const {
             print(root, 0, 'o');
         }
 
-        void print(Node<T>* node, int depth, char prefix) {
+        void print(const Node<T>* node, const int depth, const char prefix) const {
             if(node != nullptr) {
                 for(int i = 0; i < depth; i++) {
                     std::cout << "\t";

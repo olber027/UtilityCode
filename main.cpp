@@ -7,10 +7,15 @@
 #include "Testing/SmartPointerTestDriver.h"
 #include "Testing/SmartStringTestDriver.h"
 
+#include "DataTypes/ArgEnsure.h"
+
 using namespace std;
 
-int main() {
+int main(int argc, char** argv) {
 
+    ArgEnsure ae;
+    ae.addArgument(new FlagArgument("-d", "", true));
+    ae.validateArguments(argc, argv);
     TestDriver* driver;
 
     vector<TestDriver*> testDrivers = vector<TestDriver*>();
@@ -31,5 +36,6 @@ int main() {
     for(int i = 0; i < testDrivers.size(); i++) {
         delete testDrivers[i];
     }
+
     return 0;
 }

@@ -16,10 +16,10 @@ namespace smart_pointer {
             int numReferences;
         public:
             ReferenceCounter() : numReferences(0) {}
-            ReferenceCounter(int init) : numReferences(init) {}
+            ReferenceCounter(const int init) : numReferences(init) {}
             int addRef() { return ++numReferences; }
             int removeRef() { return --numReferences; }
-            int getNumReferences() { return numReferences; }
+            int getNumReferences() const { return numReferences; }
         };
 
         T* pointer;
@@ -56,10 +56,10 @@ namespace smart_pointer {
             destroy();
         }
 
-        T& operator*() { return *pointer; }
-        T* operator->() { return pointer; }
-        T* getPointer() { return pointer; }
-        int numReferences() { return referenceCounter->getNumReferences(); }
+        T& operator*() const { return *pointer; }
+        T* operator->() const { return pointer; }
+        T* getPointer() const { return pointer; }
+        int numReferences() const { return referenceCounter->getNumReferences(); }
 
         SmartPointer<T>& operator=(const SmartPointer<T>& rhs) {
             if(&rhs != this) {

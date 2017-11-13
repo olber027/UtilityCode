@@ -22,14 +22,14 @@ namespace set {
     public:
         Set() : items(std::vector<T>()) {}
 
-        Set(T* list, int size) {
+        Set(const T* list, const int size) {
             items = std::vector<T>();
             for(int i = 0; i < size; i++) {
                 addItem(list[i]);
             }
         }
 
-        Set(std::vector<T> list) {
+        Set(const std::vector<T> list) {
             items = std::vector<T>();
             for(int i = 0; i < list.size(); i++) {
                 addItem(list[i]);
@@ -52,7 +52,7 @@ namespace set {
             }
         }
 
-        bool contains(T item) {
+        bool contains(const T item) const {
             for(int i = 0; i < items.size(); i++) {
                 if(items[i] == item) {
                     return true;
@@ -61,7 +61,7 @@ namespace set {
             return false;
         }
 
-        T* addItem(T item) {
+        T* addItem(const T item) {
             for(int i = 0; i < items.size(); i++) {
                 if(items[i] == item) {
                     return &items[i];
@@ -87,17 +87,17 @@ namespace set {
             return result;
         }
 
-        T operator[](int index) {
+        T operator[](const int index) const {
             return items[index];
         }
 
-        int size() {
+        int size() const {
             return items.size();
         }
 
         //Provides the union of two sets.
         //e.g. {1, 2} U {2, 3} = {1, 2, 3}
-        Set<T> Union(Set<T> other) {
+        Set<T> Union(const Set<T>& other) const {
             Set<T> result = Set<T>();
             for(int i = 0; i < size(); i++) {
                 //bypass addItem since we know every element of this set to be unique already.
@@ -111,7 +111,7 @@ namespace set {
 
         //provides the intersection of two sets.
         //e.g. {1, 2} I {2, 3} = {2}
-        Set<T> Intersection(Set<T> other) {
+        Set<T> Intersection(const Set<T>& other) const {
             Set<T> result = Set<T>();
             for(int i = 0; i < size(); i++) {
                 if(other.contains(items[i])) {
@@ -124,7 +124,7 @@ namespace set {
         // provides the complement of the calling set
         // with regards to the set passed in.
         // e.g. {1, 2, 3} / {2, 3} = {1}
-        Set<T> Complement(Set<T> other) {
+        Set<T> const Complement(const Set<T>& other) const {
             Set<T> result = Set<T>();
             for(int i = 0; i < size(); i++) {
                 if(!other.contains(items[i])) {
@@ -134,28 +134,28 @@ namespace set {
             return result;
         }
 
-        Set<T> operator+(Set<T> other) {
+        Set<T> operator+(const Set<T>& other) const {
             return Union(other);
         }
 
-        Set<T> operator-(Set<T> other) {
+        Set<T> operator-(const Set<T>& other) const {
             return Complement(other);
         }
 
-        Set<T> operator+=(Set<T> other) {
+        Set<T> operator+=(const Set<T>& other) {
             for(int i = 0; i < other.size(); i++) {
                 addItem(other[i]);
             }
             return *this;
         }
 
-        Set<T> operator-=(Set<T> other) {
+        Set<T> operator-=(const Set<T>& other) {
             Set<T> temp = Complement(other);
             *this = temp;
             return *this;
         }
 
-        bool isSubSetOf(Set<T> other) {
+        bool isSubSetOf(const Set<T>& other) const {
             for(int i = 0; i < size(); i++) {
                 if(!other.contains(items[i])) {
                     return false;
@@ -164,7 +164,7 @@ namespace set {
             return true;
         }
 
-        bool isSuperSetOf(Set<T> other) {
+        bool isSuperSetOf(const Set<T>& other) const {
             for(int i = 0; i < other.size(); i++) {
                 if(!contains(other[i])) {
                     return false;

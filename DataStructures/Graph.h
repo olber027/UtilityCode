@@ -31,23 +31,23 @@ namespace graph {
             delete neighbors;
         }
 
-        double getCostTo(T other) {
+        double getCostTo(const T other) const {
             return vertexType.getCostTo((VertexType *) &other);
         }
 
-        Vertex<T>** getNeighbors() {
+        Vertex<T>** getNeighbors() const {
             return neighbors;
         }
 
-        int getNumNeighbors() {
+        int getNumNeighbors() const {
             return numNeighbors;
         }
 
-        T getVertexType() {
+        T getVertexType() const {
             return vertexType;
         }
 
-        bool isNeighborsWith(Vertex<T>* neighbor) {
+        bool isNeighborsWith(const Vertex<T>* neighbor) const {
             for(int i = 0; i < numNeighbors; i++) {
                 if(neighbors[i] == neighbor) {
                     return true;
@@ -91,7 +91,7 @@ namespace graph {
             return false;
         }
 
-        std::string getRepresentation() {
+        std::string getRepresentation() const {
             std::stringstream result;
             result << vertexType.getRepresentation() << " -> [";
             for(int i = 0; i < numNeighbors; i++) {
@@ -150,15 +150,15 @@ namespace graph {
             return *this;
         }
 
-        bool areAdjacent(Vertex<T>* a, Vertex<T>* b) {
+        bool areAdjacent(const Vertex<T>* a, const Vertex<T>* b) const {
             return a->isNeighborsWith(b) || b->isNeighborsWith(a);
         }
 
-        Vertex<T>** getNeighborsOf(Vertex<T>* vertex) {
+        Vertex<T>** getNeighborsOf(const Vertex<T>* vertex) const {
             return vertex->getNeighbors();
         }
 
-        bool contains(Vertex<T>* vertex) {
+        bool contains(const Vertex<T>* vertex) const {
             for(int i = 0; i < numVertices; i++) {
                 if(vertices[i] == vertex) {
                     return true;
@@ -239,7 +239,7 @@ namespace graph {
             numEdges--;
         }
 
-        double getCost(Vertex<T>* from, Vertex<T>* to) {
+        double getCost(const Vertex<T>* from, const Vertex<T>* to) const {
             return from->getCostTo(to);
         }
     };

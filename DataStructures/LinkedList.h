@@ -13,15 +13,15 @@ namespace linked_list {
     class Node {
     private:
         T data;
-        Node<T> *next;
+        Node<T>* next;
 
     public:
-        Node(T d, Node<T> *n) {
+        Node(const T d, Node<T>* n) {
             data = d;
             next = n;
         }
 
-        Node(T d) {
+        Node(const T d) {
             data = d;
             next = nullptr;
         }
@@ -33,15 +33,15 @@ namespace linked_list {
             }
         }
 
-        Node<T> *getNext() { return next; }
+        Node<T>* getNext() const { return next; }
 
-        void setNext(Node<T> *n) { next = n; }
+        void setNext(Node<T>* n) { next = n; }
 
-        T getData() { return data; }
+        T getData() const { return data; }
 
         void setData(T d) { data = d; }
 
-        friend std::ostream &operator<<(std::ostream &out, Node<T> &node) {
+        friend std::ostream &operator<<(std::ostream &out, const Node<T> &node) {
             out << node.getData();
             return out;
         }
@@ -50,8 +50,8 @@ namespace linked_list {
     template<class T>
     class LinkedList {
     private:
-        Node<T> *head;
-        Node<T> *tail;
+        Node<T>* head;
+        Node<T>* tail;
 
     public:
         LinkedList() {
@@ -59,7 +59,7 @@ namespace linked_list {
             tail = nullptr;
         }
 
-        LinkedList(Node<T> *node) {
+        LinkedList(const Node<T>* node) {
             if(!node) {
                 LinkedList<T>();
                 return;
@@ -72,7 +72,7 @@ namespace linked_list {
             }
         }
 
-        LinkedList(T value) {
+        LinkedList(const T value) {
             LinkedList(new Node<T>(value));
         }
 
@@ -110,16 +110,16 @@ namespace linked_list {
         ~LinkedList() {
             if (!head)
                 return;
-            Node<T> *next = head->getNext();
+            Node<T>* next = head->getNext();
             delete head;
             while (next) {
-                Node<T> *temp = next;
+                Node<T>* temp = next;
                 next = next->getNext();
                 delete temp;
             }
         }
 
-        void addNode(Node<T> *node) {
+        void addNode(Node<T>* node) {
             if (tail) {
                 tail->setNext(node);
                 tail = tail->getNext();
@@ -129,11 +129,11 @@ namespace linked_list {
             }
         }
 
-        void addNode(T value) {
+        void addNode(const T value) {
             addNode(new Node<T>(value));
         }
 
-        bool addNodeAt(int index, T value) {
+        bool addNodeAt(const int index, const T value) {
             if(index < 0)
                 return false;
             if(!head) {
@@ -170,19 +170,19 @@ namespace linked_list {
             return false;
         }
 
-        Node<T> *pop() {
+        Node<T>* pop() {
             if (!head)
                 return nullptr;
 
-            Node<T> *lead = head->getNext();
-            Node<T> *trail = head;
-            Node<T> *last = head;
+            Node<T>* lead = head->getNext();
+            Node<T>* trail = head;
+            Node<T>* last = head;
             while (lead) {
                 last = trail;
                 trail = lead;
                 lead = lead->getNext();
             }
-            Node<T> *temp = trail;
+            Node<T>* temp = trail;
             if (trail == head) {
                 head = nullptr;
                 tail = nullptr;
@@ -193,7 +193,7 @@ namespace linked_list {
             return temp;
         }
 
-        Node<T> *pop(int index) {
+        Node<T>* pop(const int index) {
             if (!head)
                 return nullptr;
             if (index == 0) {
@@ -205,8 +205,8 @@ namespace linked_list {
                 return temp;
             }
 
-            Node<T> *lead = head;
-            Node<T> *trail = head;
+            Node<T>* lead = head;
+            Node<T>* trail = head;
             int i = 0;
             while (i++ < index && lead) {
                 trail = lead;
@@ -218,15 +218,15 @@ namespace linked_list {
             return lead;
         }
 
-        Node<T> *operator[](int index) {
+        Node<T>* operator[](const int index) const {
             return getNodeAtIndex(index);
         }
 
-        Node<T> *getNodeAtIndex(int index) {
+        Node<T>* getNodeAtIndex(const int index) const {
             if(index < 0) {
                 return nullptr;
             }
-            Node<T> *search = head;
+            Node<T>* search = head;
             int i = 0;
             while (i++ < index && search) {
                 search = search->getNext();
@@ -234,28 +234,28 @@ namespace linked_list {
             return search;
         }
 
-        Node<T> *getNode(T value) {
-            Node<T> *search = head;
+        Node<T>* getNode(const T value) const {
+            Node<T>* search = head;
             while (search && search->getData() != value) {
                 search = search->getNext();
             }
             return search;
         }
 
-        Node<T> *getNode(Node<T> node) {
+        Node<T>* getNode(const Node<T>& node) const {
             return getNode(node.getData());
         }
 
-        Node<T> *getHead() {
+        Node<T>* getHead() const {
             return head;
         }
 
-        Node<T> *getTail() {
+        Node<T>* getTail() const {
             return tail;
         }
 
-        int length() {
-            Node<T> *search = head;
+        int length() const {
+            Node<T>* search = head;
             int len = 0;
             while (search) {
                 search = search->getNext();
@@ -264,8 +264,8 @@ namespace linked_list {
             return len;
         }
 
-        friend std::ostream &operator<<(std::ostream &out, LinkedList<T> &list) {
-            Node<T> *node = list.getHead();
+        friend std::ostream &operator<<(std::ostream& out, const LinkedList<T>& list) {
+            Node<T>* node = list.getHead();
             while (node) {
                 out << "[" << *node << "]->";
                 node = node->getNext();

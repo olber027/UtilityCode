@@ -12,7 +12,7 @@ namespace graph {
 
     class VertexType {
     public:
-        virtual double getCostTo(VertexType *other) = 0;
+        virtual double getCostTo(const VertexType *other) = 0;
         virtual std::string getRepresentation() = 0;
     };
 
@@ -26,7 +26,7 @@ namespace graph {
         double getX() { return x; }
         double getY() { return y; }
 
-        double getCostTo(VertexType* Other) {
+        double getCostTo(const VertexType* Other) {
             Coordinates2D* other = (Coordinates2D*) Other;
             double squareX = (other->getX() - x) * (other->getX() - x);
             double squareY = (other->getY() - y) * (other->getY() - y);
@@ -52,7 +52,7 @@ namespace graph {
         double getY() { return y; }
         double getZ() { return z; }
 
-        double getCostTo(VertexType* Other) {
+        double getCostTo(const VertexType* Other) {
             Coordinates3D* other = (Coordinates3D*) Other;
             double squareX = (other->getX() - x) * (other->getX() - x);
             double squareY = (other->getY() - y) * (other->getY() - y);
@@ -78,7 +78,7 @@ namespace graph {
         double getX() { return x; }
         double getY() { return y; }
 
-        double getCostTo(VertexType* Other) {
+        double getCostTo(const VertexType* Other) {
             Grid* other = (Grid*) Other;
             return abs(other->getX() - x) + (abs(other->getY() - y));
         }

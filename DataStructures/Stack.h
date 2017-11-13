@@ -85,14 +85,14 @@ namespace stack {
             return nullptr;
         }
 
-        T* peek() {
+        T* peek() const {
             if(top != nullptr) {
                 return top->data;
             }
             return nullptr;
         }
 
-        int getSize() { return size; }
+        int getSize() const { return size; }
     };
 }
 
