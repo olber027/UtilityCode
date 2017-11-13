@@ -13,9 +13,6 @@ using namespace std;
 
 int main(int argc, char** argv) {
 
-    ArgEnsure ae;
-    ae.addArgument(new FlagArgument("-d", "", true));
-    ae.validateArguments(argc, argv);
     TestDriver* driver;
 
     vector<TestDriver*> testDrivers = vector<TestDriver*>();
