@@ -174,6 +174,12 @@ public:
         assert(true, ("d" > temp));
         assert(true, ("c" >= temp));
         assert(true, ("c" <= temp));
+
+        temp = "bad";
+        temp[0] = 'c';
+        assert(std::string("cad"), temp.str());
+        temp[2] = 't';
+        assert(std::string("cat"), temp.str());
     }
 
     void testReplaceAndFormat() {

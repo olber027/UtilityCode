@@ -6,14 +6,11 @@
 #include "Testing/BinaryTreeTestDriver.h"
 #include "Testing/SmartPointerTestDriver.h"
 #include "Testing/SmartStringTestDriver.h"
-
-#include "DataTypes/ArgEnsure.h"
+#include "Testing/DictionaryTestDriver.h"
 
 using namespace std;
 
 int main(int argc, char** argv) {
-
-    TestDriver* driver;
 
     vector<TestDriver*> testDrivers = vector<TestDriver*>();
     testDrivers.push_back(new LinkedListTestDriver());
@@ -23,11 +20,11 @@ int main(int argc, char** argv) {
     testDrivers.push_back(new StackTestDriver());
     testDrivers.push_back(new SmartPointerTestDriver());
     testDrivers.push_back(new SmartStringTestDriver());
+    testDrivers.push_back(new DictionaryTestDriver());
 
     for(int i = 0; i < testDrivers.size(); i++) {
-        driver = testDrivers[i];
-        driver->run();
-        cout << driver->getOutput();
+        testDrivers[i]->run();
+        cout << testDrivers[i]->getOutput();
     }
 
     for(int i = 0; i < testDrivers.size(); i++) {
