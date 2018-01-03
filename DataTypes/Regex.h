@@ -31,21 +31,18 @@ namespace regex {
     class Regex {
     private:
 
-        bool isCompiled;
-        SmartString pattern;
-        State* initialState;
-
-        //changes characters in the pattern to a more easy to manipulate format.
-        SmartString simplify() {
-
-        }
-
         class State {
         private:
             std::vector<State*> nextPossibleStates;
             SmartString matchingCriteria;
             bool end;
         public:
+
+            State() : nextPossibleStates(std::vector<State*>()), matchingCriteria(""), end(false) {}
+            template<typename U>
+            State(U criteria) : nextPossibleStates(std::vector<State*>()), matchingCriteria(criteria), end(false) {}
+            template<typename U>
+            State(U criteria, bool End) : nextPossibleStates(std::vector<State*>()), matchingCriteria(criteria), end(End) {}
 
             std::vector<State*> advance(char c) {
                 std::vector<State*> nextStates = std::vector<State*>();
@@ -82,17 +79,76 @@ namespace regex {
             }
         };
 
+        bool isCompiled;
+        SmartString pattern;
+        State* initialState;
+
     public:
 
         template<typename U>
         void compile(const U& Pattern) {
             pattern = Pattern;
+            /*
+             *
+parse(str)
+	parenCount = 0
+	index = 0
+	strings = []
+	currentString = ""
+	States = []
+	while index < str.size()
+		if str[index] == "("
+			parenCount++
+			currentString += str[index]
+		else if str[index] == ")"
+			parenCount--
+			currentString += str[index]
+		else if str[index] == "|" and parenCount <= 0
+			strings.add(currentString)
+			currentString = ""
+		else
+			currentString += str[index]
+		index++
+
+	for string in strings
+		index = 0
+		currentStates = []
+		while index < string.size()
+			resultStates = []
+			if string[index] == "("
+				parenCount = 0
+				index++
+				substr = ""
+				while string[index] != ")" or parenCount != 0 //not accounting for going off end of string
+					substr += string[index]
+					if string[index] == "("
+						parenCount++
+					if string[index] == ")"
+						parenCount--
+					index++
+				resultStates = parse(substr)
+			else
+				resultStates.add(stringToState(string[index]))
+
+			if currentStates is empty
+				for resultState in resultStates
+					states.add(resultState)
+
+			for state in currentStates
+				for resultState in resultStates
+					state.addChild(resultState)
+			currentStates = resultStates
+
+	return states
+             */
             compile();
         }
 
         void compile() {
 
-            SmartString str = simplify();
+            initialState = new State;
+            State* currentState = initialState;
+
 
             isCompiled = true;
         }
