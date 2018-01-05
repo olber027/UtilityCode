@@ -18,7 +18,9 @@ namespace regex {
         SmartString matchingPattern;
         int index;
     public:
-        Match(T pattern, int idx) : matchingPattern(pattern), index(idx) {}
+        Match() : matchingPattern(""), index(-1) {}
+        Match(const T& pattern, const int idx) : matchingPattern(pattern), index(idx) {}
+
         T getPattern() {
             return (T) matchingPattern;
         }
@@ -44,6 +46,18 @@ namespace regex {
             template<typename U>
             State(U criteria, bool End) : nextPossibleStates(std::vector<State*>()), matchingCriteria(criteria), end(End) {}
 
+            void addNextState(State* nextState) {
+                nextPossibleStates.push_back(nextState);
+                end = false;
+            }
+
+            void addNextStates(std::vector<State*> nextStates) {
+                for(int i = 0; i < nextStates.size(); i++) {
+                    nextPossibleStates.push_back(nextStates[i]);
+                }
+                end = false;
+            }
+
             std::vector<State*> advance(char c) {
                 std::vector<State*> nextStates = std::vector<State*>();
                 for(int i = 0; i < nextPossibleStates.size(); i++) {
@@ -53,6 +67,10 @@ namespace regex {
                     }
                 }
                 return nextStates;
+            }
+
+            bool makeEnd() {
+                end = true;
             }
 
             bool isEnd() {
@@ -83,78 +101,120 @@ namespace regex {
         SmartString pattern;
         State* initialState;
 
+        std::vector<State*> parse(SmartString str) {
+            int parenCount = 0;
+            int index = 0;
+            std::vector<SmartString> strings;
+            std::vector<State*> states;
+            SmartString currentString;
+
+            while(index < str.length()) {
+                if(str[index] == '(') {
+                    parenCount++;
+                    currentString << str[index];
+                } else if(str[index] == ')') {
+                    parenCount--;
+                    currentString << str[index];
+                } else if(str[index] == '|' && parenCount <= 0) {
+                    strings.push_back(currentString);
+                    currentString = "";
+                } else {
+                    currentString << str[index];
+                }
+                index++;
+            }
+
+            if(currentString != "") {
+                strings.push_back(currentString);
+            }
+
+            for(int i = 0; i < strings.size(); i++) {
+                SmartString string = strings[i];
+                index = 0;
+                std::vector<State*> currentStates;
+
+                while(index < string.length()) {
+                    std::vector<State*> resultStates;
+                    if(string[index] == '(') {
+                        parenCount = 0;
+                        index++;
+                        SmartString substr;
+                        while(string[index] != ')' || parenCount != 0) {
+                            substr << string[index];
+                            if(string[index] == '(') {
+                                parenCount++;
+                            } else if(string[index] == ')') {
+                                parenCount--;
+                            }
+                            index++;
+                        }
+                        std::vector<State*> substrResults = parse(substr);
+                        for(int j = 0; j < substrResults.size(); j++) {
+                            resultStates.push_back(substrResults[j]);
+                        }
+                    } else {
+                        resultStates.push_back(new State(string[index]));
+                    }
+
+                    if(currentStates.size() == 0) {
+                        for(int j = 0; j < resultStates.size(); j++) {
+                            states.push_back(resultStates[j]);
+                        }
+                    }
+
+                    for(int j = 0; j < currentStates.size(); j++) {
+                        currentStates[j]->addNextStates(resultStates);
+                    }
+                    currentStates = resultStates;
+                    index++;
+                }
+                for(int j = 0; j < currentStates.size(); j++) {
+                    currentStates[j]->makeEnd();
+                }
+            }
+            return states;
+        }
+
     public:
 
+        Regex() : isCompiled(false), pattern(""), initialState(nullptr) {}
         template<typename U>
-        void compile(const U& Pattern) {
+        Regex(const U& Pattern, const bool doCompilation) : Regex() {
             pattern = Pattern;
-            /*
-             *
-parse(str)
-	parenCount = 0
-	index = 0
-	strings = []
-	currentString = ""
-	States = []
-	while index < str.size()
-		if str[index] == "("
-			parenCount++
-			currentString += str[index]
-		else if str[index] == ")"
-			parenCount--
-			currentString += str[index]
-		else if str[index] == "|" and parenCount <= 0
-			strings.add(currentString)
-			currentString = ""
-		else
-			currentString += str[index]
-		index++
-
-	for string in strings
-		index = 0
-		currentStates = []
-		while index < string.size()
-			resultStates = []
-			if string[index] == "("
-				parenCount = 0
-				index++
-				substr = ""
-				while string[index] != ")" or parenCount != 0 //not accounting for going off end of string
-					substr += string[index]
-					if string[index] == "("
-						parenCount++
-					if string[index] == ")"
-						parenCount--
-					index++
-				resultStates = parse(substr)
-			else
-				resultStates.add(stringToState(string[index]))
-
-			if currentStates is empty
-				for resultState in resultStates
-					states.add(resultState)
-
-			for state in currentStates
-				for resultState in resultStates
-					state.addChild(resultState)
-			currentStates = resultStates
-
-	return states
-             */
-            compile();
-        }
-
-        void compile() {
-
-            initialState = new State;
-            State* currentState = initialState;
-
-
-            isCompiled = true;
+            if(doCompilation) {
+                isCompiled = compile();
+            }
+            if(!isCompiled) {
+                initialState = nullptr;
+            }
         }
 
         template<typename U>
-        Match<T> matchOne(const U& text) {
+        bool compile(const U& Pattern) {
+            pattern = Pattern;
+
+            return compile();
+        }
+
+        bool compile() {
+            if(pattern == "") {
+                isCompiled = false;
+                return false;
+            }
+
+            if(initialState != nullptr) {
+                delete initialState;
+            }
+
+            initialState = new State();
+            initialState->addNextStates(parse(pattern));
+            isCompiled = true;
+
+            return true;
+        }
+
+        template<typename U>
+        Match<T> firstMatch(const U& text) {
             SmartString str = text;
             std::vector<PossibleMatch> currentPossibleMatches;
             std::vector<PossibleMatch> nextPossibleMatches = std::vector<PossibleMatch>();
@@ -202,9 +262,9 @@ parse(str)
         }
 
         template<typename U>
-        std::vector<Match<T>> match(const U& text) {
+        std::vector<Match<T>> matchAll(const U& text) {
             SmartString str = text;
-            std::vector<PossibleMatch> currentPossibleMatches;
+            std::vector<PossibleMatch> currentPossibleMatches = std::vector<PossibleMatch>();
             std::vector<PossibleMatch> nextPossibleMatches = std::vector<PossibleMatch>();
             std::vector<Match<T>> matches = std::vector<Match<T>>();
 
@@ -217,10 +277,9 @@ parse(str)
                 nextPossibleMatches = std::vector<PossibleMatch>();
 
                 std::vector<State*> nextStates = initialState->advance(str[i]);
-                for(int k = 0; k < nextStates.size(); k++) {
-                    nextPossibleMatches.push_back(PossibleMatch(str[i], nextStates[k], i));
+                for(int j = 0; j < nextStates.size(); j++) {
+                    nextPossibleMatches.push_back(PossibleMatch(str[i], nextStates[j], i));
                 }
-
 
                 for(int j = 0; j < currentPossibleMatches.size(); j++) {
                     PossibleMatch currentMatch = currentPossibleMatches[j];
@@ -228,7 +287,7 @@ parse(str)
                         matches.push_back(Match<T>(currentMatch.getContents(), currentMatch.getStartingIndex()));
                         continue;
                     }
-                    std::vector<State*> nextStates = currentMatch.getState()->advance(str[i]);
+                    nextStates = currentMatch.getState()->advance(str[i]);
                     for(int k = 0; k < nextStates.size(); k++) {
                         nextPossibleMatches.push_back(
                                 PossibleMatch(
@@ -241,8 +300,8 @@ parse(str)
                 }
             }
 
-            for(int i = 0; i < currentPossibleMatches.size(); i++) {
-                PossibleMatch currentMatch = currentPossibleMatches[i];
+            for(int i = 0; i < nextPossibleMatches.size(); i++) {
+                PossibleMatch currentMatch = nextPossibleMatches[i];
                 if(currentMatch.getState()->isEnd()) {
                     matches.push_back(Match<T>(currentMatch.getContents(), currentMatch.getStartingIndex()));
                 }
@@ -250,7 +309,18 @@ parse(str)
 
             return matches;
         }
-    };
 
+        template<typename U>
+        Match<T> match(const U& text) {
+            std::vector<Match<T>> matches = matchAll(text);
+            Match<T> longestMatch;
+            for(int i = 0; i < matches.size(); i++) {
+                if(longestMatch.getPattern().length() < matches[i].getPattern().length()) {
+                    longestMatch = matches[i];
+                }
+            }
+            return longestMatch;
+        }
+    };
 }
 #endif //UTILITYCODE_REGEX_H
