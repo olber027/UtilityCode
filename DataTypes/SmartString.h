@@ -9,6 +9,7 @@
 #include <cstdarg>
 #include <fstream>
 #include <sstream>
+#include <stdexcept>
 
 
 namespace smart_string {
@@ -99,7 +100,7 @@ namespace smart_string {
             return (char) (digit + ((int) '0'));
         }
 
-        int charToDigit(const char c) const {
+        static int charToDigit(const char c) {
             return ((int) c) - ((int) '0');
         }
 
@@ -316,7 +317,7 @@ namespace smart_string {
                 num /= 10;
             } while ( num > 0 );
             if(isNegative) {
-                temp.prepend("-");
+                temp.prepend('-');
             }
             return append(temp);
         }
@@ -329,11 +330,8 @@ namespace smart_string {
 
         SmartString& append(const double val, const int precision) {
             SmartString temp("");
-            int leftOfDecimal = (int) abs(val);
+            int leftOfDecimal = (int) val;
 
-            if(val < 0) {
-                temp.append("-");
-            }
             temp.append(leftOfDecimal);
             temp.append(".");
 
@@ -973,6 +971,84 @@ namespace smart_string {
             }
             return *this;
         }
+
+        template<typename T> static
+        bool tryConvert(const T source, double& out) {
+            SmartString src = source;
+            if(src.isEmpty()) {
+                return false;
+            }
+            int sign = 1;
+            if(src[0] == '-') {
+                sign = -1;
+                src.lstrip("-");
+            }
+
+            SmartString leftOfDecimal;
+            SmartString rightOfDecimal;
+            std::vector<SmartString> results = src.split<SmartString>(".");
+            double answer = 0;
+
+            if(results.size() > 2 || results.size() < 1) {
+                return false;
+            } else if(results.size() == 2) {
+                rightOfDecimal = results[1];
+            }
+            leftOfDecimal = results[0];
+
+            int multiplier = 1;
+            for(int i = leftOfDecimal.length() - 1; i >= 0; i--) {
+                int num = charToDigit(leftOfDecimal[i]);
+                if(num > 9 || num < 0) {
+                    return false;
+                }
+                answer += (num * multiplier);
+                multiplier *= 10;
+            }
+
+            double divisor = 10;
+            for(int i = 0; i < rightOfDecimal.length(); i++) {
+                int num = charToDigit(rightOfDecimal[i]);
+                if(num > 9 || num < 0) {
+                    return false;
+                }
+                answer += (num / divisor);
+                divisor *= 10;
+            }
+
+            out = answer * sign;
+            return true;
+        }
+
+        template<typename T> static
+        bool tryConvert(const T source, float& out) {
+            double temp;
+            bool result = tryConvert(source, temp);
+            if(result) {
+                out = (float) temp;
+            }
+            return result;
+        }
+
+        template<typename T> static
+        bool tryConvert(const T source, int& out) {
+            double temp;
+            bool result = tryConvert(source, temp);
+            if(result) {
+                out = (int) temp;
+            }
+            return result;
+        }
+
+        template<typename T, typename U> static
+        T convert(const U source) {
+            T temp;
+            bool result = tryConvert(source, temp);
+            if(result) {
+                return temp;
+            }
+            throw std::invalid_argument("source string was not a valid number");
+        };
 
         static SmartString whitespace() {
             SmartString result = " \t\n\r\x0b\x0c";

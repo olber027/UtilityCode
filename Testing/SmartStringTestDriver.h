@@ -9,6 +9,7 @@
 #include "TestDriver.h"
 #include <iostream>
 #include <string>
+#include <stdexcept>
 
 using namespace smart_string;
 
@@ -287,6 +288,54 @@ public:
         assert(std::string(".';,!@#$%ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"), temp.str());
         temp.toLower();
         assert(std::string(".';,!@#$%abcdefghijklmnopqrstuvwxyz0123456789"), temp.str());
+
+        double val;
+        bool result = SmartString::tryConvert("-1.56", val);
+        assert(true, result);
+        assert(-1.56, val);
+
+        result = SmartString::tryConvert("123.56", val);
+        assert(true, result);
+        assert(123.56, val);
+
+        result = SmartString::tryConvert("-1.56a", val);
+        assert(false, result);
+        assert(123.56, val);
+
+        result = SmartString::tryConvert("-1", val);
+        assert(true, result);
+        assert(-1.0, val);
+
+        result = SmartString::tryConvert("12345", val);
+        assert(true, result);
+        assert(12345.0, val);
+
+        int intVal;
+        result = SmartString::tryConvert("123", intVal);
+        assert(true, result);
+        assert(123, intVal);
+
+        float floatVal;
+        result = SmartString::tryConvert("12.3", floatVal);
+        assert(true, result);
+        assert((float) 12.3, floatVal);
+
+        val = SmartString::convert<double>("12.5");
+        assert((double) 12.5, val);
+
+        floatVal = SmartString::convert<float>("12.45");
+        assert((float) 12.45, floatVal);
+
+        intVal = SmartString::convert<int>("123");
+        assert(123, intVal);
+
+        std::string errorMessage;
+        try {
+            val = SmartString::convert<double>("123a");
+        } catch (std::invalid_argument& e) {
+            errorMessage = e.what();
+        }
+        assert(std::string("source string was not a valid number"), errorMessage);
     }
 
     void run() {
