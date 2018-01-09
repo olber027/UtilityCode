@@ -27,11 +27,13 @@ public:
         assert(1, dict["one"]);
         dict["one"] = 2;
         assert(2, dict["one"]);
+        std::string errorMessage = "no error";
         try {
             dict["two"] = 1;
         } catch (InvalidIndexException<std::string> &e) {
-            assert(std::string("Invalid Index : two"), std::string(e.what()));
+            errorMessage = e.what();
         }
+        assert(std::string("Invalid Index : two"), errorMessage);
         dict["one"] = 1;
         assert(true, dict.containsKey("one"));
         assert(false, dict.containsKey("two"));
@@ -42,13 +44,15 @@ public:
         try {
             dict.getValue("two");
         } catch (InvalidIndexException<std::string> &e) {
-            assert(std::string("Invalid Index : two"), std::string(e.what()));
+            errorMessage = e.what();
         }
+        assert(std::string("Invalid Index : two"), errorMessage);
         try {
             dict.getKey(2);
         } catch (InvalidIndexException<int> &e) {
-            assert(std::string("Invalid Index : 2"), std::string(e.what()));
+            errorMessage = e.what();
         }
+        assert(std::string("Invalid Index : 2"), errorMessage);
 
         assert(1, dict.length());
         dict.clear();

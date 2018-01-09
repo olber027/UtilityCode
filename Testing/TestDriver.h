@@ -41,6 +41,14 @@ public:
         return output.str();
     }
 
+    virtual int getFailures() {
+        return failed;
+    }
+
+    virtual int getPasses() {
+        return passed;
+    }
+
     template<typename T> bool assert(T expected, T actual) {
         bool result = expected == actual;
         if(result) {

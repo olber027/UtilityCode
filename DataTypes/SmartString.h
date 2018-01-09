@@ -1050,6 +1050,21 @@ namespace smart_string {
             throw std::invalid_argument("source string was not a valid number");
         };
 
+        template<typename T>
+        bool tryConvert(T& out) const {
+            return tryConvert(*this, out);
+        }
+
+        template<typename T>
+        T convert() const {
+            T temp;
+            bool result = this->tryConvert(temp);
+            if(result) {
+                return temp;
+            }
+            throw std::invalid_argument("string was not a valid number");
+        };
+
         static SmartString whitespace() {
             SmartString result = " \t\n\r\x0b\x0c";
             return result;

@@ -69,7 +69,7 @@ namespace regex {
                 return nextStates;
             }
 
-            bool makeEnd() {
+            void makeEnd() {
                 end = true;
             }
 
@@ -101,12 +101,15 @@ namespace regex {
         SmartString pattern;
         State* initialState;
 
-        std::vector<State*> parse(SmartString str) {
+        // turns the given string into one or more strings, separated by the
+        // outermost OR characters. e.g. a|b|c would turn into ["a","b","c"],
+        // (a|b)|c would turn into ["(a|b)", "c"], and "ab" would turn into
+        // ["ab"].
+        std::vector<SmartString> separateOrClauses(SmartString str) {
+            std::vector<SmartString> resultStrings;
+            SmartString currentString;
             int parenCount = 0;
             int index = 0;
-            std::vector<SmartString> strings;
-            std::vector<State*> states;
-            SmartString currentString;
 
             while(index < str.length()) {
                 if(str[index] == '(') {
@@ -116,7 +119,7 @@ namespace regex {
                     parenCount--;
                     currentString << str[index];
                 } else if(str[index] == '|' && parenCount <= 0) {
-                    strings.push_back(currentString);
+                    resultStrings.push_back(currentString);
                     currentString = "";
                 } else {
                     currentString << str[index];
@@ -125,18 +128,25 @@ namespace regex {
             }
 
             if(currentString != "") {
-                strings.push_back(currentString);
+                resultStrings.push_back(currentString);
             }
+
+            return resultStrings;
+        }
+
+        std::vector<State*> parse(SmartString str) {
+            std::vector<SmartString> strings = separateOrClauses(str);
+            std::vector<State*> states;
 
             for(int i = 0; i < strings.size(); i++) {
                 SmartString string = strings[i];
-                index = 0;
+                int index = 0;
                 std::vector<State*> currentStates;
 
                 while(index < string.length()) {
                     std::vector<State*> resultStates;
                     if(string[index] == '(') {
-                        parenCount = 0;
+                        int parenCount = 0;
                         index++;
                         SmartString substr;
                         while(string[index] != ')' || parenCount != 0) {
@@ -192,7 +202,6 @@ namespace regex {
         template<typename U>
         bool compile(const U& Pattern) {
             pattern = Pattern;
-
             return compile();
         }
 
@@ -238,7 +247,7 @@ namespace regex {
                     if(currentMatch.getState()->isEnd()) {
                         return Match<T>(currentMatch.getContents(), currentMatch.getStartingIndex());
                     }
-                    std::vector<State*> nextStates = currentMatch.getState()->advance(str[i]);
+                    nextStates = currentMatch.getState()->advance(str[i]);
                     for(int k = 0; k < nextStates.size(); k++) {
                         nextPossibleMatches.push_back(
                                 PossibleMatch(
@@ -264,8 +273,8 @@ namespace regex {
         template<typename U>
         std::vector<Match<T>> matchAll(const U& text) {
             SmartString str = text;
-            std::vector<PossibleMatch> currentPossibleMatches = std::vector<PossibleMatch>();
-            std::vector<PossibleMatch> nextPossibleMatches = std::vector<PossibleMatch>();
+            std::vector<PossibleMatch> currentPossibleMatches;
+            std::vector<PossibleMatch> nextPossibleMatches;
             std::vector<Match<T>> matches = std::vector<Match<T>>();
 
             if(!isCompiled) {
