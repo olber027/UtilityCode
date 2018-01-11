@@ -254,8 +254,8 @@ public:
             }
         }
 
-        for(auto it = arguments.begin(); it != arguments.end(); it++) {
-            Argument* arg = *it;
+        for(int i = 0; i < arguments.size(); i++) {
+            Argument* arg = arguments[i];
             char* value = {'\0'};
             bool argumentFound = false;
 
