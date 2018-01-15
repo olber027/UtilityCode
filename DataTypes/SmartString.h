@@ -113,7 +113,7 @@ namespace smart_string {
         }
 
         int getNumArguments() const {
-            int location = -1;
+            int location;
             int count = 0;
             do {
                 SmartString arg;
@@ -176,7 +176,7 @@ namespace smart_string {
                 precision = other.precision;
             }
         }
-        SmartString(SmartString&& other) : SmartString() {
+        SmartString(SmartString&& other) noexcept : SmartString() {
             backingString = other.backingString;
             stringSize = other.stringSize;
             precision = other.precision;
@@ -208,7 +208,7 @@ namespace smart_string {
             return *this;
         }
 
-        SmartString& operator=(SmartString&& rhs) {
+        SmartString& operator=(SmartString&& rhs) noexcept {
             if(&rhs != this) {
                 destroy();
                 precision = rhs.precision;
@@ -437,13 +437,13 @@ namespace smart_string {
 
         template<typename T>
         SmartString operator+(const T& t) const {
-            SmartString result(backingString);
+            SmartString result(*this);
             result.append(t);
             return result;
         }
 
         SmartString operator+(const SmartString& str) const {
-            SmartString result(backingString);
+            SmartString result(*this);
             result.append(str);
             return result;
         }
@@ -453,7 +453,7 @@ namespace smart_string {
         }
 
         template<typename T>
-        bool operator!=(const T str) const {
+        bool operator!=(const T& str) const {
             SmartString rhs = str;
             return (*this != rhs);
         }
@@ -463,7 +463,7 @@ namespace smart_string {
         }
 
         template<typename T>
-        bool operator==(const T str) const {
+        bool operator==(const T& str) const {
             SmartString rhs = str;
             return (*this == rhs);
         }
@@ -473,7 +473,7 @@ namespace smart_string {
         }
 
         template<typename T>
-        bool operator<(const T str) const {
+        bool operator<(const T& str) const {
             SmartString rhs = str;
             return (*this < rhs);
         }
@@ -483,7 +483,7 @@ namespace smart_string {
         }
 
         template<typename T>
-        bool operator<=(const T str) const {
+        bool operator<=(const T& str) const {
             SmartString rhs = str;
             return (*this <= rhs);
         }
@@ -493,7 +493,7 @@ namespace smart_string {
         }
 
         template<typename T>
-        bool operator>(const T str) const {
+        bool operator>(const T& str) const {
             SmartString rhs = str;
             return (*this > rhs);
         }
@@ -503,7 +503,7 @@ namespace smart_string {
         }
 
         template<typename T>
-        bool operator>=(const T str) const {
+        bool operator>=(const T& str) const {
             SmartString rhs = str;
             return (*this >= rhs);
         }
@@ -660,18 +660,18 @@ namespace smart_string {
         }
 
         template<typename T>
-        int findSubstring(const T target) const {
+        int findSubstring(const T& target) const {
             SmartString targ(target);
             return findSubstring(0, targ);
         }
 
         template<typename T>
-        bool contains(const T target) const {
+        bool contains(const T& target) const {
             return findSubstring(target) >= 0;
         }
 
         template<typename T>
-        int count(const T target) const {
+        int count(const T& target) const {
             int numInstances = 0;
             SmartString targ(target);
             int location = findSubstring(targ);
@@ -689,7 +689,7 @@ namespace smart_string {
         }
 
         template<typename T, typename U>
-        std::vector<T> split(const U target) const {
+        std::vector<T> split(const U& target) const {
             std::vector<T> result = std::vector<T>();
             SmartString temp(*this);
             SmartString targ(target);
@@ -706,7 +706,7 @@ namespace smart_string {
         }
 
         template<typename T, typename U, typename V> static
-        T join(const std::vector<U> list, const V separator) {
+        T join(const std::vector<U>& list, const V& separator) {
             SmartString temp("");
             for(int i = 0; i < list.size()-1; i++) {
                 temp.append(list[i]);
@@ -717,7 +717,7 @@ namespace smart_string {
         }
 
         template<typename T, typename U, typename V> static
-        T join(const U* list, const int listSize, const V separator) {
+        T join(const U* list, const int listSize, const V& separator) {
             SmartString temp("");
             for(int i = 0; i < listSize-1; i++) {
                 temp.append(list[i]);
@@ -744,7 +744,7 @@ namespace smart_string {
         }
 
         template<typename T>
-        SmartString& lstrip(const T chars) {
+        SmartString& lstrip(const T& chars) {
             SmartString toStrip = chars;
             int index = 0;
             while(index < stringSize && toStrip.contains(backingString[index])) {
@@ -755,7 +755,7 @@ namespace smart_string {
         }
 
         template<typename T>
-        SmartString& rstrip(const T chars) {
+        SmartString& rstrip(const T& chars) {
             SmartString toStrip = chars;
             int index = stringSize-1;
             while(index >= 0 && toStrip.contains(backingString[index])) {
@@ -766,7 +766,7 @@ namespace smart_string {
         }
 
         template<typename T>
-        SmartString& strip(const T chars) {
+        SmartString& strip(const T& chars) {
             lstrip(chars);
             rstrip(chars);
             return *this;
@@ -790,7 +790,7 @@ namespace smart_string {
         }
 
         template<typename T>
-        SmartString& remove(const T target) {
+        SmartString& remove(const T& target) {
             SmartString targ(target);
             return remove(targ);
         }
@@ -806,7 +806,7 @@ namespace smart_string {
         }
 
         template<typename T>
-        SmartString& removeAll(const T target) {
+        SmartString& removeAll(const T& target) {
             SmartString targ(target);
             return removeAll(targ);
         }
@@ -842,7 +842,7 @@ namespace smart_string {
         }
 
         template<typename T, typename U>
-        SmartString& replace(const T target, const U newSubstring) {
+        SmartString& replace(const T& target, const U& newSubstring) {
             SmartString targ(target); SmartString newSubstr(newSubstring);
             return replace(targ, newSubstr);
         }
@@ -859,7 +859,7 @@ namespace smart_string {
         }
 
         template<typename T, typename U>
-        SmartString& replaceAll(const T target, const U newSubstring) {
+        SmartString& replaceAll(const T& target, const U& newSubstring) {
             SmartString targ(target); SmartString newSubstr(newSubstring);
             return replaceAll(targ, newSubstr);
         }
@@ -927,7 +927,7 @@ namespace smart_string {
         }
 
         template<typename T, typename U> static
-        T format(U str, ...) {
+        T format(U& str, ...) {
             SmartString result(str);
             int count = result.getNumArguments();
 
@@ -973,7 +973,7 @@ namespace smart_string {
         }
 
         template<typename T> static
-        bool tryConvert(const T source, double& out) {
+        bool tryConvert(const T& source, double& out) {
             SmartString src = source;
             if(src.isEmpty()) {
                 return false;
@@ -1021,7 +1021,7 @@ namespace smart_string {
         }
 
         template<typename T> static
-        bool tryConvert(const T source, float& out) {
+        bool tryConvert(const T& source, float& out) {
             double temp;
             bool result = tryConvert(source, temp);
             if(result) {
@@ -1031,7 +1031,7 @@ namespace smart_string {
         }
 
         template<typename T> static
-        bool tryConvert(const T source, int& out) {
+        bool tryConvert(const T& source, int& out) {
             double temp;
             bool result = tryConvert(source, temp);
             if(result) {
@@ -1041,7 +1041,7 @@ namespace smart_string {
         }
 
         template<typename T, typename U> static
-        T convert(const U source) {
+        T convert(const U& source) {
             T temp;
             bool result = tryConvert(source, temp);
             if(result) {
