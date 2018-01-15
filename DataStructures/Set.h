@@ -21,21 +21,18 @@ namespace set {
         }
     public:
         Set() : items(std::vector<T>()) {}
-
         Set(const T* list, const int size) {
             items = std::vector<T>();
             for(int i = 0; i < size; i++) {
                 addItem(list[i]);
             }
         }
-
-        Set(const std::vector<T> list) {
+        Set(const std::vector<T>& list) {
             items = std::vector<T>();
             for(int i = 0; i < list.size(); i++) {
                 addItem(list[i]);
             }
         }
-
         Set(const Set<T>& set) {
             items = std::vector<T>();
             for(int i = 0; i < set.items.size(); i++) {
@@ -52,43 +49,54 @@ namespace set {
             }
         }
 
-        bool contains(const T item) const {
-            for(int i = 0; i < items.size(); i++) {
-                if(items[i] == item) {
-                    return true;
-                }
-            }
-            return false;
+        T operator[](const int index) const {
+            return items[index];
         }
 
-        T* addItem(const T item) {
-            for(int i = 0; i < items.size(); i++) {
-                if(items[i] == item) {
-                    return &items[i];
+        bool operator==(const Set<T>& rhs) const {
+            for(int i = 0; i < rhs.size(); i++) {
+                if(!contains(rhs[i])) {
+                    return false;
                 }
+            }
+            return true;
+        }
+
+        int getIndexOf(const T& item) const {
+            for(int i = 0; i < size(); i++) {
+                if(items[i] == item) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        bool contains(const T& item) const {
+            return getIndexOf(item) >= 0;
+        }
+
+        T* addItem(const T& item) {
+            int index = getIndexOf(item);
+            if(index >= 0) {
+                return &items[index];
             }
             items.push_back(item);
             return &items[items.size()-1];
         }
 
-        bool removeItem(T item) {
-            for(int i = 0; i < size(); i++) {
-                if(items[i] == item) {
-                    items.erase(items.begin() + i);
-                    return true;
-                }
+        bool removeItem(T& item) {
+            int index = getIndexOf(item);
+            if(index < 0) {
+                return false;
             }
-            return false;
+            items.erase(items.begin() + index);
+            return true;
         }
 
         T pop() {
             T result = items.back();
             items.pop_back();
             return result;
-        }
-
-        T operator[](const int index) const {
-            return items[index];
         }
 
         int size() const {
@@ -123,12 +131,17 @@ namespace set {
 
         // provides the complement of the calling set
         // with regards to the set passed in.
-        // e.g. {1, 2, 3} / {2, 3} = {1}
-        Set<T> const Complement(const Set<T>& other) const {
+        // e.g. {1, 2} / {2, 3} = {1, 3}
+        Set<T> Complement(const Set<T>& other) const {
             Set<T> result = Set<T>();
             for(int i = 0; i < size(); i++) {
                 if(!other.contains(items[i])) {
                     result.forceAdd(items[i]);
+                }
+            }
+            for(int i = 0; i < other.size(); i++) {
+                if(!contains(other[i])) {
+                    result.addItem(other[i]);
                 }
             }
             return result;
@@ -142,14 +155,14 @@ namespace set {
             return Complement(other);
         }
 
-        Set<T> operator+=(const Set<T>& other) {
+        Set<T>& operator+=(const Set<T>& other) {
             for(int i = 0; i < other.size(); i++) {
                 addItem(other[i]);
             }
             return *this;
         }
 
-        Set<T> operator-=(const Set<T>& other) {
+        Set<T>& operator-=(const Set<T>& other) {
             Set<T> temp = Complement(other);
             *this = temp;
             return *this;
@@ -171,6 +184,22 @@ namespace set {
                 }
             }
             return true;
+        }
+
+        std::vector<T> toVector() const {
+            std::vector<T> result;
+            for(int i = 0; i < size(); i++) {
+                result.push_back(items[i]);
+            }
+            return result;
+        }
+
+        T* toArray() const {
+            T* result = new T[size()];
+            for(int i = 0; i < size(); i++) {
+                result[i] = items[i];
+            }
+            return result;
         }
     };
 }

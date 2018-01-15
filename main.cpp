@@ -7,6 +7,7 @@
 #include "Testing/SmartPointerTestDriver.h"
 #include "Testing/SmartStringTestDriver.h"
 #include "Testing/DictionaryTestDriver.h"
+#include "Testing/SetTestDriver.h"
 
 using namespace std;
 
@@ -22,6 +23,7 @@ int main(int argc, char** argv) {
     testDrivers.push_back(new SmartPointerTestDriver());
     testDrivers.push_back(new SmartStringTestDriver());
     testDrivers.push_back(new DictionaryTestDriver());
+    testDrivers.push_back(new SetTestDriver());
 
     int totalFailures = 0;
     int totalPasses = 0;

@@ -5,6 +5,8 @@
 #ifndef UTILITYCODE_STACK_H
 #define UTILITYCODE_STACK_H
 
+#include <stdexcept>
+
 namespace stack {
 
     template<typename T>
@@ -13,23 +15,15 @@ namespace stack {
 
         class Item {
         public:
-            Item(T* dat, Item* n) : data(dat), next(n) {}
-            ~Item() {
-                if(data != nullptr) {
-                    delete data;
-                }
-            }
-            T* data;
+            Item(T dat, Item* n) : data(dat), next(n) {}
+            T data;
             Item* next;
         };
 
         Item* top;
         int size;
 
-    public:
-        Stack() : top(nullptr), size(0) {}
-        Stack(T* init) : top(new Item(init, nullptr)), size(1) {}
-        ~Stack() {
+        void destroy() {
             if(top) {
                 while (top->next) {
                     Item *temp = top->next;
@@ -40,18 +34,25 @@ namespace stack {
             }
         }
 
-        void cleanup() {
-            delete *this;
+    public:
+        Stack() : top(nullptr), size(0) {}
+        Stack(T init) : top(new Item(init, nullptr)), size(1) {}
+        ~Stack() {
+            destroy();
         }
 
-        Stack(const Stack<T> &stack) {
+        void cleanup() {
+            destroy();
+        }
+
+        Stack(const Stack<T>& stack) {
             if(&stack != this) {
                 top = stack.top;
                 size = stack.size;
             }
         }
 
-        Stack<T> operator=(const Stack<T> &rhs) {
+        Stack<T>& operator=(const Stack<T>& rhs) {
             if(&rhs != this) {
                 top = rhs.top;
                 size = rhs.size;
@@ -59,7 +60,7 @@ namespace stack {
             return *this;
         }
 
-        void push(T* item) {
+        Stack<T>& push(const T& item) {
             if(top != nullptr) {
                 Item* temp = new Item(item, top);
                 top = temp;
@@ -67,30 +68,28 @@ namespace stack {
                 top = new Item(item, nullptr);
             }
             size++;
+
+            return *this;
         }
 
-        void push(T item) {
-            T* tempItem = new T;
-            *tempItem = item;
-            push(tempItem);
-        }
-
-        T* pop() {
+        T pop() {
             if(top != nullptr) {
                 size--;
                 Item* temp = top;
                 top = top->next;
                 return temp->data;
             }
-            return nullptr;
+            throw std::out_of_range("Attempted to pop an empty stack");
         }
 
-        T* peek() const {
+        T peek() const {
             if(top != nullptr) {
                 return top->data;
             }
-            return nullptr;
+            throw std::out_of_range("Attempted to peek an empty stack");
         }
+
+        bool isEmpty() const { return size == 0; }
 
         int getSize() const { return size; }
     };

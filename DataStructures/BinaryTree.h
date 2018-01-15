@@ -23,11 +23,11 @@ namespace binary_tree {
         Node<T>* left;
         T data;
     public:
-        Node(T d) : right(nullptr), left(nullptr), data(d) {}
+        Node(const T& d) : right(nullptr), left(nullptr), data(d) {}
 
-        Node(T d, Node<T>* r, Node<T>* l) : right(r), left(l), data(d) {}
+        Node(const T& d, Node<T>* r, Node<T>* l) : right(r), left(l), data(d) {}
 
-        Node(const Node<T> &node) {
+        Node(const Node<T>& node) {
             if(this != &node) {
                 data = node.data;
                 left = node.left;
@@ -35,7 +35,7 @@ namespace binary_tree {
             }
         }
 
-        Node<T>& operator=(const Node<T> &rhs) {
+        Node<T>& operator=(const Node<T>& rhs) {
             if(this != &rhs) {
                 data = rhs.data;
                 left = rhs.left;
@@ -56,7 +56,7 @@ namespace binary_tree {
             return right;
         }
 
-        void setData(const T newData) {
+        void setData(const T& newData) {
             data = newData;
         }
 
@@ -94,7 +94,7 @@ namespace binary_tree {
         BinaryTree() : root(nullptr) {}
         BinaryTree(Node<T>* r) : root(r) {}
 
-        void insert(const T item) {
+        void insert(const T& item) {
             Node<T>* newNode = new Node<T>(item);
             Node<T>* currentNode = root;
             Node<T>* trailingNode = nullptr;
@@ -119,11 +119,11 @@ namespace binary_tree {
             }
         }
 
-        Node<T>* find(const T item) {
+        Node<T>* find(const T& item) {
             return find(root, item);
         }
 
-        Node<T>* find(Node<T>* start, const T item) const {
+        Node<T>* find(Node<T>* start, const T& item) const {
             if(start == nullptr) {
                 return nullptr;
             }
