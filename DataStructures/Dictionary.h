@@ -64,7 +64,7 @@ namespace dictionary {
             }
         }
 
-        void swap(const int from, const int to) {
+        void swap(const int& from, const int& to) {
             T tempKey = keys[from];
             U tempVal = values[from];
             keys[from] = keys[to];
@@ -73,12 +73,12 @@ namespace dictionary {
             values[to] = tempVal;
         }
 
-        void move(const int from, const int to) {
+        void move(const int& from, const int& to) {
             keys[to] = keys[from];
             values[to] = values[from];
         }
 
-        int getKeyIndex(const T& target, const int left, const int right) const {
+        int getKeyIndex(const T& target, const int& left, const int& right) const {
             if(right >= left) {
                 int middle = left + ((right - left)/2);
                 if(keys[middle] == target) {
@@ -142,6 +142,16 @@ namespace dictionary {
 
     public:
         Dictionary() : keys(nullptr), values(nullptr), size(0), memorySize(1) {}
+        Dictionary(const T* Keys, const U* Values, const int& size) : Dictionary() {
+            for(int i = 0; i < size; i++) {
+                addEntry(Keys[i], Values[i]);
+            }
+        }
+        Dictionary(const std::vector<T>& Keys, const std::vector<U>& Values) : Dictionary() {
+            for(int i = 0; i < Keys.size(); i++) {
+                addEntry(Keys[i], Values[i]);
+            }
+        }
         Dictionary(const Dictionary& other) : Dictionary() {
             if(&other != this) {
                 size = other.size;

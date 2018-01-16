@@ -16,7 +16,7 @@ namespace smart_pointer {
             int numReferences;
         public:
             ReferenceCounter() : numReferences(0) {}
-            ReferenceCounter(const int init) : numReferences(init) {}
+            ReferenceCounter(const int& init) : numReferences(init) {}
             int addRef() { return ++numReferences; }
             int removeRef() { return --numReferences; }
             int getNumReferences() const { return numReferences; }

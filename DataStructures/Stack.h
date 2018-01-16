@@ -15,7 +15,7 @@ namespace stack {
 
         class Item {
         public:
-            Item(T dat, Item* n) : data(dat), next(n) {}
+            Item(const T& dat, Item* n) : data(dat), next(n) {}
             T data;
             Item* next;
         };
@@ -36,7 +36,7 @@ namespace stack {
 
     public:
         Stack() : top(nullptr), size(0) {}
-        Stack(T init) : top(new Item(init, nullptr)), size(1) {}
+        Stack(const T& init) : top(new Item(init, nullptr)), size(1) {}
         ~Stack() {
             destroy();
         }

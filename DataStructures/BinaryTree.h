@@ -76,14 +76,14 @@ namespace binary_tree {
     private:
         Node<T>* root;
 
-        int max(const int a, const int b) const {
+        int max(const int& a, const int& b) const {
             if(a > b) {
                 return a;
             }
             return b;
         }
 
-        int abs(const int a) const {
+        int abs(const int& a) const {
             if(a < 0) {
                 return a*-1;
             }
@@ -163,7 +163,7 @@ namespace binary_tree {
             return 0;
         }
 
-        Node<T>* getParent(Node<T>* target) {
+        Node<T>* getParent(const Node<T>* target) {
             return getParent(root, target);
         }
 
@@ -295,7 +295,7 @@ namespace binary_tree {
             print(root, 0, 'o');
         }
 
-        void print(const Node<T>* node, const int depth, const char prefix) const {
+        void print(const Node<T>* node, const int& depth, const char& prefix) const {
             if(node != nullptr) {
                 for(int i = 0; i < depth; i++) {
                     std::cout << "\t";

@@ -68,7 +68,7 @@ namespace linked_list {
                 next = next->getNext();
             }
         }
-        LinkedList(const T value) : LinkedList() {
+        LinkedList(const T& value) : LinkedList() {
             head = new Node<T>(value);
             tail = head;
         }
@@ -79,7 +79,7 @@ namespace linked_list {
             }
         }
 
-        LinkedList<T>& operator=(const LinkedList<T> &rhs) {
+        LinkedList<T>& operator=(const LinkedList<T>& rhs) {
             if(&rhs != this) {
                 head = rhs.head;
                 tail = rhs.tail;
@@ -114,7 +114,7 @@ namespace linked_list {
             addNode(new Node<T>(value));
         }
 
-        bool addNodeAt(const int index, const T& value) {
+        bool addNodeAt(const int& index, const T& value) {
             if(index < 0) {
                 return false;
             }
@@ -173,7 +173,7 @@ namespace linked_list {
             return temp;
         }
 
-        Node<T>* pop(const int index) {
+        Node<T>* pop(const int& index) {
             if (!head) {
                 return nullptr;
             }
@@ -199,11 +199,11 @@ namespace linked_list {
             return lead;
         }
 
-        Node<T>* operator[](const int index) const {
+        Node<T>* operator[](const int& index) const {
             return getNodeAtIndex(index);
         }
 
-        Node<T>* getNodeAtIndex(const int index) const {
+        Node<T>* getNodeAtIndex(const int& index) const {
             if(index < 0) {
                 return nullptr;
             }

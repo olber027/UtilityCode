@@ -29,14 +29,14 @@ namespace graph {
         double x, y;
     public:
         Coordinates2D() : x(0), y(0) {}
-        Coordinates2D(double i, double j) : x(i), y(j) { }
+        Coordinates2D(const double& i, const double& j) : x(i), y(j) { }
         Coordinates2D(const Coordinates2D& other) : Coordinates2D() {
             x = other.x;
             y = other.y;
         }
 
-        double getX() { return x; }
-        double getY() { return y; }
+        double getX() const { return x; }
+        double getY() const { return y; }
 
         double getCostTo(const VertexType* Other) const {
             Coordinates2D* other = (Coordinates2D*) Other;
@@ -62,16 +62,16 @@ namespace graph {
 
     public:
         Coordinates3D() : x(0), y(0), z(0) {}
-        Coordinates3D(double i, double j, double k) : x(i), y(j), z(k) { }
+        Coordinates3D(const double& i, const double& j, const double& k) : x(i), y(j), z(k) { }
         Coordinates3D(const Coordinates3D& other) : Coordinates3D() {
             x = other.x;
             y = other.y;
             z = other.z;
         }
 
-        double getX() { return x; }
-        double getY() { return y; }
-        double getZ() { return z; }
+        double getX() const { return x; }
+        double getY() const { return y; }
+        double getZ() const { return z; }
 
         double getCostTo(const VertexType* Other) const {
             Coordinates3D* other = (Coordinates3D*) Other;
@@ -98,14 +98,14 @@ namespace graph {
 
     public:
         Grid() : x(0), y(0) {}
-        Grid(int i, int j) : x(i), y(j) {}
+        Grid(const int& i, const int& j) : x(i), y(j) {}
         Grid(const Grid& other) : Grid() {
             x = other.x;
             y = other.y;
         }
 
-        double getX() { return x; }
-        double getY() { return y; }
+        double getX() const { return x; }
+        double getY() const { return y; }
 
         double getCostTo(const VertexType* Other) const {
             Grid* other = (Grid*) Other;
@@ -146,7 +146,7 @@ namespace graph {
             return vertexType == other.getVertexType();
         }
 
-        double getCostTo(const Vertex<T> other) const {
+        double getCostTo(const Vertex<T>& other) const {
             return vertexType.getCostTo((VertexType*) &other.vertexType);
         }
 
@@ -245,15 +245,15 @@ namespace graph {
             }
             path.push_back(vertex);
         }
-        std::vector<Vertex<T>*> getPath() { return path; }
-        double getPathCost() { return pathCost; }
-        Vertex<T>* getLastVertex() { return path[path.size()-1]; }
-        double getEstimatedCost() {
+        std::vector<Vertex<T>*> getPath() const { return path; }
+        double getPathCost() const { return pathCost; }
+        Vertex<T>* getLastVertex() const { return path[path.size()-1]; }
+        double getEstimatedCost() const {
             Vertex<T>* vert = getLastVertex();
             double costToDestination = vert->getCostTo(*dest);
             return pathCost + costToDestination;
         }
-        std::vector<Vertex<T>*> getNextVertices() {
+        std::vector<Vertex<T>*> getNextVertices() const {
             std::vector<Vertex<T>*> neighbors = getLastVertex()->getNeighbors();
             int numNeighbors = getLastVertex()->getNumNeighbors();
             Vertex<T>* prev = nullptr;
@@ -291,7 +291,7 @@ namespace graph {
             delete vertices;
         }
 
-        Graph(const Graph<T> &graph) {
+        Graph(const Graph<T>& graph) {
             if(&graph != this) {
                 numVertices = graph.numVertices;
                 numEdges = graph.numEdges;
@@ -304,7 +304,7 @@ namespace graph {
             }
         }
 
-        Graph<T>& operator=(const Graph<T> &rhs) {
+        Graph<T>& operator=(const Graph<T>& rhs) {
             if(&rhs != this) {
                 numVertices = rhs.numVertices;
                 numEdges = rhs.numEdges;

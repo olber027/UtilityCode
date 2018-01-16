@@ -26,12 +26,12 @@ namespace set {
     private:
         std::vector<T> items;
 
-        void forceAdd(T item) {
+        void forceAdd(const T& item) {
             items.push_back(item);
         }
     public:
         Set() : items(std::vector<T>()) {}
-        Set(const T* list, const int size) {
+        Set(const T* list, const int& size) {
             items = std::vector<T>();
             for(int i = 0; i < size; i++) {
                 addItem(list[i]);
@@ -59,7 +59,7 @@ namespace set {
             }
         }
 
-        T operator[](const int index) const {
+        T operator[](const int& index) const {
             return items[index];
         }
 
@@ -94,7 +94,7 @@ namespace set {
             return &items[items.size()-1];
         }
 
-        bool removeItem(T& item) {
+        bool removeItem(const T& item) {
             int index = getIndexOf(item);
             if(index < 0) {
                 return false;

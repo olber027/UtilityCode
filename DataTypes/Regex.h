@@ -19,12 +19,12 @@ namespace regex {
         int index;
     public:
         Match() : matchingPattern(""), index(-1) {}
-        Match(const T& pattern, const int idx) : matchingPattern(pattern), index(idx) {}
+        Match(const T& pattern, const int& idx) : matchingPattern(pattern), index(idx) {}
 
-        T getPattern() {
+        T getPattern() const {
             return (T) matchingPattern;
         }
-        int getPatternIndex() {
+        int getPatternIndex() const {
             return index;
         }
     };
@@ -42,9 +42,9 @@ namespace regex {
 
             State() : nextPossibleStates(std::vector<State*>()), matchingCriteria(""), end(false) {}
             template<typename U>
-            State(U criteria) : nextPossibleStates(std::vector<State*>()), matchingCriteria(criteria), end(false) {}
+            State(const U& criteria) : nextPossibleStates(std::vector<State*>()), matchingCriteria(criteria), end(false) {}
             template<typename U>
-            State(U criteria, bool End) : nextPossibleStates(std::vector<State*>()), matchingCriteria(criteria), end(End) {}
+            State(const U& criteria, const bool& End) : nextPossibleStates(std::vector<State*>()), matchingCriteria(criteria), end(End) {}
 
             void addNextState(State* nextState) {
                 nextPossibleStates.push_back(nextState);
@@ -58,7 +58,7 @@ namespace regex {
                 end = false;
             }
 
-            std::vector<State*> advance(char c) {
+            std::vector<State*> advance(const char& c) {
                 std::vector<State*> nextStates = std::vector<State*>();
                 for(int i = 0; i < nextPossibleStates.size(); i++) {
                     if(nextPossibleStates[i]->matchingCriteria == "" ||
@@ -73,7 +73,7 @@ namespace regex {
                 end = true;
             }
 
-            bool isEnd() {
+            bool isEnd() const {
                 return end;
             }
         };
@@ -84,15 +84,15 @@ namespace regex {
             State* currentState;
             int startingIndex;
         public:
-            PossibleMatch(SmartString contents, State* state, int index) :
+            PossibleMatch(const SmartString& contents, State* state, const int& index) :
                     currentContents(contents), currentState(state), startingIndex(index) {}
-            State* getState() {
+            State* getState() const {
                 return currentState;
             }
-            SmartString getContents() {
+            SmartString getContents() const {
                 return currentContents;
             }
-            int getStartingIndex() {
+            int getStartingIndex() const {
                 return startingIndex;
             }
         };
@@ -189,7 +189,7 @@ namespace regex {
 
         Regex() : isCompiled(false), pattern(""), initialState(nullptr) {}
         template<typename U>
-        Regex(const U& Pattern, const bool doCompilation) : Regex() {
+        Regex(const U& Pattern, const bool& doCompilation) : Regex() {
             pattern = Pattern;
             if(doCompilation) {
                 isCompiled = compile();
@@ -198,6 +198,8 @@ namespace regex {
                 initialState = nullptr;
             }
         }
+        template<typename U>
+        Regex(const U& Pattern) : Regex(pattern, true) {}
 
         template<typename U>
         bool compile(const U& Pattern) {
