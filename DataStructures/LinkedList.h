@@ -9,6 +9,12 @@
 
 namespace linked_list {
 
+    template<typename T, typename = void>
+    struct is_equal_comparable : std::false_type { };
+
+    template<typename T>
+    struct is_equal_comparable<T, typename std::enable_if<std::is_convertible<decltype(std::declval<T&>() == std::declval<T&>()), bool>{}>::type> : std::true_type {};
+
     template<typename T>
     class Node {
     private:
@@ -16,17 +22,9 @@ namespace linked_list {
         Node<T>* next;
 
     public:
-        Node(const T d, Node<T>* n) {
-            data = d;
-            next = n;
-        }
-
-        Node(const T d) {
-            data = d;
-            next = nullptr;
-        }
-
-        Node(const Node<T> &node) {
+        Node(const T& d, Node<T>* n) : data(d), next(n) { }
+        Node(const T& d) : Node(d, nullptr) { }
+        Node(const Node<T>& node) {
             if (this != &node) {
                 data = node.data;
                 next = node.next;
@@ -39,9 +37,9 @@ namespace linked_list {
 
         T getData() const { return data; }
 
-        void setData(T d) { data = d; }
+        void setData(const T& d) { data = d; }
 
-        friend std::ostream &operator<<(std::ostream &out, const Node<T> &node) {
+        friend std::ostream &operator<<(std::ostream& out, const Node<T>& node) {
             out << node.getData();
             return out;
         }
@@ -49,67 +47,50 @@ namespace linked_list {
 
     template<class T>
     class LinkedList {
+
+        static_assert(is_equal_comparable<T>::value, "Type T must be comparable with the == operator");
+
     private:
         Node<T>* head;
         Node<T>* tail;
 
     public:
-        LinkedList() {
-            head = nullptr;
-            tail = nullptr;
-        }
-
-        LinkedList(const Node<T>* node) {
+        LinkedList() : head(nullptr), tail(nullptr) {}
+        LinkedList(Node<T>* node) : LinkedList() {
             if(!node) {
-                LinkedList<T>();
                 return;
             }
-            head = new Node<T>(node->getData());
+            head = node;
             tail = head;
-            while(node->getNext()) {
-                node = node->getNext();
-                addNode(node->getData());
+            Node<T>* next = tail->getNext();
+            while(next) {
+                tail = next;
+                next = next->getNext();
             }
         }
-
-        LinkedList(const T value) {
-            LinkedList(new Node<T>(value));
+        LinkedList(const T value) : LinkedList() {
+            head = new Node<T>(value);
+            tail = head;
         }
-
-        LinkedList(const LinkedList<T> &list) {
-            if(list.head == nullptr) {
-                head = nullptr;
-                tail = nullptr;
-            } else if(&list != this) {
-                Node<T>* node = list.head->getNext();
-                head = new Node<T>(list.head->getData());
-                tail = head;
-                while(node) {
-                    addNode(node->getData());
-                    node = node->getNext();
-                }
+        LinkedList(const LinkedList<T>& list) {
+            if(&list != this) {
+                head = list.head;
+                tail = list.tail;
             }
         }
 
         LinkedList<T>& operator=(const LinkedList<T> &rhs) {
-            if(rhs.head == nullptr) {
-                head = nullptr;
-                tail = nullptr;
-            } else if(&rhs != this) {
-                Node<T>* node = rhs.head->getNext();
-                head = new Node<T>(rhs.head->getData());
-                tail = head;
-                while(node) {
-                    addNode(node->getData());
-                    node = node->getNext();
-                }
+            if(&rhs != this) {
+                head = rhs.head;
+                tail = rhs.tail;
             }
             return *this;
         }
 
         ~LinkedList() {
-            if (!head)
+            if (!head) {
                 return;
+            }
             Node<T>* next = head->getNext();
             delete head;
             while (next) {
@@ -129,13 +110,14 @@ namespace linked_list {
             }
         }
 
-        void addNode(const T value) {
+        void addNode(const T& value) {
             addNode(new Node<T>(value));
         }
 
-        bool addNodeAt(const int index, const T value) {
-            if(index < 0)
+        bool addNodeAt(const int index, const T& value) {
+            if(index < 0) {
                 return false;
+            }
             if(!head) {
                 if(index > 0) {
                     return false;
@@ -145,21 +127,19 @@ namespace linked_list {
                 }
             } else {
                 if(index == 0) {
-                    Node<T>* next = head;
-                    head = new Node<T>(value, next);
+                    head = new Node<T>(value, head);
                     return true;
                 }
             }
 
             int i = 0;
             Node<T>* node = head;
-            Node<T>* next;
             while(++i < index && node) {
                 node = node->getNext();
             }
 
             if(node) {
-                next = node->getNext();
+                Node<T>* next = node->getNext();
                 node->setNext(new Node<T>(value, next));
                 if(next == nullptr) {
                     tail = node->getNext();
@@ -171,9 +151,9 @@ namespace linked_list {
         }
 
         Node<T>* pop() {
-            if (!head)
+            if (!head) {
                 return nullptr;
-
+            }
             Node<T>* lead = head->getNext();
             Node<T>* trail = head;
             Node<T>* last = head;
@@ -194,8 +174,9 @@ namespace linked_list {
         }
 
         Node<T>* pop(const int index) {
-            if (!head)
+            if (!head) {
                 return nullptr;
+            }
             if (index == 0) {
                 Node<T>* temp = head;
                 head = head->getNext();
@@ -234,16 +215,12 @@ namespace linked_list {
             return search;
         }
 
-        Node<T>* getNode(const T value) const {
+        Node<T>* getNode(const T& value) const {
             Node<T>* search = head;
-            while (search && search->getData() != value) {
+            while (search && !(search->getData() == value)) {
                 search = search->getNext();
             }
             return search;
-        }
-
-        Node<T>* getNode(const Node<T>& node) const {
-            return getNode(node.getData());
         }
 
         Node<T>* getHead() const {

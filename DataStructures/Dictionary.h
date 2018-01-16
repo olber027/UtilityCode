@@ -11,6 +11,19 @@
 
 namespace dictionary {
 
+    //used to ensure that the types given are comparable.
+    template<typename T, typename = void>
+    struct is_less_than_comparable : std::false_type { };
+
+    template<typename T>
+    struct is_less_than_comparable<T, typename std::enable_if<std::is_convertible<decltype(std::declval<T&>() < std::declval<T&>()), bool>{}>::type> : std::true_type{};
+
+    template<typename T, typename = void>
+    struct is_equal_comparable : std::false_type { };
+
+    template<typename T>
+    struct is_equal_comparable<T, typename std::enable_if<std::is_convertible<decltype(std::declval<T&>() == std::declval<T&>()), bool>{}>::type> : std::true_type {};
+
     template <typename T>
     class InvalidIndexException : public std::runtime_error {
     private:
@@ -32,6 +45,11 @@ namespace dictionary {
 
     template<typename T, typename U>
     class Dictionary {
+
+        static_assert(is_less_than_comparable<T>::value, "Type T must be comparable with the < operator");
+        static_assert(is_equal_comparable<T>::value, "Type T must be comparable with the == operator");
+        static_assert(is_equal_comparable<U>::value, "Type U must be comparable with the == operator");
+
     private:
 
         T* keys;
@@ -66,7 +84,7 @@ namespace dictionary {
                 if(keys[middle] == target) {
                     return middle;
                 }
-                if(keys[middle] > target) {
+                if(target < keys[middle]) {
                     return getKeyIndex(target, left, middle-1);
                 } else {
                     return getKeyIndex(target, middle+1, right);

@@ -29,8 +29,10 @@ public:
         output << "Checking Node constructors...\n";
         assert(0, node.getData());
         assert((Node<int>*) nullptr, node.getNext());
+
         Node<int>* temp = new Node<int>(1, nullptr);
         Node<int>* secondTemp = new Node<int>(2, temp);
+
         assert(2, secondTemp->getData());
         assert(1, secondTemp->getNext()->getData());
 
@@ -74,10 +76,8 @@ public:
         output << "Checking the Get functions...\n";
         assert(1, list.getNode(1)->getData());
         assert(2, list.getNodeAtIndex(1)->getData());
-        assert(3, list.getNode(Node<int>(3))->getData());
         assert((Node<int>*) nullptr, list.getNode(4));
         assert((Node<int>*) nullptr, list.getNodeAtIndex(5));
-        assert((Node<int>*) nullptr, list.getNode(Node<int>(4)));
     }
 
     void verifyPop() {

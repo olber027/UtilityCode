@@ -11,8 +11,18 @@ namespace set {
     //Provides basic set functionality, including unions,
     //intersections and complements. Does not allow
     //duplicate elements.
+
+    template<typename T, typename = void>
+    struct is_equal_comparable : std::false_type { };
+
+    template<typename T>
+    struct is_equal_comparable<T, typename std::enable_if<std::is_convertible<decltype(std::declval<T&>() == std::declval<T&>()), bool>{}>::type> : std::true_type {};
+
     template<typename T>
     class Set {
+
+        static_assert(is_equal_comparable<T>::value, "Type T must be comparable with the == operator");
+
     private:
         std::vector<T> items;
 

@@ -43,6 +43,16 @@ namespace smart_pointer {
             }
         }
 
+        SmartPointer<T>& operator=(const SmartPointer<T>& rhs) {
+            if(&rhs != this) {
+                destroy();
+                pointer = rhs.pointer;
+                referenceCounter = rhs.referenceCounter;
+                referenceCounter->addRef();
+            }
+            return *this;
+        }
+
         void destroy() {
             if(referenceCounter != nullptr && referenceCounter->removeRef() == 0) {
                 delete referenceCounter;
@@ -61,15 +71,6 @@ namespace smart_pointer {
         T* getPointer() const { return pointer; }
         int numReferences() const { return referenceCounter->getNumReferences(); }
 
-        SmartPointer<T>& operator=(const SmartPointer<T>& rhs) {
-            if(&rhs != this) {
-                destroy();
-                pointer = rhs.pointer;
-                referenceCounter = rhs.referenceCounter;
-                referenceCounter->addRef();
-            }
-            return *this;
-        }
     };
 }
 

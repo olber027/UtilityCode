@@ -12,9 +12,15 @@
 
 namespace graph {
 
+    template<typename T, typename = void>
+    struct is_equal_comparable : std::false_type { };
+
+    template<typename T>
+    struct is_equal_comparable<T, typename std::enable_if<std::is_convertible<decltype(std::declval<T&>() == std::declval<T&>()), bool>{}>::type> : std::true_type {};
+
     class VertexType {
     public:
-        virtual double getCostTo(const VertexType *other) const = 0;
+        virtual double getCostTo(const VertexType* other) const = 0;
         virtual std::string getRepresentation() const = 0;
     };
 
@@ -37,6 +43,10 @@ namespace graph {
             double squareX = (other->getX() - x) * (other->getX() - x);
             double squareY = (other->getY() - y) * (other->getY() - y);
             return std::sqrt(squareX + squareY);
+        }
+
+        bool operator==(const Coordinates2D& other) const {
+            return (x == other.x && y == other.y);
         }
 
         std::string getRepresentation() const {
@@ -71,6 +81,10 @@ namespace graph {
             return std::sqrt(squareX + squareY + squareZ);
         }
 
+        bool operator==(const Coordinates3D& other) const {
+            return (x == other.x && y == other.y && z == other.z);
+        }
+
         std::string getRepresentation() const {
             std::stringstream result;
             result << "(" << x << ", " << y << ", " << z << ")";
@@ -98,6 +112,10 @@ namespace graph {
             return std::abs(other->getX() - x) + (std::abs(other->getY() - y));
         }
 
+        bool operator==(const Grid& other) const {
+            return (x == other.x && y == other.y);
+        }
+
         std::string getRepresentation() const {
             std::stringstream result;
             result << "(" << x << ", " << y << ")";
@@ -109,18 +127,23 @@ namespace graph {
     class Vertex {
         static_assert(std::is_base_of<VertexType, T>::value, "T must derive from VertexType");
         static_assert(std::is_default_constructible<T>::value, "T must have a default constructor");
+        static_assert(is_equal_comparable<T>::value, "Type T must be comparable with the == operator");
     private:
         T vertexType;
         std::vector<Vertex<T>*> neighbors;
 
     public:
         Vertex() : vertexType(T()), neighbors(std::vector<Vertex<T>*>()) {}
-        Vertex(T init) : vertexType(init), neighbors(std::vector<Vertex<T>*>()) {}
+        Vertex(const T& init) : vertexType(init), neighbors(std::vector<Vertex<T>*>()) {}
 
         ~Vertex() {
             for(int i = 0; i < getNumNeighbors(); i++) {
                 disconnect(neighbors[i]);
             }
+        }
+
+        bool operator==(const Vertex<T>& other) const {
+            return vertexType == other.getVertexType();
         }
 
         double getCostTo(const Vertex<T> other) const {
