@@ -122,10 +122,10 @@ private:
     int min, max;
 public:
     template<typename T, typename U>
-    IntegerRangeArgument(const T& shortopt, const U& longopt, const bool& isRequired, const int& low, const int& high) :
+    IntegerRangeArgument(const T& shortopt, const U& longopt, const bool& isRequired, int low, int high) :
             Argument(shortopt, longopt, isRequired), min(low), max(high) {}
     template<typename T>
-    IntegerRangeArgument(const T& shortopt, const int& low, const int& high) :
+    IntegerRangeArgument(const T& shortopt, int low, int high) :
             Argument(shortopt, "", false), min(low), max(high) {}
 
     bool isValid(const char* value) const {
@@ -156,10 +156,10 @@ private:
     double min, max;
 public:
     template<typename T, typename U>
-    DecimalRangeArgument(const T& shortopt, const U& longopt, const bool& isRequired, const double& low, const double& high) :
+    DecimalRangeArgument(const T& shortopt, const U& longopt, const bool& isRequired, double low, double high) :
             Argument(shortopt, longopt, isRequired), min(low), max(high) {}
     template<typename T>
-    DecimalRangeArgument(const T& shortopt, const double& low, const double& high) :
+    DecimalRangeArgument(const T& shortopt, double low, double high) :
             Argument(shortopt, "", false), min(low), max(high) {}
 
     bool isValid(const char* value) const {
@@ -239,7 +239,7 @@ public:
         arguments.push_back(arg);
     }
 
-    std::map<Argument*, SmartString> validateArguments(const int& argc, char** argv) const {
+    std::map<Argument*, SmartString> validateArguments(int argc, char** argv) const {
         std::map<SmartString, char*> argumentMap;
         std::map<Argument*, SmartString> invalidArguments;
 

@@ -31,7 +31,7 @@ namespace set {
         }
     public:
         Set() : items(std::vector<T>()) {}
-        Set(const T* list, const int& size) {
+        Set(const T* list, int size) {
             items = std::vector<T>();
             for(int i = 0; i < size; i++) {
                 addItem(list[i]);
@@ -59,7 +59,7 @@ namespace set {
             }
         }
 
-        T operator[](const int& index) const {
+        T operator[](int index) const {
             return items[index];
         }
 

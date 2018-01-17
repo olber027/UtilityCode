@@ -19,7 +19,7 @@ namespace regex {
         int index;
     public:
         Match() : matchingPattern(""), index(-1) {}
-        Match(const T& pattern, const int& idx) : matchingPattern(pattern), index(idx) {}
+        Match(const T& pattern, int idx) : matchingPattern(pattern), index(idx) {}
 
         T getPattern() const {
             return (T) matchingPattern;
@@ -58,7 +58,7 @@ namespace regex {
                 end = false;
             }
 
-            std::vector<State*> advance(const char& c) {
+            std::vector<State*> advance(char c) {
                 std::vector<State*> nextStates = std::vector<State*>();
                 for(int i = 0; i < nextPossibleStates.size(); i++) {
                     if(nextPossibleStates[i]->matchingCriteria == "" ||
@@ -84,7 +84,7 @@ namespace regex {
             State* currentState;
             int startingIndex;
         public:
-            PossibleMatch(const SmartString& contents, State* state, const int& index) :
+            PossibleMatch(const SmartString& contents, State* state, int index) :
                     currentContents(contents), currentState(state), startingIndex(index) {}
             State* getState() const {
                 return currentState;

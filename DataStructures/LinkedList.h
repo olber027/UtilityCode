@@ -114,7 +114,7 @@ namespace linked_list {
             addNode(new Node<T>(value));
         }
 
-        bool addNodeAt(const int& index, const T& value) {
+        bool addNodeAt(int index, const T& value) {
             if(index < 0) {
                 return false;
             }
@@ -173,7 +173,7 @@ namespace linked_list {
             return temp;
         }
 
-        Node<T>* pop(const int& index) {
+        Node<T>* pop(int index) {
             if (!head) {
                 return nullptr;
             }
@@ -199,11 +199,11 @@ namespace linked_list {
             return lead;
         }
 
-        Node<T>* operator[](const int& index) const {
+        Node<T>* operator[](int index) const {
             return getNodeAtIndex(index);
         }
 
-        Node<T>* getNodeAtIndex(const int& index) const {
+        Node<T>* getNodeAtIndex(int index) const {
             if(index < 0) {
                 return nullptr;
             }

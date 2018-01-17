@@ -29,7 +29,7 @@ namespace graph {
         double x, y;
     public:
         Coordinates2D() : x(0), y(0) {}
-        Coordinates2D(const double& i, const double& j) : x(i), y(j) { }
+        Coordinates2D(double i, double j) : x(i), y(j) { }
         Coordinates2D(const Coordinates2D& other) : Coordinates2D() {
             x = other.x;
             y = other.y;
@@ -62,7 +62,7 @@ namespace graph {
 
     public:
         Coordinates3D() : x(0), y(0), z(0) {}
-        Coordinates3D(const double& i, const double& j, const double& k) : x(i), y(j), z(k) { }
+        Coordinates3D(double i, double j, double k) : x(i), y(j), z(k) { }
         Coordinates3D(const Coordinates3D& other) : Coordinates3D() {
             x = other.x;
             y = other.y;
@@ -98,7 +98,7 @@ namespace graph {
 
     public:
         Grid() : x(0), y(0) {}
-        Grid(const int& i, const int& j) : x(i), y(j) {}
+        Grid(int i, int j) : x(i), y(j) {}
         Grid(const Grid& other) : Grid() {
             x = other.x;
             y = other.y;
