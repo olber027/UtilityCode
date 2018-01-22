@@ -61,6 +61,20 @@ public:
         total++;
         return result;
     }
+
+    template<typename T> bool assert(T expected, T actual, const char* message) {
+        bool result = expected == actual;
+        if(result) {
+            passed++;
+        } else {
+            output << "TestFailed\n__________\n";
+            output << "\texpected: " << expected << "\n\tactual  : " << actual << std::endl;
+            output << "\tmessage : " << message << std::endl;
+            failed++;
+        }
+        total++;
+        return result;
+    }
 };
 
 #endif //UTILITYCODE_TESTDRIVER_H

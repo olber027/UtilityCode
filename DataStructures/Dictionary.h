@@ -57,6 +57,8 @@ namespace dictionary {
         int size;
         int memorySize;
 
+        // The list will already be sorted when this is called, except for (potentially)
+        // the last element. So all we need to do is get the last element in the right place.
         void sort() {
             int i = size - 1;
             while(i > 0 && keys[i] < keys[i-1]) {
@@ -78,6 +80,7 @@ namespace dictionary {
             values[to] = values[from];
         }
 
+        // Do a binary search on the list to speed up lookup times.
         int getKeyIndex(const T& target, int left, int right) const {
             if(right >= left) {
                 int middle = left + ((right - left)/2);
@@ -148,6 +151,9 @@ namespace dictionary {
             }
         }
         Dictionary(const std::vector<T>& Keys, const std::vector<U>& Values) : Dictionary() {
+            if(Keys.size() != Values.size()) {
+                throw std::length_error("The size of the given Keys and Values did not match.");
+            }
             for(int i = 0; i < Keys.size(); i++) {
                 addEntry(Keys[i], Values[i]);
             }
@@ -176,6 +182,15 @@ namespace dictionary {
         }
         ~Dictionary() {
             destroy();
+        }
+
+        Dictionary& operator=(const Dictionary& rhs) {
+            if(this != &rhs) {
+                destroy();
+                for(int i = 0; i < rhs.length(); i++) {
+                    addEntry(rhs.keys[i], rhs.values[i]);
+                }
+            }
         }
 
         U& operator[](const T& index) {

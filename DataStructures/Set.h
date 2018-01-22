@@ -69,6 +69,11 @@ namespace set {
                     return false;
                 }
             }
+            for(int i = 0; i < size(); i++) {
+                if(!rhs.contains(items[i])) {
+                    return false;
+                }
+            }
             return true;
         }
 

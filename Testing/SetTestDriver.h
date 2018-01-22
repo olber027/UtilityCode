@@ -86,6 +86,22 @@ public:
         set -= other;
         assert(1, set[0]);
         assert(2, set[1]);
+
+        std::vector<int> nums = {1,1,1,1,2,3,4,5,6,6,6,7,7};
+        Set<int> vecSet = Set<int>(nums);
+        assert(7, vecSet.size());
+        for(int i = 0; i < vecSet.size(); i++) {
+            assert(i+1, vecSet[i]);
+        }
+
+        int ints[13] = {1,1,1,1,2,3,4,5,6,6,6,7,7};
+        Set<int> arrSet = Set<int>(ints, 13);
+        assert(7, arrSet.size());
+        for(int i = 0; i < arrSet.size(); i++) {
+            assert(i+1, arrSet[i]);
+        }
+        assert(true, vecSet == arrSet);
+        assert(false, vecSet == set);
     }
 
 };

@@ -51,7 +51,7 @@ public:
         Vertex<Grid>* end   = grid[9][9];
 
         Path<Grid> path = graph.AStar(start, end);
-        assert(18.0, path.getPathCost());
+        assert(18.0, path.getPathCost(), "A* did not come up with the correct path");
     }
 
 };

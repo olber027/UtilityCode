@@ -84,7 +84,7 @@ public:
         int initialTreeDepth = bigTree.getDepth();
         bigTree.balance();
         int finalTreeDepth = bigTree.getDepth();
-        assert(true, initialTreeDepth >= finalTreeDepth);
+        assert(true, initialTreeDepth >= finalTreeDepth, "balanced depth was larger than unbalanced depth");
     }
 };
 

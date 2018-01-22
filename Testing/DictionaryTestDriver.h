@@ -63,10 +63,17 @@ public:
         for(int i = 0; i < keys.size(); i++) {
             dict.addEntry(keys[i], values[i]);
         }
-        assert(9, dict.length());
+        assert(9, dict.length(), "correct number of entries were not added");
         for(int i = keys.size()-1; i >= 0; i--) {
             dict.remove(keys[i]);
             assert(values[i] - 1, dict.length());
+        }
+
+        dict.clear();
+        assert(0, dict.length(), "dictionary did not clear correctly");
+        dict = Dictionary<std::string, int>(keys, values);
+        for(int i = 0; i < keys.size(); i++) {
+            assert(dict[keys[i]], values[i]);
         }
     }
 };
