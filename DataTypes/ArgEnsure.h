@@ -20,7 +20,7 @@ protected:
     bool  required;
 
     template<typename T, typename U>
-    Argument(const T& shortopt, const U& longopt, const bool& isRequired) :
+    Argument(const T& shortopt, const U& longopt, const bool isRequired) :
             shortOpt(shortopt), longOpt(longopt), required(isRequired) {}
 public:
     virtual bool  isValid(const char *) const = 0;
@@ -65,9 +65,9 @@ public:
 class IntegerArgument : public Argument {
 public:
     template<typename T, typename U>
-    IntegerArgument(const T& shortopt, const U& longopt, const bool& isRequired) : Argument(shortopt, longopt, isRequired) {}
+    IntegerArgument(const T& shortopt, const U& longopt, const bool isRequired) : Argument(shortopt, longopt, isRequired) {}
     template<typename T>
-    IntegerArgument(const T& shortopt, const bool& isRequired) : Argument(shortopt, "", isRequired) {}
+    IntegerArgument(const T& shortopt, const bool isRequired) : Argument(shortopt, "", isRequired) {}
     template<typename T>
     IntegerArgument(const T& shortopt) : Argument(shortopt, "", false) {}
 
@@ -93,9 +93,9 @@ public:
 class DecimalArgument : public Argument {
 public:
     template<typename T, typename U>
-    DecimalArgument(const T& shortopt, const U& longopt, const bool& isRequired) : Argument(shortopt, longopt, isRequired) {}
+    DecimalArgument(const T& shortopt, const U& longopt, const bool isRequired) : Argument(shortopt, longopt, isRequired) {}
     template<typename T>
-    DecimalArgument(const T& shortopt, const bool& isRequired) : Argument(shortopt, "", isRequired) {}
+    DecimalArgument(const T& shortopt, const bool isRequired) : Argument(shortopt, "", isRequired) {}
     template<typename T>
     DecimalArgument(const T& shortopt) : Argument(shortopt, "", false) {}
 
@@ -122,10 +122,10 @@ private:
     int min, max;
 public:
     template<typename T, typename U>
-    IntegerRangeArgument(const T& shortopt, const U& longopt, const bool& isRequired, int low, int high) :
+    IntegerRangeArgument(const T& shortopt, const U& longopt, const bool isRequired, const int low, const int high) :
             Argument(shortopt, longopt, isRequired), min(low), max(high) {}
     template<typename T>
-    IntegerRangeArgument(const T& shortopt, int low, int high) :
+    IntegerRangeArgument(const T& shortopt, const int low, const int high) :
             Argument(shortopt, "", false), min(low), max(high) {}
 
     bool isValid(const char* value) const {
@@ -156,10 +156,10 @@ private:
     double min, max;
 public:
     template<typename T, typename U>
-    DecimalRangeArgument(const T& shortopt, const U& longopt, const bool& isRequired, double low, double high) :
+    DecimalRangeArgument(const T& shortopt, const U& longopt, const bool isRequired, const double low, const double high) :
             Argument(shortopt, longopt, isRequired), min(low), max(high) {}
     template<typename T>
-    DecimalRangeArgument(const T& shortopt, double low, double high) :
+    DecimalRangeArgument(const T& shortopt, const double low, const double high) :
             Argument(shortopt, "", false), min(low), max(high) {}
 
     bool isValid(const char* value) const {
@@ -188,10 +188,10 @@ public:
 class FlagArgument : public Argument {
 public:
     template<typename T, typename U>
-    FlagArgument(const T& shortopt, const U& longopt, const bool& isRequired) :
+    FlagArgument(const T& shortopt, const U& longopt, const bool isRequired) :
             Argument(shortopt, longopt, isRequired) {}
     template<typename T>
-    FlagArgument(const T& shortopt, const bool& isRequired) : Argument(shortopt, "", isRequired) {}
+    FlagArgument(const T& shortopt, const bool isRequired) : Argument(shortopt, "", isRequired) {}
     template<typename T>
     FlagArgument(const T& shortopt) : Argument(shortopt, "", false) {}
 
@@ -239,7 +239,7 @@ public:
         arguments.push_back(arg);
     }
 
-    std::map<Argument*, SmartString> validateArguments(int argc, char** argv) const {
+    std::map<Argument*, SmartString> validateArguments(const int argc, char** argv) const {
         std::map<SmartString, char*> argumentMap;
         std::map<Argument*, SmartString> invalidArguments;
 

@@ -19,7 +19,7 @@ namespace regex {
         int index;
     public:
         Match() : matchingPattern(""), index(-1) {}
-        Match(const T& pattern, int idx) : matchingPattern(pattern), index(idx) {}
+        Match(const T& pattern, const int idx) : matchingPattern(pattern), index(idx) {}
 
         T getPattern() const {
             return (T) matchingPattern;
@@ -44,7 +44,7 @@ namespace regex {
             template<typename U>
             State(const U& criteria) : nextPossibleStates(std::vector<State*>()), matchingCriteria(criteria), end(false) {}
             template<typename U>
-            State(const U& criteria, const bool& End) : nextPossibleStates(std::vector<State*>()), matchingCriteria(criteria), end(End) {}
+            State(const U& criteria, const bool End) : nextPossibleStates(std::vector<State*>()), matchingCriteria(criteria), end(End) {}
 
             void addNextState(State* nextState) {
                 nextPossibleStates.push_back(nextState);
@@ -84,7 +84,7 @@ namespace regex {
             State* currentState;
             int startingIndex;
         public:
-            PossibleMatch(const SmartString& contents, State* state, int index) :
+            PossibleMatch(const SmartString& contents, State* state, const int index) :
                     currentContents(contents), currentState(state), startingIndex(index) {}
             State* getState() const {
                 return currentState;
@@ -105,7 +105,7 @@ namespace regex {
         // outermost OR characters. e.g. a|b|c would turn into ["a","b","c"],
         // (a|b)|c would turn into ["(a|b)", "c"], and "ab" would turn into
         // ["ab"].
-        std::vector<SmartString> separateOrClauses(SmartString str) {
+        std::vector<SmartString> separateOrClauses(SmartString& str) {
             std::vector<SmartString> resultStrings;
             SmartString currentString;
             int parenCount = 0;
@@ -134,7 +134,7 @@ namespace regex {
             return resultStrings;
         }
 
-        std::vector<State*> parse(SmartString str) {
+        std::vector<State*> parse(SmartString& str) {
             std::vector<SmartString> strings = separateOrClauses(str);
             std::vector<State*> states;
 
@@ -189,7 +189,7 @@ namespace regex {
 
         Regex() : isCompiled(false), pattern(""), initialState(nullptr) {}
         template<typename U>
-        Regex(const U& Pattern, const bool& doCompilation) : Regex() {
+        Regex(const U& Pattern, const bool doCompilation) : Regex() {
             pattern = Pattern;
             if(doCompilation) {
                 isCompiled = compile();

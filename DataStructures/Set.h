@@ -59,7 +59,7 @@ namespace set {
             }
         }
 
-        T operator[](int index) const {
+        T operator[](const int index) const {
             return items[index];
         }
 

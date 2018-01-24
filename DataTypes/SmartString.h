@@ -29,7 +29,7 @@ namespace smart_string {
             }
         }
 
-        void initialize(int size) {
+        void initialize(const int size) {
             destroy();
             stringSize = size;
             backingString = new char[stringSize+1];
@@ -37,7 +37,7 @@ namespace smart_string {
             memorySize = stringSize+1;
         }
 
-        void extend(int charsToAdd, const bool addToFront) {
+        void extend(const int charsToAdd, const bool addToFront) {
             if(charsToAdd <= 0) {
                 return;
             }
@@ -76,7 +76,7 @@ namespace smart_string {
             stringSize += charsToAdd;
         }
 
-        void extend(int charsToAdd) {
+        void extend(const int charsToAdd) {
             extend(charsToAdd, false);
         }
 
@@ -96,7 +96,7 @@ namespace smart_string {
             return size;
         }
 
-        char digitToChar(int digit) const {
+        char digitToChar(const int digit) const {
             return (char) (digit + ((int) '0'));
         }
 
@@ -136,7 +136,7 @@ namespace smart_string {
                 }
             }
         }
-        SmartString(char init) : SmartString() {
+        SmartString(const char init) : SmartString() {
             initialize(1);
             stringSize = 1;
             backingString[0] = init;
@@ -160,7 +160,7 @@ namespace smart_string {
             }
             precision = init.precision();
         }
-        SmartString(int numChars, char fill) : SmartString() {
+        SmartString(const int numChars, const char fill) : SmartString() {
             initialize(numChars);
             for(int i = 0; i < numChars; i++) {
                 backingString[i] = fill;
@@ -292,7 +292,7 @@ namespace smart_string {
             return *this;
         }
 
-        SmartString& append(char c) {
+        SmartString& append(const char c) {
             extend(1);
             backingString[stringSize-1] = c;
             backingString[stringSize] = '\0';
@@ -300,14 +300,14 @@ namespace smart_string {
             return *this;
         }
 
-        SmartString& prepend(char c) {
+        SmartString& prepend(const char c) {
             extend(1, true);
             backingString[0] = c;
 
             return *this;
         }
 
-        SmartString& append(int val) {
+        SmartString& append(const int val) {
             SmartString temp("");
             bool isNegative = val < 0;
             int num = abs(val);
@@ -322,13 +322,13 @@ namespace smart_string {
             return append(temp);
         }
 
-        SmartString& prepend(int val) {
+        SmartString& prepend(const int val) {
             SmartString temp("");
             temp.append(val);
             return prepend(temp);
         }
 
-        SmartString& append(double val, int precision) {
+        SmartString& append(const double val, const int precision) {
             SmartString temp("");
             int leftOfDecimal = (int) val;
 
@@ -344,7 +344,7 @@ namespace smart_string {
             return append(temp);
         }
 
-        SmartString& append(double val) {
+        SmartString& append(const double val) {
             /*
              * Any trailing zeroes will be removed when this method is used,
              * unless there are only trailing zeroes, in which case one zero
@@ -361,19 +361,19 @@ namespace smart_string {
             return *this;
         }
 
-        SmartString& prepend(double val, int precision) {
+        SmartString& prepend(const double val, const int precision) {
             SmartString temp("");
             temp.append(val, precision);
             return prepend(temp);
         }
 
-        SmartString& prepend(double val) {
+        SmartString& prepend(const double val) {
             SmartString temp("");
             temp.append(val);
             return prepend(temp);
         }
 
-        SmartString& append(float val, int precision) {
+        SmartString& append(const float val, const int precision) {
             SmartString temp("");
             int leftOfDecimal = (int) abs(val);
 
@@ -392,7 +392,7 @@ namespace smart_string {
             return append(temp);
         }
 
-        SmartString& append(float val) {
+        SmartString& append(const float val) {
             append(val, precision);
             if(getLast() == '0') {
                 rstrip('0');
@@ -403,13 +403,13 @@ namespace smart_string {
             return *this;
         }
 
-        SmartString& prepend(float val, int precision) {
+        SmartString& prepend(const float val, const int precision) {
             SmartString temp("");
             temp.append(val, precision);
             return prepend(temp);
         }
 
-        SmartString& prepend(float val) {
+        SmartString& prepend(const float val) {
             SmartString temp("");
             temp.append(val);
             return prepend(temp);
@@ -508,7 +508,7 @@ namespace smart_string {
             return (*this >= rhs);
         }
 
-        char& operator[](int index) const {
+        char& operator[](const int index) const {
             return backingString[index];
         }
 
@@ -597,7 +597,7 @@ namespace smart_string {
             return in;
         }
 
-        bool setPrecision(int newPrecision) {
+        bool setPrecision(const int newPrecision) {
             if(newPrecision >= 0) {
                 precision = newPrecision;
                 return true;
@@ -624,7 +624,7 @@ namespace smart_string {
         }
 
         // start and end are both inclusive.
-        SmartString getSubstring(int start, int end) const {
+        SmartString getSubstring(const int start, const int end) const {
             SmartString result("");
             for(int i = start; i <= end; i++) {
                 result.append(backingString[i]);
@@ -633,11 +633,11 @@ namespace smart_string {
         }
 
         template<typename T>
-        T getSubstring(int start, int end) const {
+        T getSubstring(const int start, const int end) const {
             return (T) getSubstring(start, end);
         }
 
-        int findSubstring(int startingLocation, const SmartString& target) const {
+        int findSubstring(const int startingLocation, const SmartString& target) const {
             for(int i = startingLocation; i < stringSize && i >= 0; i++) {
                 if(target[0] == backingString[i]) {
                     bool match = true;
@@ -773,7 +773,7 @@ namespace smart_string {
         }
 
         // start and end are both inclusive.
-        SmartString& remove(int start, int end) {
+        SmartString& remove(const int start, const int end) {
             SmartString temp("");
             for(int i = 0; i < length(); i++) {
                 if(i < start || i > end) {
@@ -879,7 +879,7 @@ namespace smart_string {
             return *this;
         }
 
-        SmartString format(int count, ...) {
+        SmartString format(const int count, ...) {
             va_list arguments;
             va_start(arguments, count);
             for(int i = 0; i < count; i++) {
@@ -911,7 +911,7 @@ namespace smart_string {
         }
 
         template<typename T>
-        T getFormatted(int count, ...) const {
+        T getFormatted(const int count, ...) const {
             SmartString result(*this);
             va_list arguments;
             va_start(arguments, count);
