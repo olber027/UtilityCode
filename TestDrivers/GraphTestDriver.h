@@ -71,6 +71,12 @@ public:
         Path<Grid> path = graph.AStar(start, end);
         assert(9.0, path.getPathCost(), "A* did not come up with the correct path");
 
+        for(int i = 0; i < 4; i++) {
+            for(int j = 0; j < 7; j++) {
+                delete grid[i][j];
+            }
+        }
+
     }
 
 };

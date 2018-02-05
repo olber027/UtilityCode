@@ -284,12 +284,7 @@ namespace graph {
     public:
         Graph() : numVertices(0), numEdges(0), vertices(nullptr), start(nullptr), goal(nullptr) {}
 
-        ~Graph() {
-            for(int i = 0; i < numVertices; i++) {
-                delete vertices[i];
-            }
-            delete vertices;
-        }
+        ~Graph() { }
 
         Graph(const Graph<T>& graph) {
             if(&graph != this) {
