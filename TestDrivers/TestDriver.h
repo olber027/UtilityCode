@@ -26,7 +26,7 @@ public:
         for(int i = 0; i < 80; i++) {
             output << "=";
         }
-        output << std::endl << "Start of " << driverName << " Testing\n";
+        output << std::endl << "Start of " << driverName << " TestDrivers\n";
         for(int i = 0; i < 80; i++) {
             output << "=";
         }

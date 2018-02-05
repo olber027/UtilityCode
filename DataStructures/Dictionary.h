@@ -8,6 +8,7 @@
 #include <exception>
 #include <stdexcept>
 #include <sstream>
+#include <vector>
 
 namespace dictionary {
 

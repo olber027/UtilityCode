@@ -1,18 +1,17 @@
-#include "Testing/TestDriver.h"
-#include "Testing/LinkedListTestDriver.h"
-#include "Testing/SortingTestDriver.h"
-#include "Testing/GraphTestDriver.h"
-#include "Testing/StackTestDriver.h"
-#include "Testing/BinaryTreeTestDriver.h"
-#include "Testing/SmartPointerTestDriver.h"
-#include "Testing/SmartStringTestDriver.h"
-#include "Testing/DictionaryTestDriver.h"
-#include "Testing/SetTestDriver.h"
+#include "../TestDrivers/TestDriver.h"
+#include "../TestDrivers/LinkedListTestDriver.h"
+#include "../TestDrivers/SortingTestDriver.h"
+#include "../TestDrivers/GraphTestDriver.h"
+#include "../TestDrivers/StackTestDriver.h"
+#include "../TestDrivers/BinaryTreeTestDriver.h"
+#include "../TestDrivers/SmartPointerTestDriver.h"
+#include "../TestDrivers/SmartStringTestDriver.h"
+#include "../TestDrivers/DictionaryTestDriver.h"
+#include "../TestDrivers/SetTestDriver.h"
 
 using namespace std;
 
 int main(int argc, char** argv) {
-
 
     vector<TestDriver*> testDrivers = vector<TestDriver*>();
     testDrivers.push_back(new LinkedListTestDriver());
