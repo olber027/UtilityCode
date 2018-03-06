@@ -63,7 +63,7 @@ private:
     }
 
     //merges the left and right arrays in sorted order.
-    template<typename T> static T* mergeArrays(const T *left, int leftSize, const T *right, int rightSize) {
+    template<typename T> static T* mergeArrays(const T* left, int leftSize, const T* right, int rightSize) {
         int totalSize = leftSize + rightSize;
         T* result = new T[totalSize];
         int leftIndex = 0;
