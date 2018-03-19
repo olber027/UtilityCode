@@ -127,6 +127,31 @@ namespace smart_string {
             return count;
         }
 
+        // create the pre-processing table for the Knuth-Morris-Pratt algorithm
+        std::vector<int> createTable(const SmartString& targetWord) const {
+            std::vector<int> table(targetWord.length(), 0);
+            table[0] = -1;
+            int currentPosition = 1;
+            int currentCandidate = 0;
+
+            while(currentPosition < targetWord.length()) {
+                if(targetWord[currentPosition] == targetWord[currentCandidate]) {
+                    table[currentPosition] = table[currentCandidate];
+                } else {
+                    table[currentPosition] = currentCandidate;
+                    currentCandidate = table[currentCandidate];
+
+                    while(currentCandidate >= 0 && targetWord[currentCandidate] != targetWord[currentPosition]) {
+                        currentCandidate = table[currentCandidate];
+                    }
+                }
+                currentCandidate++;
+                currentPosition++;
+            }
+
+            return table;
+        }
+
     public:
         SmartString() : backingString(nullptr), stringSize(0), precision(5), memorySize(0) { }
         SmartString(const std::string& init) : SmartString() {
@@ -639,17 +664,27 @@ namespace smart_string {
         }
 
         int findSubstring(const int startingLocation, const SmartString& target) const {
-            for(int i = startingLocation; i < stringSize && i >= 0; i++) {
-                if(target[0] == backingString[i]) {
-                    bool match = true;
-                    for(int j = 1; j < target.length(); j++) {
-                        if(i+j >= stringSize || target[j] != backingString[i+j]) {
-                            match = false;
-                            break;
-                        }
+
+            if(startingLocation < 0) {
+                return -1;
+            }
+
+            std::vector<int> table = createTable(target);
+            int currentLocation = startingLocation;
+            int targetLocation = 0;
+
+            while(currentLocation < stringSize) {
+                if(target[targetLocation] == backingString[currentLocation]) {
+                    targetLocation++;
+                    currentLocation++;
+                    if(targetLocation == target.length()) {
+                        return currentLocation - targetLocation;
                     }
-                    if(match) {
-                        return i;
+                } else {
+                    targetLocation = table[targetLocation];
+                    if(targetLocation < 0) {
+                        currentLocation++;
+                        targetLocation++;
                     }
                 }
             }

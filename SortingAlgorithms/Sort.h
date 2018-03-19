@@ -22,7 +22,7 @@ private:
         if (left >= right) {
             return;
         }
-        int pivotValue = array[right];
+        T pivotValue = array[right];
         int i = left;
         int j = right-1;
         while(i <= j) {

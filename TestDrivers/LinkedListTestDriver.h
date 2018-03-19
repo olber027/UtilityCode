@@ -22,11 +22,9 @@ public:
 
     void verifyContructors() {
 
-        output << "Checking default Linked List constructor...\n";
         assert((Node<int>*) nullptr, list.getHead());
         assert((Node<int>*) nullptr, list.getTail());
 
-        output << "Checking Node constructors...\n";
         assert(0, node.getData());
         assert((Node<int>*) nullptr, node.getNext());
 
@@ -36,7 +34,6 @@ public:
         assert(2, secondTemp->getData());
         assert(1, secondTemp->getNext()->getData());
 
-        output << "Checking LinkedList constructors...\n";
         list = LinkedList<int>(secondTemp);
         assert(secondTemp->getData(), list.getHead()->getData());
         assert(temp->getData(), list.getTail()->getData());
@@ -46,8 +43,6 @@ public:
     }
 
     void verifyAdd() {
-
-        output << "Checking adding Functionality...\n";
         list = LinkedList<int>();
         assert(false, list.addNodeAt(-1, 5));
         assert(true, list.addNodeAt(0, 1));
@@ -67,13 +62,10 @@ public:
         list.addNode(3);
         assert(3, list.getTail()->getData());
 
-        output << "Checking length() function...\n";
         assert(3, list.length());
     }
 
     void verifyGet() {
-
-        output << "Checking the Get functions...\n";
         assert(1, list.getNode(1)->getData());
         assert(2, list.getNodeAtIndex(1)->getData());
         assert((Node<int>*) nullptr, list.getNode(4));
@@ -81,8 +73,6 @@ public:
     }
 
     void verifyPop() {
-
-        output << "Checking the Pop functions...\n";
         assert(3, list.pop()->getData());
         assert(1, list.pop(0)->getData());
         assert(2, list.pop()->getData());

@@ -280,6 +280,13 @@ public:
         }
         SmartString result = SmartString::join<SmartString>(array, 3, "\n");
         assert(std::string("this is a multi-line piece of text.\nit's way longer than it has any right to be.\n....that's what she said."), result.str());
+        //                  012345678910
+        assert(10, result.findSubstring("multi"));
+        assert(2, result.findSubstring("is"));
+        assert(5, result.findSubstring(4, "is"));
+        assert(-1, result.findSubstring("foo"));
+        assert(-1, result.findSubstring(5000, "foo"));
+        assert(-1, result.findSubstring(-600, "foo"));
     }
 
     void testMiscFunctions() {
