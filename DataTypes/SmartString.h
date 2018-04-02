@@ -218,7 +218,7 @@ namespace smart_string {
         explicit operator char*() const { return c_str(); }
         explicit operator std::stringstream() const {
             std::stringstream result;
-            result << str();
+            result << backingString;
             return result;
         }
 
