@@ -196,7 +196,7 @@ public:
         assert(std::string("12345"), temp.str());
 
         SmartString formatString = "{0} {1} {2} {0}";
-        formatString.format(3, "a", "b", "c");
+        formatString.format("a", "b", "c");
         assert(std::string("a b c a"), formatString.str());
 
         std::string str = (std::string) temp;
@@ -206,18 +206,19 @@ public:
         assert(temp.str(), std::string(charStr));
 
         formatString = "{0} {1} {2} {0}";
-        str = formatString.getFormatted<std::string>(3, "a", "b", "c");
-        assert(std::string("a b c a"), str);
-        charStr = formatString.getFormatted<char *>(3, "a", "b", "c");
-        assert(std::string("a b c a"), std::string(charStr));
-        temp = formatString.getFormatted<SmartString>(3, "a", "b", "c");
-        assert(std::string("a b c a"), temp.str());
-
         str = formatString.getFormatted<std::string>("a", "b", "c");
         assert(std::string("a b c a"), str);
         charStr = formatString.getFormatted<char *>("a", "b", "c");
         assert(std::string("a b c a"), std::string(charStr));
         temp = formatString.getFormatted<SmartString>("a", "b", "c");
+        assert(std::string("a b c a"), temp.str());
+
+        str = SmartString::format<std::string>(formatString, "a", "b", "c");
+        assert(std::string("a b c a"), str);
+        charStr = SmartString::format<char *>("{0} {1} {2} {0}", "a", "b", "c");
+        assert(std::string("a b c a"), std::string(charStr));
+        str = "{0} {1} {2} {0}";
+        temp = SmartString::format<SmartString>(str, "a", "b", "c");
         assert(std::string("a b c a"), temp.str());
     }
 

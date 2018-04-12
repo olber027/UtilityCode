@@ -6,7 +6,6 @@
 #define UTILITYCODE_SMARTSTRING_H
 
 #include <string>
-#include <cstdarg>
 #include <fstream>
 #include <sstream>
 #include <stdexcept>
@@ -152,6 +151,21 @@ namespace smart_string {
             return table;
         }
 
+        template<typename T>
+        void formatHelper(const int depth, const T& t) {
+            SmartString target;
+            target << "{" << depth << "}";
+            replaceAll(target, t);
+        };
+
+        template<typename T, typename... Args>
+        void formatHelper(const int depth, const T& t, Args... args) {
+            SmartString target;
+            target << "{" << depth << "}";
+            replaceAll(target, t);
+            formatHelper(depth + 1, args...);
+        };
+
     public:
         SmartString() : backingString(nullptr), stringSize(0), precision(5), memorySize(0) { }
         SmartString(const std::string& init) : SmartString() {
@@ -185,6 +199,15 @@ namespace smart_string {
                 }
             }
             precision = init.precision();
+        }
+        SmartString(const int init) : SmartString() {
+            append(init);
+        }
+        SmartString(const double init) : SmartString() {
+            append(init);
+        }
+        SmartString(const float init) : SmartString() {
+            append(init);
         }
         SmartString(const int numChars, const char fill) : SmartString() {
             initialize(numChars);
@@ -650,19 +673,20 @@ namespace smart_string {
         }
 
         // start and end are both inclusive.
-        SmartString getSubstring(const int start, const int end) const {
+        SmartString getSubstring(const int startLocation, const int endLocation) const {
             SmartString result("");
-            for(int i = start; i <= end; i++) {
+            for(int i = startLocation; i <= endLocation; i++) {
                 result.append(backingString[i]);
             }
             return result;
         }
 
         template<typename T>
-        T getSubstring(const int start, const int end) const {
-            return (T) getSubstring(start, end);
+        T getSubstring(const int startLocation, const int endLocation) const {
+            return (T) getSubstring(startLocation, endLocation);
         }
 
+        // Uses the Knuth-Morris-Pratt algorithm for finding the substring
         int findSubstring(const int startingLocation, const SmartString& target) const {
 
             if(startingLocation < 0) {
@@ -809,10 +833,10 @@ namespace smart_string {
         }
 
         // start and end are both inclusive.
-        SmartString& remove(const int start, const int end) {
+        SmartString& remove(const int startLocation, const int endLocation) {
             SmartString temp("");
             for(int i = 0; i < length(); i++) {
-                if(i < start || i > end) {
+                if(i < startLocation || i > endLocation) {
                     temp.append(backingString[i]);
                 }
             }
@@ -900,83 +924,23 @@ namespace smart_string {
             return replaceAll(targ, newSubstr);
         }
 
-        SmartString format(...) {
-            int numArgs = getNumArguments();
-            va_list arguments;
-            va_start(arguments, nullptr);
-            for(int i = 0; i < numArgs; i++) {
-                SmartString target;
-                target << "{" << i << "}";
-                char* argument = va_arg(arguments, char*);
-                replaceAll(target.str(), argument);
-            }
-            va_end(arguments);
-
+        template<typename... Args>
+        SmartString& format(Args... args) {
+            formatHelper(0, args...);
             return *this;
         }
 
-        SmartString format(const int count, ...) {
-            va_list arguments;
-            va_start(arguments, count);
-            for(int i = 0; i < count; i++) {
-                SmartString target;
-                target << "{" << i << "}";
-                char* argument = va_arg(arguments, char*);
-                replaceAll(target.str(), argument);
-            }
-            va_end(arguments);
-
-            return *this;
-        }
-
-        template<typename T>
-        T getFormatted(...) const {
+        template<typename T, typename... Args>
+        T getFormatted(Args... args) const {
             SmartString result(*this);
-            int numArgs = result.getNumArguments();
-            va_list arguments;
-            va_start(arguments, nullptr);
-            for(int i = 0; i < numArgs; i++) {
-                SmartString target;
-                target << "{" << i << "}";
-                char* argument = va_arg(arguments, char*);
-                result.replaceAll(target, argument);
-            }
-            va_end(arguments);
-
+            result.formatHelper(0, args...);
             return (T) result;
         }
 
-        template<typename T>
-        T getFormatted(const int count, ...) const {
-            SmartString result(*this);
-            va_list arguments;
-            va_start(arguments, count);
-            for(int i = 0; i < count; i++) {
-                SmartString target;
-                target << "{" << i << "}";
-                char* argument = va_arg(arguments, char*);
-                result.replaceAll(target, argument);
-            }
-            va_end(arguments);
-
-            return (T) result;
-        }
-
-        template<typename T, typename U> static
-        T format(const U& str, ...) {
-            SmartString result(str);
-            int count = result.getNumArguments();
-
-            va_list(arguments);
-            va_start(arguments, str);
-            for(int i = 0; i < count; i++) {
-                SmartString target;
-                target << "{" << i << "}";
-                char* argument = va_arg(arguments, char*);
-                result.replaceAll(target, argument);
-            }
-            va_end(arguments);
-
+        template<typename T, typename U, typename... Args> static
+        T format(const U& source, Args... args) {
+            SmartString result(source);
+            result.formatHelper(0, args...);
             return (T) result;
         }
 
