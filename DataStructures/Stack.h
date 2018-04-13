@@ -72,7 +72,7 @@ namespace stack {
             return *this;
         }
 
-        T pop() {
+        T& pop() {
             if(top != nullptr) {
                 size--;
                 Item* temp = top;
@@ -82,7 +82,7 @@ namespace stack {
             throw std::out_of_range("Attempted to pop an empty stack");
         }
 
-        T peek() const {
+        T& peek() const {
             if(top != nullptr) {
                 return top->data;
             }

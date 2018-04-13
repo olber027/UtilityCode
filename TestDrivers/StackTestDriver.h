@@ -66,6 +66,16 @@ public:
         for(int i = 4; i >= 0; i--) {
             assert(i, pointerStack.pop()->data);
         }
+
+        Stack<int> stack1;
+        Stack<int> stack2;
+        for(int i = 0; i < 5; i++) {
+            stack1.push(i);
+            stack2.push(stack1.pop());
+        }
+        for(int i = 4; i >= 0; i--) {
+            assert(i, stack2.pop());
+        }
     }
 };
 

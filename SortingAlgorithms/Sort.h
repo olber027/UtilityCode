@@ -12,13 +12,13 @@ class Sort {
 private:
     Sort() {}
 
-    template<typename T> static void swap(T* array, int i, int j) {
+    template<typename T> static void swap(T* array, const int i, const int j) {
         T temp = array[j];
         array[j] = array[i];
         array[i] = temp;
     }
 
-    template<typename T> static void quicksortHelper(T* array, int left, int right) {
+    template<typename T> static void quicksortHelper(T* array, const int left, const int right) {
         if (left >= right) {
             return;
         }
@@ -39,7 +39,7 @@ private:
         quicksortHelper<T>(array, i+1, right);
     }
 
-    template<typename T> static T* mergesortHelper(T* array, int size) {
+    template<typename T> static T* mergesortHelper(T* array, const int size) {
         if(size <= 1) {
             return array;
         }
@@ -63,7 +63,7 @@ private:
     }
 
     //merges the left and right arrays in sorted order.
-    template<typename T> static T* mergeArrays(const T* left, int leftSize, const T* right, int rightSize) {
+    template<typename T> static T* mergeArrays(const T* left, const int leftSize, const T* right, const int rightSize) {
         int totalSize = leftSize + rightSize;
         T* result = new T[totalSize];
         int leftIndex = 0;
@@ -86,7 +86,7 @@ private:
     }
 
     //appends the right array to the left array and returns the result as a new array.
-    template<typename T> static T* concatenateArray(const T* left, int leftSize, const T* right, int rightSize) {
+    template<typename T> static T* concatenateArray(const T* left, const int leftSize, const T* right, const int rightSize) {
         int totalSize = leftSize + rightSize;
         T* result = new T[totalSize];
         int j = 0;
@@ -99,7 +99,7 @@ private:
         return result;
     }
 
-    template<typename T> static void radixsortHelper(T* array, int size, int depth) {
+    template<typename T> static void radixsortHelper(T* array, const int size, const int depth) {
         T** buckets = new T*[10];
         int* bucketSizes = new int[10];
         for(int i = 0; i < 10; i++) {
@@ -131,7 +131,7 @@ private:
         delete bucketSizes;
     }
 
-    template<typename T> static void shellsortHelper(T* array, int size, const int* gapList, int gapListSize) {
+    template<typename T> static void shellsortHelper(T* array, const int size, const int* gapList, const int gapListSize) {
         for(int g = 0; g < gapListSize; g++) {
             int gap = gapList[g];
             for(int i = gap; i < size; i++) {
@@ -146,11 +146,11 @@ private:
     }
 
 public:
-    template<typename T> static void quicksort(T* array, int size) {
+    template<typename T> static void quicksort(T* array, const int size) {
         quicksortHelper<T>(array, 0, size-1);
     }
 
-    template<typename T> static void bubblesort(T* array, int size) {
+    template<typename T> static void bubblesort(T* array, const int size) {
         bool swapped;
         do {
             swapped = false;
@@ -163,7 +163,7 @@ public:
         } while(swapped);
     }
 
-    template<typename T> static void insertionsort(T* array, int size) {
+    template<typename T> static void insertionsort(T* array, const int size) {
         for(int i = 1; i < size; i++) {
             int j = i;
             while(j > 0 && array[j-1] > array[j]) {
@@ -173,7 +173,7 @@ public:
         }
     }
 
-    template<typename T> static void mergesort(T* array, int size) {
+    template<typename T> static void mergesort(T* array, const int size) {
         T* temp = mergesortHelper<T>(array, size);
         for(int i = 0; i < size; i++) {
             array[i] = temp[i];
@@ -181,7 +181,7 @@ public:
         delete temp;
     }
 
-    template<typename T> static void radixsort(T* array, int size) {
+    template<typename T> static void radixsort(T* array, const int size) {
         int maxDepth = 0;
         T max = array[0];
         int j = 10;
@@ -197,7 +197,7 @@ public:
         radixsortHelper(array, size, maxDepth);
     }
 
-    template<typename T> static void shellsort(T* array, int size) {
+    template<typename T> static void shellsort(T* array, const int size) {
         int gapListSize = (log(size)/log(2)) + 1;
         int* gapList = new int[gapListSize];
         gapList[0] = 1;
@@ -207,7 +207,7 @@ public:
         shellsortHelper(array, size, gapList, gapListSize);
     }
 
-    template<typename T> static bool isSorted(const T* array, int size) {
+    template<typename T> static bool isSorted(const T* array, const int size) {
         for(int i = 0; i < size-1; i++) {
             if(array[i] > array[i+1]) {
                 return false;

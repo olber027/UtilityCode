@@ -179,7 +179,7 @@ public:
         if(!longOpt.isEmpty()) {
             result << ", " << longOpt << " : ";
         }
-        result << "Expected an integer in the range";
+        result << "Expected an number in the range";
         result << " [" << min << ", " << max << "]\n";
         return result;
     }

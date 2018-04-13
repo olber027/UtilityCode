@@ -29,6 +29,7 @@ namespace set {
         void forceAdd(const T& item) {
             items.push_back(item);
         }
+
     public:
         Set() : items(std::vector<T>()) {}
         Set(const T* list, int size) {
@@ -64,6 +65,9 @@ namespace set {
         }
 
         bool operator==(const Set<T>& rhs) const {
+            if(size() != rhs.size()) {
+                return false;
+            }
             for(int i = 0; i < rhs.size(); i++) {
                 if(!contains(rhs[i])) {
                     return false;
@@ -90,28 +94,25 @@ namespace set {
             return getIndexOf(item) >= 0;
         }
 
-        T* addItem(const T& item) {
+        bool addItem(const T& item) {
             int index = getIndexOf(item);
             if(index >= 0) {
-                return &items[index];
+                return false;
             }
             items.push_back(item);
-            return &items[items.size()-1];
+            return true;
         }
 
         bool removeItem(const T& item) {
-            int index = getIndexOf(item);
-            if(index < 0) {
+            return removeItem(getIndexOf(item));
+        }
+
+        bool removeItem(const int index) {
+            if(index < 0 || index >= items.size()) {
                 return false;
             }
             items.erase(items.begin() + index);
             return true;
-        }
-
-        T pop() {
-            T result = items.back();
-            items.pop_back();
-            return result;
         }
 
         int size() const {
