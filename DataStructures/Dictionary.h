@@ -63,7 +63,8 @@ namespace dictionary {
         void sort() {
             int i = size - 1;
             while(i > 0 && keys[i] < keys[i-1]) {
-                swap(i, i--);
+                swap(i, i-1);
+                i--;
             }
         }
 
@@ -83,18 +84,19 @@ namespace dictionary {
 
         // Do a binary search on the list to speed up lookup times.
         int getKeyIndex(const T& target, int left, int right) const {
-            if(right >= left) {
-                int middle = left + ((right - left)/2);
-                if(keys[middle] == target) {
-                    return middle;
-                }
-                if(target < keys[middle]) {
-                    return getKeyIndex(target, left, middle-1);
-                } else {
-                    return getKeyIndex(target, middle+1, right);
-                }
+            if(right < left) {
+                return -1;
             }
-            return -1;
+
+            int middle = left + ((right - left)/2);
+            if(keys[middle] == target) {
+                return middle;
+            }
+            if(target < keys[middle]) {
+                return getKeyIndex(target, left, middle-1);
+            } else {
+                return getKeyIndex(target, middle+1, right);
+            }
         }
 
         int getKeyIndex(const T& target) const {
@@ -194,7 +196,7 @@ namespace dictionary {
             }
         }
 
-        U& operator[](const T& index) {
+        U& operator[](const T& index) const {
             return getValue(index);
         }
 

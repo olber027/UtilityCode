@@ -75,6 +75,12 @@ public:
         for(int i = 0; i < keys.size(); i++) {
             assert(dict[keys[i]], values[i]);
         }
+        assert(9, dict.length(), "correct number of entries were not added");
+        for(int i = 0; i < values.size(); i--) {
+            dict.remove(values[i]);
+            assert(9 - values[i], dict.length());
+        }
+
     }
 };
 
