@@ -256,6 +256,7 @@ public:
         SmartString temp("1212121");
         assert(4, temp.count("1"));
         assert(3, temp.count("12"));
+        assert(0, temp.count("3"));
         temp = "12314516";
         assert(std::string("1"), temp.getSubstring<std::string>(0,0));
         std::vector<SmartString> list = temp.split<SmartString>("1");
@@ -318,6 +319,10 @@ public:
         assert(true, result);
         assert(12345.0, val);
 
+        result = SmartString::tryConvert("0001000000.000001000", val);
+        assert(true, result);
+        assert(1000000.000001, val);
+
         int intVal;
         result = SmartString::tryConvert("123", intVal);
         assert(true, result);
@@ -346,6 +351,38 @@ public:
         assert(std::string("source string was not a valid number"), errorMessage);
     }
 
+    void testFunctionPassing() {
+        SmartString test = "Get Basic String";
+        SmartString result = getBasicString();
+        assert(test, result);
+        test = "Get Reference String";
+        result = getReferenceString();
+        assert(test, result);
+        test = "Pass Basic String";
+        passBasicString(test);
+        test = "Pass Reference String";
+        passReferenceString(test);
+    }
+
+    SmartString getBasicString() {
+        SmartString result = "Get Basic String";
+        return result;
+    }
+
+    SmartString& getReferenceString() {
+        SmartString* result = new SmartString();
+        *result = "Get Reference String";
+        return *result;
+    }
+
+    void passBasicString(SmartString test) {
+        assert(SmartString("Pass Basic String"), test);
+    }
+
+    void passReferenceString(SmartString& test) {
+        assert(SmartString("Pass Reference String"), test);
+    }
+
     void run() {
         testConstructors();
         testAppendPrepend();
@@ -354,6 +391,7 @@ public:
         testRemove();
         testSubstrings();
         testMiscFunctions();
+        testFunctionPassing();
     }
 };
 #endif //UTILITYCODE_SMARTSTRINGTESTDRIVER_H

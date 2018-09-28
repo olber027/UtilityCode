@@ -735,12 +735,11 @@ namespace smart_string {
             int numInstances = 0;
             SmartString targ(target);
             int location = findSubstring(targ);
-            while(location < length()) {
+            while(location >= 0 && location < length()) {
                 numInstances++;
-                SmartString temp = getSubstring(++location, length());
-                int newLocation = temp.findSubstring(targ);
+                int newLocation = findSubstring(location+1, targ);
                 if(newLocation >= 0) {
-                    location += newLocation;
+                    location = newLocation;
                 } else {
                     break;
                 }
