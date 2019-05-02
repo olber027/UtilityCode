@@ -16,7 +16,7 @@ namespace smart_pointer {
             int numReferences;
         public:
             ReferenceCounter() : numReferences(0) {}
-            ReferenceCounter(const int init) : numReferences(init) {}
+            explicit ReferenceCounter(const int init) : numReferences(init) {}
             int addRef() { return ++numReferences; }
             int removeRef() { return --numReferences; }
             int getNumReferences() const { return numReferences; }
@@ -30,7 +30,7 @@ namespace smart_pointer {
             referenceCounter = new ReferenceCounter();
         }
 
-        SmartPointer(T* val) : pointer(val) {
+        explicit SmartPointer(T* val) : pointer(val) {
             referenceCounter = new ReferenceCounter(1);
         }
 
@@ -43,6 +43,14 @@ namespace smart_pointer {
             }
         }
 
+        SmartPointer(SmartPointer<T>&& smartPointer) noexcept {
+            destroy();
+            pointer = smartPointer.pointer;
+            referenceCounter = smartPointer.referenceCounter;
+            smartPointer.pointer = nullptr;
+            smartPointer.referenceCounter = nullptr;
+        }
+
         SmartPointer<T>& operator=(const SmartPointer<T>& rhs) {
             if(&rhs != this) {
                 destroy();
@@ -50,6 +58,16 @@ namespace smart_pointer {
                 referenceCounter = rhs.referenceCounter;
                 referenceCounter->addRef();
             }
+            return *this;
+        }
+
+        SmartPointer<T>& operator=(SmartPointer<T>&& rhs) noexcept {
+            destroy();
+            pointer = rhs.pointer;
+            referenceCounter = rhs.referenceCounter;
+            rhs.pointer = nullptr;
+            rhs.referenceCounter = nullptr;
+
             return *this;
         }
 

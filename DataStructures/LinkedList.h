@@ -23,7 +23,7 @@ namespace linked_list {
 
     public:
         Node(const T& d, Node<T>* n) : data(d), next(n) { }
-        Node(const T& d) : Node(d, nullptr) { }
+        explicit Node(const T& d) : Node(d, nullptr) { }
         Node(const Node<T>& node) {
             if (this != &node) {
                 data = node.data;
@@ -56,7 +56,7 @@ namespace linked_list {
 
     public:
         LinkedList() : head(nullptr), tail(nullptr) {}
-        LinkedList(Node<T>* node) : LinkedList() {
+        explicit LinkedList(Node<T>* node) : LinkedList() {
             if(!node) {
                 return;
             }
@@ -68,7 +68,7 @@ namespace linked_list {
                 next = next->getNext();
             }
         }
-        LinkedList(const T& value) : LinkedList() {
+        explicit LinkedList(const T& value) : LinkedList() {
             head = new Node<T>(value);
             tail = head;
         }
@@ -78,11 +78,27 @@ namespace linked_list {
                 tail = list.tail;
             }
         }
+        LinkedList(LinkedList<T>&& list) noexcept {
+            head = list.head;
+            tail = list.tail;
+            list.head = nullptr;
+            list.tail = nullptr;
+        }
 
         LinkedList<T>& operator=(const LinkedList<T>& rhs) {
             if(&rhs != this) {
                 head = rhs.head;
                 tail = rhs.tail;
+            }
+            return *this;
+        }
+
+        LinkedList<T>& operator=(LinkedList<T>&& rhs) noexcept {
+            if(&rhs != this) {
+                head = rhs.head;
+                tail = rhs.tail;
+                rhs.tail = nullptr;
+                rhs.head = nullptr;
             }
             return *this;
         }

@@ -36,7 +36,7 @@ namespace stack {
 
     public:
         Stack() : top(nullptr), size(0) {}
-        Stack(const T& init) : top(new Item(init, nullptr)), size(1) {}
+        explicit Stack(const T& init) : top(new Item(init, nullptr)), size(1) {}
         ~Stack() {
             destroy();
         }
@@ -51,12 +51,25 @@ namespace stack {
                 size = stack.size;
             }
         }
+        Stack(Stack<T>&& stack) noexcept {
+            top = stack.top;
+            size = stack.size;
+            stack.top = nullptr;
+            stack.size = 0;
+        }
 
         Stack<T>& operator=(const Stack<T>& rhs) {
             if(&rhs != this) {
                 top = rhs.top;
                 size = rhs.size;
             }
+            return *this;
+        }
+        Stack<T>& operator=(Stack<T>&& rhs) noexcept {
+            top = rhs.top;
+            size = rhs.size;
+            rhs.top = nullptr;
+            rhs.size = 0;
             return *this;
         }
 

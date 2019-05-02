@@ -6,6 +6,7 @@
 #define UTILITYCODE_TESTDRIVER_H
 
 #include <string>
+#include <vector>
 #include <sstream>
 
 class TestDriver {
@@ -17,7 +18,7 @@ protected:
 public:
     virtual void run() = 0;
 
-    virtual void init(std::string driverName) {
+    virtual void init(const std::string& driverName) {
         passed = 0;
         failed = 0;
         total = 0;
@@ -74,6 +75,31 @@ public:
         }
         total++;
         return result;
+    }
+
+    template<typename T>
+    bool assert_vector(const std::vector<T>& expected, const std::vector<T>& actual, const char* message) {
+        total++;
+        if(expected.size() != actual.size()) {
+            output << "TestFailed\n__________\n";
+            output << "\texpected vector of size " << actual.size() << ". got " << expected.size() << std::endl;
+            output << "\tmessage : " << message << std::endl;
+            failed++;
+            return false;
+        }
+        for(int i = 0; i < expected.size(); i++) {
+            if(expected[i] != actual[i]) {
+                output << "TestFailed\n__________\n";
+                output << "\telement " << i << " did not match." << std::endl;
+                output << "\texpected: " << expected[i] << std::endl;
+                output << "\tactual  : " << actual[i] << std::endl;
+                output << "\tmessage : " << message << std::endl;
+                failed++;
+                return false;
+            }
+        }
+        passed++;
+        return true;
     }
 };
 

@@ -23,7 +23,7 @@ namespace binary_tree {
         Node<T>* left;
         T data;
     public:
-        Node(const T& d) : right(nullptr), left(nullptr), data(d) {}
+        explicit Node(const T& d) : right(nullptr), left(nullptr), data(d) {}
 
         Node(const T& d, Node<T>* r, Node<T>* l) : right(r), left(l), data(d) {}
 
@@ -35,12 +35,30 @@ namespace binary_tree {
             }
         }
 
+        Node(const Node<T>&& node) noexcept {
+            data = node.data;
+            left = node.left;
+            right = node.right;
+            node.left = nullptr;
+            node.right = nullptr;
+        }
+
         Node<T>& operator=(const Node<T>& rhs) {
             if(this != &rhs) {
                 data = rhs.data;
                 left = rhs.left;
                 right = rhs.right;
             }
+            return *this;
+        }
+
+        Node<T>& operator=(const Node<T>&& rhs) noexcept {
+            data = rhs.data;
+            left = rhs.left;
+            right = rhs.right;
+            rhs.right = nullptr;
+            rhs.left = nullptr;
+
             return *this;
         }
 
@@ -92,7 +110,31 @@ namespace binary_tree {
 
     public:
         BinaryTree() : root(nullptr) {}
-        BinaryTree(Node<T>* r) : root(r) {}
+        explicit BinaryTree(Node<T>* r) : root(r) {}
+
+        BinaryTree(const BinaryTree<T>& other) {
+            if(this != &other) {
+                root = other.root;
+            }
+        }
+
+        BinaryTree(BinaryTree<T>&& other) noexcept {
+            root = other.root;
+            other.root = nullptr;
+        }
+
+        BinaryTree<T>& operator=(const BinaryTree<T>& rhs) {
+            if(this != &rhs) {
+                root = rhs.root;
+            }
+            return *this;
+        }
+
+        BinaryTree<T>& operator=(BinaryTree<T>&& rhs) noexcept {
+            root = rhs.root;
+            rhs.root = nullptr;
+            return *this;
+        }
 
         void insert(const T& item) {
             Node<T>* newNode = new Node<T>(item);

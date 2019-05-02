@@ -38,7 +38,7 @@ namespace set {
                 addItem(list[i]);
             }
         }
-        Set(const std::vector<T>& list) {
+        explicit Set(const std::vector<T>& list) {
             items = std::vector<T>();
             for(int i = 0; i < list.size(); i++) {
                 addItem(list[i]);
@@ -50,13 +50,11 @@ namespace set {
                 items.push_back(set.items[i]);
             }
         }
-
         ~Set() {}
 
         Set<T>& operator=(const Set<T>& set) {
-            items = std::vector<T>();
-            for(int i = 0; i < set.items.size(); i++) {
-                items.push_back(set.items[i]);
+            if(this != &set) {
+                items = std::vector<T>(set.items);
             }
         }
 
@@ -68,13 +66,8 @@ namespace set {
             if(size() != rhs.size()) {
                 return false;
             }
-            for(int i = 0; i < rhs.size(); i++) {
-                if(!contains(rhs[i])) {
-                    return false;
-                }
-            }
             for(int i = 0; i < size(); i++) {
-                if(!rhs.contains(items[i])) {
+                if(!contains(rhs[i]) || !contains(items[i])) {
                     return false;
                 }
             }
@@ -122,11 +115,7 @@ namespace set {
         //Provides the union of two sets.
         //e.g. {1, 2} U {2, 3} = {1, 2, 3}
         Set<T> Union(const Set<T>& other) const {
-            Set<T> result = Set<T>();
-            for(int i = 0; i < size(); i++) {
-                //bypass addItem since we know every element of this set to be unique already.
-                result.forceAdd(items[i]);
-            }
+            Set<T> result = *this;
             for(int i = 0; i < other.size(); i++) {
                 result.addItem(other[i]);
             }
@@ -203,11 +192,7 @@ namespace set {
         }
 
         std::vector<T> toVector() const {
-            std::vector<T> result;
-            for(int i = 0; i < size(); i++) {
-                result.push_back(items[i]);
-            }
-            return result;
+            return std::vector<T>(items);
         }
 
         T* toArray() const {

@@ -36,7 +36,7 @@ namespace dictionary {
             stream << "Invalid Index : " << index;
             message = stream.str();
         }
-        virtual const char* what() const noexcept {
+        virtual const char* what() const noexcept override {
             return message.c_str();
         }
         T getIndex() const {
@@ -161,7 +161,7 @@ namespace dictionary {
                 addEntry(Keys[i], Values[i]);
             }
         }
-        Dictionary(const Dictionary& other) : Dictionary() {
+        Dictionary(const Dictionary<T, U>& other) : Dictionary() {
             if(&other != this) {
                 size = other.size;
                 memorySize = other.memorySize;
@@ -173,7 +173,7 @@ namespace dictionary {
                 }
             }
         }
-        Dictionary(Dictionary&& other) : Dictionary() {
+        Dictionary(Dictionary<T,U>&& other) noexcept {
             keys = other.keys;
             values = other.values;
             size = other.size;
@@ -187,13 +187,23 @@ namespace dictionary {
             destroy();
         }
 
-        Dictionary& operator=(const Dictionary& rhs) {
+        Dictionary<T,U>& operator=(const Dictionary<T,U>& rhs) {
             if(this != &rhs) {
                 destroy();
                 for(int i = 0; i < rhs.length(); i++) {
                     addEntry(rhs.keys[i], rhs.values[i]);
                 }
             }
+        }
+        Dictionary<T,U>& operator=(Dictionary<T,U>&& rhs) noexcept {
+            keys = rhs.keys;
+            values = rhs.values;
+            size = rhs.size;
+            memorySize = rhs.memorySize;
+            rhs.keys = nullptr;
+            rhs.values = nullptr;
+            rhs.size = 0;
+            rhs.memorySize = 1;
         }
 
         U& operator[](const T& index) const {
@@ -226,9 +236,8 @@ namespace dictionary {
             int index = getValueIndex(value);
             if(index < 0) {
                 throw InvalidIndexException<U>(value);
-            } else {
-                return keys[index];
             }
+            return keys[index];
         }
 
         U& getValue(const T& key) const {
@@ -240,43 +249,35 @@ namespace dictionary {
         }
 
         std::vector<T> getKeys() const {
-            std::vector<T> result;
-            for(int i = 0; i < size; i++) {
-                result.push_back(keys[i]);
-            }
-            return result;
+            return std::vector<T>(keys, keys+size);
         }
 
         std::vector<U> getValues() const {
-            std::vector<U> result;
-            for(int i = 0; i < size; i++) {
-                result.push_back(values[i]);
-            }
-            return result;
+            return std::vector<U>(values, values+size);
         }
 
         void remove(const T& key) {
             int index = getKeyIndex(key);
             if(index < 0) {
                 throw InvalidIndexException<T>(key);
-            } else {
-                for(int i = index + 1; i < size; i++, index++) {
-                    move(i, index);
-                }
-                size--;
             }
+
+            for(int i = index + 1; i < size; i++, index++) {
+                move(i, index);
+            }
+            size--;
         }
 
         void remove(const U& value) {
             int index = getValueIndex(value);
             if(index < 0) {
                 throw InvalidIndexException<U>(value);
-            } else {
-                for(int i = index + 1; i < size; i++, index++) {
-                    move(i, index);
-                }
-                size--;
             }
+
+            for(int i = index + 1; i < size; i++, index++) {
+                move(i, index);
+            }
+            size--;
         }
 
         int length() const {
