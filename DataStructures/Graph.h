@@ -215,6 +215,7 @@ namespace graph {
             addVertex(start);
             dest = destination;
         }
+
         Path(const Path<T>& other) : Path() {
             if(&other != this) {
                 for(int i = 0; i < other.path.size(); i++) {
@@ -224,6 +225,7 @@ namespace graph {
                 dest = other.dest;
             }
         }
+
         bool operator==(const Path<T>& rhs) {
             if(path.size() != rhs.path.size()) {
                 return false;
@@ -245,14 +247,19 @@ namespace graph {
             }
             path.push_back(vertex);
         }
+
         std::vector<Vertex<T>*> getPath() const { return path; }
+
         double getPathCost() const { return pathCost; }
+
         Vertex<T>* getLastVertex() const { return path[path.size()-1]; }
+
         double getEstimatedCost() const {
             Vertex<T>* vert = getLastVertex();
             double costToDestination = vert->getCostTo(*dest);
             return pathCost + costToDestination;
         }
+
         std::vector<Vertex<T>*> getNextVertices() const {
             std::vector<Vertex<T>*> neighbors = getLastVertex()->getNeighbors();
             int numNeighbors = getLastVertex()->getNumNeighbors();
@@ -268,6 +275,7 @@ namespace graph {
             }
             return results;
         }
+
         static Path<T> getErrorPath() {
             return Path<T>();
         }
@@ -370,7 +378,6 @@ namespace graph {
         }
 
         bool removeVertex(Vertex<T>* vertex) {
-            bool result = false;
             for(int i = 0; i < numVertices; i++) {
                 if(vertices[i]->isNeighborsWith(vertex)) {
                     vertices[i]->disconnect(vertex);
@@ -378,7 +385,6 @@ namespace graph {
             }
             for(int i = 0; i < numVertices; i++) {
                 if(vertices[i] == vertex) {
-                    result = true;
                     Vertex<T>** temp = new Vertex<T>*[numVertices - 1];
                     int flag = 0;
                     for(int j = 0; j < numVertices; j++) {
@@ -391,9 +397,10 @@ namespace graph {
                     delete vertices;
                     numVertices--;
                     vertices = temp;
+                    return true;
                 }
             }
-            return result;
+            return false;
         }
 
         void addEdge(Vertex<T>* from, Vertex<T>* to) {
@@ -428,12 +435,14 @@ namespace graph {
             std::vector<Path<T>> closedList;
             closedList.push_back(Path<T>(start, end));
 
+            // Add all neighbors of the starting Vertex to the openList
             for(int i = 0; i < start->getNumNeighbors(); i++) {
                 openList.push_back(Path<T>(start, end));
                 openList[i].addVertex(start->getNeighbors()[i]);
             }
 
             while(openList.size() != 0) {
+                // Find the path with the lowest estimated cost from the openList
                 double shortest = openList[0].getEstimatedCost();
                 int index = 0;
                 for(int i = 1; i < openList.size(); i++) {
@@ -444,47 +453,60 @@ namespace graph {
                 }
 
                 Vertex<T>* currentVertex = openList[index].getLastVertex();
+                // If we've reached the end, that means we've found the shortest path and
+                // can simply return here.
                 if(currentVertex == end) {
                     return openList[index];
                 }
 
+                // Iterate through the next possible Vertices we can visit
                 std::vector<Vertex<T>*> nextVertices = openList[index].getNextVertices();
                 for(int i = 0; i < nextVertices.size(); i++) {
                     Path<T> temp = openList[index];
                     Vertex<T>* next = nextVertices[i];
                     temp.addVertex(next);
-                    bool add = true;
+                    bool addToList = true;
 
                     for(int j = 0; j < closedList.size(); j++) {
+                        // If a path to the next vertex is already in the closed list
+                        // but we found a shorter path to it, remove it from the
+                        // closedList and possibly add it to the openList after (if a
+                        // shorter path to the same vertex isn't already in the openList)
                         if(closedList[j].getLastVertex() == next) {
                             if(temp.getPathCost() < closedList[j].getPathCost()) {
                                 closedList.erase(closedList.begin() + j);
                             } else {
-                                add = false;
+                                addToList = false;
                                 break;
                             }
                         }
                     }
 
-                    for(int j = 0; j < openList.size() && add; j++) {
+                    for(int j = 0; j < openList.size() && addToList; j++) {
+                        // If a path to the next vertex is already in the openList
+                        // check which is shorter. If it's the one currently there,
+                        // simply don't add this path to the list, otherwise remove
+                        // the path currently in the open list and add our new one
                         if(openList[j].getLastVertex() == next) {
                             if(openList[j].getPathCost() <= temp.getPathCost()) {
-                                add = false;
+                                addToList = false;
                             } else {
                                 openList.erase(openList.begin() + j);
                             }
                             break;
                         }
                     }
-                    if(add) {
+                    if(addToList) {
                         openList.push_back(temp);
                     }
                 }
-
+                // current path moves from the open to the closed list
                 closedList.push_back(openList[index]);
                 openList.erase(openList.begin() + index);
             }
 
+            // If we get to this point, it means that we were not able to find a path
+            // to the given destination, so we return an error.
             return Path<T>::getErrorPath();
         }
 

@@ -6,6 +6,7 @@
 #define UTILITYCODE_LINKEDLIST_H
 
 #include <ostream>
+#include <functional>
 
 namespace linked_list {
 
@@ -38,6 +39,14 @@ namespace linked_list {
         T getData() const { return data; }
 
         void setData(const T& d) { data = d; }
+
+        bool operator==(const Node<T>& rhs) const {
+            return (data == rhs.data) && (next == rhs.next);
+        }
+
+        bool operator!=(const Node<T>& rhs) const {
+            return !(*this == rhs);
+        }
 
         friend std::ostream &operator<<(std::ostream& out, const Node<T>& node) {
             out << node.getData();
@@ -217,6 +226,43 @@ namespace linked_list {
 
         Node<T>* operator[](const int index) const {
             return getNodeAtIndex(index);
+        }
+
+        bool operator==(const LinkedList<T>& rhs) const {
+            Node<T>* thisPtr = head;
+            Node<T>* rhsPtr = rhs.head;
+
+            while((thisPtr != nullptr) && (rhsPtr != nullptr)) {
+                if(*thisPtr != *rhsPtr) {
+                    return false;
+                }
+                thisPtr = thisPtr->getNext();
+                rhsPtr = rhsPtr->getNext();
+            }
+            if(thisPtr != rhsPtr) {
+                return false;
+            }
+            return true;
+        }
+
+        bool operator!=(const LinkedList<T>& rhs) const {
+            return !(*this == rhs);
+        }
+
+        void transform(Node<T>* startNode, const Node<T>* endNode, std::function<void(Node<T>*)> func) {
+            Node<T>* ptr = startNode;
+            while(ptr != endNode) {
+                func(ptr);
+                ptr = ptr->getNext();
+            }
+        }
+
+        void transform(Node<T>* startNode, std::function<void(Node<T>*)> func) {
+            transform(startNode, nullptr, func);
+        }
+
+        void transform(std::function<void(Node<T>*)> func) {
+            transform(head, nullptr, func);
         }
 
         Node<T>* getNodeAtIndex(const int index) const {

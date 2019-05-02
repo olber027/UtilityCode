@@ -156,7 +156,7 @@ namespace smart_string {
             SmartString target;
             target << "{" << depth << "}";
             replaceAll(target, t);
-        };
+        }
 
         template<typename T, typename... Args>
         void formatHelper(const int depth, const T& t, Args... args) {
@@ -164,7 +164,7 @@ namespace smart_string {
             target << "{" << depth << "}";
             replaceAll(target, t);
             formatHelper(depth + 1, args...);
-        };
+        }
 
     public:
         SmartString() : backingString(nullptr), stringSize(0), precision(5), memorySize(0) { }
@@ -216,19 +216,17 @@ namespace smart_string {
             }
         }
         SmartString(const SmartString& other) : SmartString() {
-            if(&other != this) {
-                destroy();
-                initialize(other.stringSize);
-                for(int i = 0; i < stringSize; i++) {
-                    backingString[i] = other.backingString[i];
-                }
-                precision = other.precision;
+            initialize(other.stringSize);
+            for(int i = 0; i < stringSize; i++) {
+                backingString[i] = other.backingString[i];
             }
+            precision = other.precision;
         }
-        SmartString(SmartString&& other) noexcept : SmartString() {
+        SmartString(SmartString&& other) noexcept {
             backingString = other.backingString;
             stringSize = other.stringSize;
             precision = other.precision;
+            memorySize = other.memorySize;
             other.precision = 5;
             other.stringSize = 0;
             other.backingString = nullptr;
@@ -247,7 +245,6 @@ namespace smart_string {
 
         SmartString& operator=(const SmartString& rhs) {
             if(&rhs != this) {
-                destroy();
                 initialize(rhs.stringSize);
                 for(int i = 0; i < stringSize; i++) {
                     backingString[i] = rhs.backingString[i];
@@ -271,7 +268,6 @@ namespace smart_string {
         }
 
         SmartString& operator=(const std::string& rhs) {
-            destroy();
             initialize(rhs.length());
             for(int i = 0; i < stringSize; i++) {
                 backingString[i] = rhs[i];
@@ -280,7 +276,6 @@ namespace smart_string {
         }
 
         SmartString& operator=(const char* rhs) {
-            destroy();
             int size = calculateSize(rhs);
             initialize(size);
             for(int i = 0; i < stringSize; i++) {
@@ -290,7 +285,6 @@ namespace smart_string {
         }
 
         SmartString& operator=(const std::stringstream& rhs) {
-            destroy();
             std::string str = rhs.str();
             initialize(str.length());
             for(int i = 0; i < stringSize; i++) {
@@ -735,15 +729,9 @@ namespace smart_string {
             int numInstances = 0;
             SmartString targ(target);
             int location = findSubstring(targ);
-            while(location < length()) {
+            while(location >= 0 && location < length()) {
                 numInstances++;
-                SmartString temp = getSubstring(++location, length());
-                int newLocation = temp.findSubstring(targ);
-                if(newLocation >= 0) {
-                    location += newLocation;
-                } else {
-                    break;
-                }
+                location = findSubstring(location+1, targ);
             }
             return numInstances;
         }

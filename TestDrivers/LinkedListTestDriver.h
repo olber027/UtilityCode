@@ -93,6 +93,9 @@ public:
         verifyGet();
         verifyPop();
 
+        list.transform([](Node<int>* x) { x->setData(x->getData() + 1); });
+        assert(2, list.getHead()->getData());
+        assert(4, list.pop()->getData());
         node = Node<int>(2);
         testFunction(node);
         assert(2, node.getData());
