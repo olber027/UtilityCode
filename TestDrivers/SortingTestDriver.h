@@ -32,7 +32,7 @@ public:
         ints = new int[size];
         doubles = new double[size];
         iterations = 50;
-        srand(time(NULL));
+        srand(time(nullptr));
     }
 
     ~SortingTestDriver() {
@@ -215,7 +215,7 @@ public:
         output << "\tTotal: " << totalTime << std::endl;
     }
 
-    void run() {
+    void run() override {
         verifyQuickSort();
         verifyBubbleSort();
         verifyInsertionSort();

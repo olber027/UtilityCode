@@ -28,8 +28,8 @@ public:
         assert(0, node.getData());
         assert((Node<int>*) nullptr, node.getNext());
 
-        Node<int>* temp = new Node<int>(1, nullptr);
-        Node<int>* secondTemp = new Node<int>(2, temp);
+        auto* temp = new Node<int>(1, nullptr);
+        auto* secondTemp = new Node<int>(2, temp);
 
         assert(2, secondTemp->getData());
         assert(1, secondTemp->getNext()->getData());
@@ -83,11 +83,11 @@ public:
         assert(2, list.pop(1)->getData());
     }
 
-    void testFunction(Node<int> node) {
+    void testFunction(const Node<int>& node) const {
         node.getData();
     }
 
-    void run() {
+    void run() override {
         verifyContructors();
         verifyAdd();
         verifyGet();

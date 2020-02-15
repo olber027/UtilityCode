@@ -38,8 +38,8 @@ namespace graph {
         double getX() const { return x; }
         double getY() const { return y; }
 
-        double getCostTo(const VertexType* Other) const {
-            Coordinates2D* other = (Coordinates2D*) Other;
+        double getCostTo(const VertexType* Other) const override {
+            auto other = (Coordinates2D*) Other;
             double squareX = (other->getX() - x) * (other->getX() - x);
             double squareY = (other->getY() - y) * (other->getY() - y);
             return std::sqrt(squareX + squareY);
@@ -49,7 +49,7 @@ namespace graph {
             return (x == other.x && y == other.y);
         }
 
-        std::string getRepresentation() const {
+        std::string getRepresentation() const override {
             std::stringstream result;
             result << "(" << x << ", " << y << ")";
             return result.str();
@@ -73,8 +73,8 @@ namespace graph {
         double getY() const { return y; }
         double getZ() const { return z; }
 
-        double getCostTo(const VertexType* Other) const {
-            Coordinates3D* other = (Coordinates3D*) Other;
+        double getCostTo(const VertexType* Other) const override {
+            auto other = (Coordinates3D*) Other;
             double squareX = (other->getX() - x) * (other->getX() - x);
             double squareY = (other->getY() - y) * (other->getY() - y);
             double squareZ = (other->getZ() - z) * (other->getZ() - z);
@@ -85,7 +85,7 @@ namespace graph {
             return (x == other.x && y == other.y && z == other.z);
         }
 
-        std::string getRepresentation() const {
+        std::string getRepresentation() const override {
             std::stringstream result;
             result << "(" << x << ", " << y << ", " << z << ")";
             return result.str();
@@ -107,7 +107,7 @@ namespace graph {
         double getX() const { return x; }
         double getY() const { return y; }
 
-        double getCostTo(const VertexType* Other) const {
+        double getCostTo(const VertexType* Other) const override {
             Grid* other = (Grid*) Other;
             return std::abs(other->getX() - x) + (std::abs(other->getY() - y));
         }
@@ -116,7 +116,7 @@ namespace graph {
             return (x == other.x && y == other.y);
         }
 
-        std::string getRepresentation() const {
+        std::string getRepresentation() const override {
             std::stringstream result;
             result << "(" << x << ", " << y << ")";
             return result.str();
@@ -134,7 +134,7 @@ namespace graph {
 
     public:
         Vertex() : vertexType(T()), neighbors(std::vector<Vertex<T>*>()) {}
-        Vertex(const T& init) : vertexType(init), neighbors(std::vector<Vertex<T>*>()) {}
+        explicit Vertex(const T& init) : vertexType(init), neighbors(std::vector<Vertex<T>*>()) {}
 
         ~Vertex() {
             for(int i = 0; i < getNumNeighbors(); i++) {
@@ -292,7 +292,7 @@ namespace graph {
     public:
         Graph() : numVertices(0), numEdges(0), vertices(nullptr), start(nullptr), goal(nullptr) {}
 
-        ~Graph() { }
+        ~Graph() = default;
 
         Graph(const Graph<T>& graph) {
             if(&graph != this) {
@@ -363,7 +363,7 @@ namespace graph {
             if(contains(vertex)) {
                 return false;
             }
-            Vertex<T>** temp = new Vertex<T>*[numVertices + 1];
+            auto temp = new Vertex<T>*[numVertices + 1];
             for(int i = 0; i < numVertices; i++) {
                 temp[i] = vertices[i];
             }
@@ -385,7 +385,7 @@ namespace graph {
             }
             for(int i = 0; i < numVertices; i++) {
                 if(vertices[i] == vertex) {
-                    Vertex<T>** temp = new Vertex<T>*[numVertices - 1];
+                    auto temp = new Vertex<T>*[numVertices - 1];
                     int flag = 0;
                     for(int j = 0; j < numVertices; j++) {
                         if(i == j) {

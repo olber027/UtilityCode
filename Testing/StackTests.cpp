@@ -10,7 +10,7 @@ using namespace std;
 
 int main(int argc, char** argv) {
 
-    StackTestDriver* driver = new StackTestDriver();
+    auto* driver = new StackTestDriver();
 
     driver->run();
     cout << driver->getOutput();

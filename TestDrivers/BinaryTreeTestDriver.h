@@ -20,10 +20,10 @@ public:
     BinaryTreeTestDriver() {
         init("Binary Tree");
         tree = BinaryTree<double>();
-        srand(time(NULL));
+        srand(time(nullptr));
     }
 
-    void run() {
+    void run() override {
         /*
                     5
                  /     \

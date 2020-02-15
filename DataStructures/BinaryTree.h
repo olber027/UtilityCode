@@ -35,7 +35,7 @@ namespace binary_tree {
             }
         }
 
-        Node(const Node<T>&& node) noexcept {
+        Node(Node<T>&& node) noexcept {
             data = node.data;
             left = node.left;
             right = node.right;
@@ -52,7 +52,7 @@ namespace binary_tree {
             return *this;
         }
 
-        Node<T>& operator=(const Node<T>&& rhs) noexcept {
+        Node<T>& operator=(Node<T>&& rhs) noexcept {
             data = rhs.data;
             left = rhs.left;
             right = rhs.right;
@@ -137,8 +137,8 @@ namespace binary_tree {
         }
 
         void insert(const T& item) {
-            Node<T>* newNode = new Node<T>(item);
-            Node<T>* currentNode = root;
+            auto newNode = new Node<T>(item);
+            auto currentNode = root;
             Node<T>* trailingNode = nullptr;
 
             while(currentNode != nullptr) {

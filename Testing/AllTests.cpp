@@ -27,11 +27,11 @@ int main(int argc, char** argv) {
     int totalFailures = 0;
     int totalPasses = 0;
 
-    for(int i = 0; i < testDrivers.size(); i++) {
-        testDrivers[i]->run();
-        cout << testDrivers[i]->getOutput();
-        totalFailures += testDrivers[i]->getFailures();
-        totalPasses += testDrivers[i]->getPasses();
+    for(const auto& driver : testDrivers) {
+        driver->run();
+        cout << driver->getOutput();
+        totalFailures += driver->getFailures();
+        totalPasses += driver->getPasses();
     }
 
     for(int i = 0; i < 80; i++) {
@@ -44,8 +44,8 @@ int main(int argc, char** argv) {
     cout << endl << "Total Passes:   " << totalPasses << endl;
     cout <<         "Total Failures: " << totalFailures << endl;
 
-    for(int i = 0; i < testDrivers.size(); i++) {
-        delete testDrivers[i];
+    for(auto& driver : testDrivers) {
+        delete driver;
     }
 
     return 0;

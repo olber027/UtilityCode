@@ -21,7 +21,7 @@ public:
         init("Dictionary");
     }
 
-    void run() {
+    void run() override {
         Dictionary<std::string, int> dict;
         dict.addEntry("one", 1);
         assert(1, dict["one"]);

@@ -42,7 +42,7 @@ namespace regex {
 
             State() : nextPossibleStates(std::vector<State*>()), matchingCriteria(""), end(false) {}
             template<typename U>
-            State(const U& criteria) : nextPossibleStates(std::vector<State*>()), matchingCriteria(criteria), end(false) {}
+            explicit State(const U& criteria) : nextPossibleStates(std::vector<State*>()), matchingCriteria(criteria), end(false) {}
             template<typename U>
             State(const U& criteria, const bool End) : nextPossibleStates(std::vector<State*>()), matchingCriteria(criteria), end(End) {}
 
@@ -199,7 +199,7 @@ namespace regex {
             }
         }
         template<typename U>
-        Regex(const U& Pattern) : Regex(pattern, true) {}
+        explicit Regex(const U& Pattern) : Regex(pattern, true) {}
 
         template<typename U>
         bool compile(const U& Pattern) {

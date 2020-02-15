@@ -14,7 +14,7 @@ class StackTestDriver : public TestDriver {
 private:
     class TestItem {
     public:
-        TestItem(int d) : data(d) {}
+        explicit TestItem(int d) : data(d) {}
         int data;
     };
     Stack<TestItem> stack;
@@ -24,7 +24,7 @@ public:
         stack = Stack<TestItem>();
     }
 
-    void run() {
+    void run() override {
         assert(0, stack.getSize());
         stack.push(TestItem(1));
         stack.push(TestItem(2));

@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.6)
 
 project(UtilityCode)
 set(CMAKE_CXX_STANDARD 11)
-set(SOURCE_FILES Testing/AllTests.cpp DataStructures/LinkedList.h TestDrivers/TestDriver.h TestDrivers/LinkedListTestDriver.h SortingAlgorithms/Sort.h TestDrivers/SortingTestDriver.h DataStructures/Graph.h TestDrivers/GraphTestDriver.h DataStructures/Stack.h TestDrivers/StackTestDriver.h DataStructures/BinaryTree.h TestDrivers/BinaryTreeTestDriver.h DataTypes/SmartPointer.h TestDrivers/SmartPointerTestDriver.h DataStructures/Set.h DataTypes/SmartString.h TestDrivers/SmartStringTestDriver.h DataTypes/Regex.h DataTypes/ArgEnsure.h DataStructures/Dictionary.h TestDrivers/DictionaryTestDriver.h TestDrivers/SetTestDriver.h DataTypes/Memoizer.h Testing/MemoizerTests.cpp TestDrivers/MemoizerTestDriver.h)
+set(SOURCE_FILES Testing/AllTests.cpp DataStructures/LinkedList.h TestDrivers/TestDriver.h TestDrivers/LinkedListTestDriver.h SortingAlgorithms/Sort.h TestDrivers/SortingTestDriver.h DataStructures/Graph.h TestDrivers/GraphTestDriver.h DataStructures/Stack.h TestDrivers/StackTestDriver.h DataStructures/BinaryTree.h TestDrivers/BinaryTreeTestDriver.h DataTypes/SmartPointer.h TestDrivers/SmartPointerTestDriver.h DataStructures/Set.h DataTypes/SmartString.h TestDrivers/SmartStringTestDriver.h DataTypes/Regex.h DataTypes/ArgEnsure.h DataStructures/Dictionary.h TestDrivers/DictionaryTestDriver.h TestDrivers/SetTestDriver.h)
 add_executable(AllTests ${SOURCE_FILES})
 
 project(BinaryTree)

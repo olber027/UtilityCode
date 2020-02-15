@@ -20,7 +20,7 @@ public:
         init("Graph");
     }
 
-    void run() {
+    void run() override {
 
         /*
          *   0 1 2 3 4 5 6 j
@@ -76,7 +76,6 @@ public:
                 delete grid[i][j];
             }
         }
-
     }
 
 };

@@ -10,7 +10,7 @@
 
 class Sort {
 private:
-    Sort() {}
+    Sort() = default;
 
     template<typename T> static void swap(T* array, const int i, const int j) {
         T temp = array[j];
@@ -198,11 +198,11 @@ public:
     }
 
     template<typename T> static void shellsort(T* array, const int size) {
-        int gapListSize = (log(size)/log(2)) + 1;
+        int gapListSize = static_cast<int>((log(size)/log(2)) + 1);
         int* gapList = new int[gapListSize];
         gapList[0] = 1;
         for(int i = 1; i < gapListSize; i++) {
-            gapList[i] = pow(2, i) + 1;
+            gapList[i] = static_cast<int>(pow(2, i) + 1);
         }
         shellsortHelper(array, size, gapList, gapListSize);
     }

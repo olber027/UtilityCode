@@ -50,7 +50,7 @@ namespace set {
                 items.push_back(set.items[i]);
             }
         }
-        ~Set() {}
+        ~Set() = default;
 
         Set<T>& operator=(const Set<T>& set) {
             if(this != &set) {

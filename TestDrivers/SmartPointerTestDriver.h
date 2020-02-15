@@ -15,7 +15,7 @@ private:
     int val;
 public:
     TestObject() : val(0) {}
-    TestObject(int num) : val(num) {}
+    explicit TestObject(int num) : val(num) {}
     int get() { return val; }
     int set(int num) { val = num; }
 };
@@ -28,7 +28,7 @@ public:
         init("Smart Pointer");
     }
 
-    void run() {
+    void run() override {
         int* temp = new int(5);
         SmartPointer<int> intPointer = SmartPointer<int>(temp);
         SmartPointer<TestObject> testObjectPointer = SmartPointer<TestObject>(new TestObject(7));
@@ -36,8 +36,8 @@ public:
         assert(5, *intPointer);
         assert(7, testObjectPointer->get());
         for(int i = 0; i < 5; i++) {
-            SmartPointer<TestObject> temp = testObjectPointer;
-            assert(7, temp->get());
+            SmartPointer<TestObject> tempObjectPointer = testObjectPointer;
+            assert(7, tempObjectPointer->get());
         }
         assert(7, testObjectPointer->get());
         SmartPointer<TestObject> newPointer = SmartPointer<TestObject>(new TestObject(11));

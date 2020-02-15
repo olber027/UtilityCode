@@ -10,7 +10,7 @@ using namespace std;
 
 int main(int argc, char** argv) {
 
-    SetTestDriver* driver = new SetTestDriver();
+    auto* driver = new SetTestDriver();
 
     driver->run();
     cout << driver->getOutput();

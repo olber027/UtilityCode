@@ -9,7 +9,7 @@ using namespace std;
 
 int main(int argc, char** argv) {
 
-    BinaryTreeTestDriver* driver = new BinaryTreeTestDriver();
+    auto* driver = new BinaryTreeTestDriver();
 
     driver->run();
     cout << driver->getOutput();

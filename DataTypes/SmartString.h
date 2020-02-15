@@ -1087,10 +1087,7 @@ namespace smart_string {
         }
 
         bool isEmpty() const {
-            if(stringSize == 0) {
-                return true;
-            }
-            return false;
+            return stringSize == 0;
         }
 
         size_t memoryFootPrint() const {

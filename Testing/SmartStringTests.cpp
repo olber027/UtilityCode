@@ -10,7 +10,7 @@ using namespace std;
 
 int main(int argc, char** argv) {
 
-    SmartStringTestDriver* driver = new SmartStringTestDriver();
+    auto* driver = new SmartStringTestDriver();
 
     driver->run();
     cout << driver->getOutput();

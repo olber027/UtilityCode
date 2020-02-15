@@ -9,7 +9,7 @@ using namespace std;
 
 int main(int argc, char** argv) {
 
-    DictionaryTestDriver* driver = new DictionaryTestDriver();
+    auto* driver = new DictionaryTestDriver();
 
     driver->run();
     cout << driver->getOutput();

@@ -10,7 +10,7 @@ using namespace std;
 
 int main(int argc, char** argv) {
 
-    SortingTestDriver* driver = new SortingTestDriver();
+    auto* driver = new SortingTestDriver();
 
     driver->run();
     cout << driver->getOutput();

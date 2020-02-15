@@ -10,7 +10,7 @@ using namespace std;
 
 int main(int argc, char** argv) {
 
-    SmartPointerTestDriver* driver = new SmartPointerTestDriver();
+    auto* driver = new SmartPointerTestDriver();
 
     driver->run();
     cout << driver->getOutput();

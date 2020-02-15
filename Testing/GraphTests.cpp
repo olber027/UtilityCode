@@ -10,7 +10,7 @@ using namespace std;
 
 int main(int argc, char** argv) {
 
-    GraphTestDriver* driver = new GraphTestDriver();
+    auto* driver = new GraphTestDriver();
 
     driver->run();
     cout << driver->getOutput();

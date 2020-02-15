@@ -42,16 +42,13 @@ public:
     template<typename T, typename U>
     StringArgument(const T& shortopt, const U& pattern) : Argument(shortopt, "", false), acceptedPattern(pattern) {}
 
-    bool isValid(const char* value) const {
+    bool isValid(const char* value) const override {
         regex::Regex re(acceptedPattern);
         regex::Match<SmartString> match = re.match<SmartString>(value);
-        if(match.getPatternIndex() < 0) {
-            return false;
-        }
-        return true;
+        return match.getPatternIndex() == 0;
     }
 
-    SmartString expectedInput() const {
+    SmartString expectedInput() const override {
         SmartString result = shortOpt;
         if(!longOpt.isEmpty()) {
             result << ", " << longOpt << " : ";
@@ -69,18 +66,15 @@ public:
     template<typename T>
     IntegerArgument(const T& shortopt, const bool isRequired) : Argument(shortopt, "", isRequired) {}
     template<typename T>
-    IntegerArgument(const T& shortopt) : Argument(shortopt, "", false) {}
+    explicit IntegerArgument(const T& shortopt) : Argument(shortopt, "", false) {}
 
-    bool isValid(const char* value) const {
+    bool isValid(const char* value) const override {
         regex::Regex re("-?[0-9]+");
         regex::Match<SmartString> match = re.match<SmartString>(value);
-        if(match.getPatternIndex() < 0) {
-            return false;
-        }
-        return true;
+        return match.getPatternIndex() == 0;
     }
 
-    SmartString expectedInput() const {
+    SmartString expectedInput() const override {
         SmartString result = shortOpt;
         if(!longOpt.isEmpty()) {
             result << ", " << longOpt << " : ";
@@ -97,17 +91,14 @@ public:
     template<typename T>
     DecimalArgument(const T& shortopt, const bool isRequired) : Argument(shortopt, "", isRequired) {}
     template<typename T>
-    DecimalArgument(const T& shortopt) : Argument(shortopt, "", false) {}
+    explicit DecimalArgument(const T& shortopt) : Argument(shortopt, "", false) {}
 
-    bool isValid(const char* value) const {
+    bool isValid(const char* value) const override {
         double val;
-        if(!SmartString::tryConvert(value, val)) {
-            return false;
-        }
-        return true;
+        return SmartString::tryConvert(value, val);
     }
 
-    SmartString expectedInput() const {
+    SmartString expectedInput() const override {
         SmartString result = shortOpt;
         if(!longOpt.isEmpty()) {
             result << ", " << longOpt << " : ";
@@ -128,19 +119,16 @@ public:
     IntegerRangeArgument(const T& shortopt, const int low, const int high) :
             Argument(shortopt, "", false), min(low), max(high) {}
 
-    bool isValid(const char* value) const {
+    bool isValid(const char* value) const override {
         int intVal;
         if(!SmartString::tryConvert(value, intVal)) {
             return false;
         }
 
-        if(intVal >= min && intVal <= max) {
-            return true;
-        }
-        return false;
+        return intVal >= min && intVal <= max;
     }
 
-    SmartString expectedInput() const {
+    SmartString expectedInput() const override {
         SmartString result = shortOpt;
         if(!longOpt.isEmpty()) {
             result << ", " << longOpt << " : ";
@@ -162,19 +150,16 @@ public:
     DecimalRangeArgument(const T& shortopt, const double low, const double high) :
             Argument(shortopt, "", false), min(low), max(high) {}
 
-    bool isValid(const char* value) const {
+    bool isValid(const char* value) const override {
         double val;
         if(!SmartString::tryConvert(value, val)) {
             return false;
         }
 
-        if(val >= min && val <= max) {
-            return true;
-        }
-        return false;
+        return val >= min && val <= max;
     }
 
-    SmartString expectedInput() const {
+    SmartString expectedInput() const override {
         SmartString result = shortOpt;
         if(!longOpt.isEmpty()) {
             result << ", " << longOpt << " : ";
@@ -193,16 +178,13 @@ public:
     template<typename T>
     FlagArgument(const T& shortopt, const bool isRequired) : Argument(shortopt, "", isRequired) {}
     template<typename T>
-    FlagArgument(const T& shortopt) : Argument(shortopt, "", false) {}
+    explicit FlagArgument(const T& shortopt) : Argument(shortopt, "", false) {}
 
-    bool isValid(const char* value) const {
-        if(value == nullptr) {
-            return true;
-        }
-        return false;
+    bool isValid(const char* value) const override {
+        return value == nullptr;
     }
 
-    SmartString expectedInput() const {
+    SmartString expectedInput() const override {
         SmartString result = shortOpt;
         if(!longOpt.isEmpty()) {
             result << ", " << longOpt << " : ";
@@ -220,18 +202,15 @@ private:
     bool isOption(const T& opt) const {
         regex::Regex re("-[A-Za-z_-]+");
         regex::Match<SmartString> match = re.match<SmartString>(opt);
-        if(match.getPatternIndex() < 0) {
-            return false;
-        }
-        return true;
+        return match.getPatternIndex() >= 0;
     }
 
 public:
     ArgEnsure() : arguments(std::vector<Argument*>()) { }
 
     ~ArgEnsure() {
-        for(auto it = arguments.begin(); it != arguments.end(); it++) {
-            delete *it;
+        for(auto& arg : arguments) {
+            delete arg;
         }
     }
 

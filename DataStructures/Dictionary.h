@@ -36,7 +36,7 @@ namespace dictionary {
             stream << "Invalid Index : " << index;
             message = stream.str();
         }
-        virtual const char* what() const noexcept override {
+        const char* what() const noexcept override {
             return message.c_str();
         }
         T getIndex() const {

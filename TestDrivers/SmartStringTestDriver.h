@@ -276,7 +276,7 @@ public:
         std::string tempStr = SmartString::join<std::string>(list, "\n");
         assert(std::string("this is a multi-line piece of text.\nit's way longer than it has any right to be.\n....that's what she said."), tempStr);
 
-        SmartString* array = new SmartString[3];
+        auto array = new SmartString[3];
         for(int i = 0; i < 3; i++) {
             array[i] = list[i];
         }
@@ -370,7 +370,7 @@ public:
     }
 
     SmartString& getReferenceString() {
-        SmartString* result = new SmartString();
+        auto result = new SmartString();
         *result = "Get Reference String";
         return *result;
     }
@@ -383,7 +383,7 @@ public:
         assert(SmartString("Pass Reference String"), test);
     }
 
-    void run() {
+    void run() override {
         testConstructors();
         testAppendPrepend();
         testOperators();

@@ -14,7 +14,7 @@ class SetTestDriver : public TestDriver {
 private:
     class TestItem {
     public:
-        TestItem(int d) : data(d) {}
+        explicit TestItem(int d) : data(d) {}
         int data;
     };
 
@@ -23,7 +23,7 @@ public:
         init("Set");
     }
 
-    void run() {
+    void run() override {
         Set<int> set;
         set.addItem(1);
         assert(1, set.size());

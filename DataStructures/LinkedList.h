@@ -239,10 +239,8 @@ namespace linked_list {
                 thisPtr = thisPtr->getNext();
                 rhsPtr = rhsPtr->getNext();
             }
-            if(thisPtr != rhsPtr) {
-                return false;
-            }
-            return true;
+
+            return thisPtr == rhsPtr;
         }
 
         bool operator!=(const LinkedList<T>& rhs) const {
