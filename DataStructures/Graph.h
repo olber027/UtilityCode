@@ -368,7 +368,7 @@ namespace graph {
                 temp[i] = vertices[i];
             }
             temp[numVertices++] = vertex;
-            delete vertices;
+            delete [] vertices;
             vertices = temp;
 
             for(int i = 0; i < vertex->getNumNeighbors(); i++) {
@@ -441,7 +441,7 @@ namespace graph {
                 openList[i].addVertex(start->getNeighbors()[i]);
             }
 
-            while(openList.size() != 0) {
+            while(!openList.empty()) {
                 // Find the path with the lowest estimated cost from the openList
                 double shortest = openList[0].getEstimatedCost();
                 int index = 0;
