@@ -1,52 +1,54 @@
-#include "../TestDrivers/TestDriver.h"
-#include "../TestDrivers/LinkedListTestDriver.h"
-#include "../TestDrivers/SortingTestDriver.h"
-#include "../TestDrivers/GraphTestDriver.h"
-#include "../TestDrivers/StackTestDriver.h"
-#include "../TestDrivers/BinaryTreeTestDriver.h"
-#include "../TestDrivers/SmartPointerTestDriver.h"
-#include "../TestDrivers/SmartStringTestDriver.h"
-#include "../TestDrivers/DictionaryTestDriver.h"
-#include "../TestDrivers/SetTestDriver.h"
+#include "BinaryTreeTestDriver.h"
+#include "DictionaryTestDriver.h"
+#include "GraphTestDriver.h"
+#include "LinkedListTestDriver.h"
+#include "SetTestDriver.h"
+#include "SmartPointerTestDriver.h"
+#include "SmartStringTestDriver.h"
+#include "SortingTestDriver.h"
+#include "StackTestDriver.h"
+#include "TestDriver.h"
 
-using namespace std;
+#include <memory>
+#include <vector>
 
-int main(int argc, char** argv) {
-
-    vector<TestDriver*> testDrivers = vector<TestDriver*>();
-    testDrivers.push_back(new LinkedListTestDriver());
-    testDrivers.push_back(new SortingTestDriver());
-    testDrivers.push_back(new GraphTestDriver());
-    testDrivers.push_back(new BinaryTreeTestDriver());
-    testDrivers.push_back(new StackTestDriver());
-    testDrivers.push_back(new SmartPointerTestDriver());
-    testDrivers.push_back(new SmartStringTestDriver());
-    testDrivers.push_back(new DictionaryTestDriver());
-    testDrivers.push_back(new SetTestDriver());
+int main(int argc, char** argv)
+{
+    std::vector<std::unique_ptr<TestDriver>> testDrivers = std::vector<std::unique_ptr<TestDriver>>();
+    testDrivers.push_back(std::make_unique<LinkedListTestDriver>());
+    testDrivers.push_back(std::make_unique<SortingTestDriver>());
+    testDrivers.push_back(std::make_unique<GraphTestDriver>());
+    testDrivers.push_back(std::make_unique<BinaryTreeTestDriver>());
+    testDrivers.push_back(std::make_unique<StackTestDriver>());
+    testDrivers.push_back(std::make_unique<SmartPointerTestDriver>());
+    testDrivers.push_back(std::make_unique<SmartStringTestDriver>());
+    testDrivers.push_back(std::make_unique<DictionaryTestDriver>());
+    testDrivers.push_back(std::make_unique<SetTestDriver>());
 
     int totalFailures = 0;
-    int totalPasses = 0;
+    int totalPasses   = 0;
 
-    for(const auto& driver : testDrivers) {
+    for(const auto& driver : testDrivers)
+    {
         driver->run();
-        cout << driver->getOutput();
+        std::cout << driver->getOutput();
         totalFailures += driver->getFailures();
         totalPasses += driver->getPasses();
     }
 
-    for(int i = 0; i < 80; i++) {
-        cout << "=";
+    for(int i = 0; i < 80; i++)
+    {
+        std::cout << "=";
     }
-    cout << endl << "Run Summary" << endl;
-    for(int i = 0; i < 80; i++) {
-        cout << "=";
+    std::cout << std::endl
+              << "Run Summary" << std::endl;
+    for(int i = 0; i < 80; i++)
+    {
+        std::cout << "=";
     }
-    cout << endl << "Total Passes:   " << totalPasses << endl;
-    cout <<         "Total Failures: " << totalFailures << endl;
-
-    for(auto& driver : testDrivers) {
-        delete driver;
-    }
+    std::cout << std::endl
+              << "Total Passes:   " << totalPasses << std::endl;
+    std::cout << "Total Failures: " << totalFailures << std::endl;
 
     return 0;
 }

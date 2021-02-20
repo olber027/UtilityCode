@@ -7,13 +7,14 @@
 
 #include <stdexcept>
 
-namespace stack {
-
-    template<typename T>
-    class Stack {
+namespace Utilities
+{
+    template <typename T>
+    class Stack
+    {
     private:
-
-        class Item {
+        class Item
+        {
         public:
             Item(const T& dat, Item* n) : data(dat), next(n) {}
             T data;
@@ -23,10 +24,13 @@ namespace stack {
         Item* top;
         int size;
 
-        void destroy() {
-            if(top) {
-                while (top->next) {
-                    Item *temp = top->next;
+        void destroy()
+        {
+            if(top)
+            {
+                while(top->next)
+                {
+                    Item* temp = top->next;
                     delete top;
                     top = temp;
                 }
@@ -37,47 +41,59 @@ namespace stack {
     public:
         Stack() : top(nullptr), size(0) {}
         explicit Stack(const T& init) : top(new Item(init, nullptr)), size(1) {}
-        ~Stack() {
+        ~Stack()
+        {
             destroy();
         }
 
-        void cleanup() {
+        void cleanup()
+        {
             destroy();
         }
 
-        Stack(const Stack<T>& stack) {
-            if(&stack != this) {
-                top = stack.top;
+        Stack(const Stack<T>& stack)
+        {
+            if(&stack != this)
+            {
+                top  = stack.top;
                 size = stack.size;
             }
         }
-        Stack(Stack<T>&& stack) noexcept {
-            top = stack.top;
-            size = stack.size;
-            stack.top = nullptr;
+        Stack(Stack<T>&& stack) noexcept
+        {
+            top        = stack.top;
+            size       = stack.size;
+            stack.top  = nullptr;
             stack.size = 0;
         }
 
-        Stack<T>& operator=(const Stack<T>& rhs) {
-            if(&rhs != this) {
-                top = rhs.top;
+        Stack<T>& operator=(const Stack<T>& rhs)
+        {
+            if(&rhs != this)
+            {
+                top  = rhs.top;
                 size = rhs.size;
             }
             return *this;
         }
-        Stack<T>& operator=(Stack<T>&& rhs) noexcept {
-            top = rhs.top;
-            size = rhs.size;
-            rhs.top = nullptr;
+        Stack<T>& operator=(Stack<T>&& rhs) noexcept
+        {
+            top      = rhs.top;
+            size     = rhs.size;
+            rhs.top  = nullptr;
             rhs.size = 0;
             return *this;
         }
 
-        Stack<T>& push(const T& item) {
-            if(top != nullptr) {
+        Stack<T>& push(const T& item)
+        {
+            if(top != nullptr)
+            {
                 Item* temp = new Item(item, top);
-                top = temp;
-            } else {
+                top        = temp;
+            }
+            else
+            {
                 top = new Item(item, nullptr);
             }
             size++;
@@ -85,18 +101,22 @@ namespace stack {
             return *this;
         }
 
-        T& pop() {
-            if(top != nullptr) {
+        T& pop()
+        {
+            if(top != nullptr)
+            {
                 size--;
                 Item* temp = top;
-                top = top->next;
+                top        = top->next;
                 return temp->data;
             }
             throw std::out_of_range("Attempted to pop an empty stack");
         }
 
-        T& peek() const {
-            if(top != nullptr) {
+        T& peek() const
+        {
+            if(top != nullptr)
+            {
                 return top->data;
             }
             throw std::out_of_range("Attempted to peek an empty stack");
@@ -106,6 +126,6 @@ namespace stack {
 
         int getSize() const { return size; }
     };
-}
+}// namespace Utilities
 
-#endif //UTILITYCODE_STACK_H
+#endif//UTILITYCODE_STACK_H
