@@ -5,6 +5,7 @@
 #ifndef UTILITYCODE_SMARTSTRING_H
 #define UTILITYCODE_SMARTSTRING_H
 
+#include <cstring>
 #include <fstream>
 #include <sstream>
 #include <stdexcept>
@@ -68,17 +69,12 @@ namespace Utilities
 
             if(newBackingString != nullptr)
             {
-                int offset = 0;
-                if(addToFront)
-                {
-                    offset += charsToAdd;
-                }
-                int i = offset;
-                for(i; i < stringSize + offset; i++)
+                int offset = addToFront ? charsToAdd : 0;
+                for(int i = offset; i < stringSize + offset; i++)
                 {
                     newBackingString[i] = backingString[i - offset];
                 }
-                newBackingString[i] = '\0';
+                newBackingString[stringSize + offset] = '\0';
                 delete[] backingString;
                 backingString = newBackingString;
             }
@@ -120,12 +116,12 @@ namespace Utilities
 
         inline char digitToChar(const int digit) const
         {
-            return (char) (digit + ((int) '0'));
+            return static_cast<char>(digit + static_cast<int>('0'));
         }
 
         static inline int charToDigit(const char c)
         {
-            return ((int) c) - ((int) '0');
+            return static_cast<char>(static_cast<int>(c) - static_cast<int>('0'));
         }
 
         template <typename T>
@@ -141,7 +137,7 @@ namespace Utilities
             do {
                 SmartString arg;
                 arg << "{" << count << "}";
-                location = this->findSubstring(arg);
+                location = findSubstring(arg);
                 if(location >= 0)
                 {
                     count++;
@@ -205,10 +201,7 @@ namespace Utilities
             if(init.length() != 0)
             {
                 initialize(init.length());
-                for(int i = 0; i < stringSize; i++)
-                {
-                    backingString[i] = init[i];
-                }
+                std::memcpy(backingString, init.data(), stringSize);
             }
         }
         SmartString(std::string&& init) : SmartString()
@@ -216,10 +209,7 @@ namespace Utilities
             if(init.length() != 0)
             {
                 initialize(init.length());
-                for(int i = 0; i < stringSize; i++)
-                {
-                    backingString[i] = init[i];
-                }
+                std::memcpy(backingString, init.data(), stringSize);
             }
         }
         SmartString(const char init) : SmartString()
@@ -232,12 +222,8 @@ namespace Utilities
         {
             if(init != nullptr)
             {
-                int size = calculateSize(init);
-                initialize(size);
-                for(int i = 0; i < stringSize; i++)
-                {
-                    backingString[i] = init[i];
-                }
+                initialize(calculateSize(init));
+                std::memcpy(backingString, init, stringSize);
             }
         }
         SmartString(const std::stringstream& init) : SmartString()
@@ -246,10 +232,7 @@ namespace Utilities
             if(str.length() != 0)
             {
                 initialize(str.length());
-                for(int i = 0; i < stringSize; i++)
-                {
-                    backingString[i] = str[i];
-                }
+                std::memcpy(backingString, str.data(), stringSize);
             }
             precision = init.precision();
         }
@@ -259,22 +242,19 @@ namespace Utilities
             if(str.length() != 0)
             {
                 initialize(str.length());
-                for(int i = 0; i < stringSize; i++)
-                {
-                    backingString[i] = str[i];
-                }
+                std::memcpy(backingString, str.data(), stringSize);
             }
             precision = init.precision();
         }
-        SmartString(const int init) : SmartString()
+        explicit inline SmartString(const int init) : SmartString()
         {
             append(init);
         }
-        SmartString(const double init) : SmartString()
+        explicit inline SmartString(const double init) : SmartString()
         {
             append(init);
         }
-        SmartString(const float init) : SmartString()
+        explicit inline SmartString(const float init) : SmartString()
         {
             append(init);
         }
@@ -289,10 +269,7 @@ namespace Utilities
         SmartString(const SmartString& other) : SmartString()
         {
             initialize(other.stringSize);
-            for(int i = 0; i < stringSize; i++)
-            {
-                backingString[i] = other.backingString[i];
-            }
+            std::memcpy(backingString, other.backingString, stringSize);
             precision = other.precision;
         }
         SmartString(SmartString&& other) noexcept
@@ -310,8 +287,8 @@ namespace Utilities
             destroy();
         }
 
-        explicit operator std::string() const { return str(); }
-        explicit operator char*() const { return c_str(); }
+        explicit inline operator std::string() const { return str(); }
+        explicit inline operator char*() const { return c_str(); }
         explicit operator std::stringstream() const
         {
             std::stringstream result;
@@ -351,20 +328,14 @@ namespace Utilities
         SmartString& operator=(const std::string& rhs)
         {
             initialize(rhs.length());
-            for(int i = 0; i < stringSize; i++)
-            {
-                backingString[i] = rhs[i];
-            }
+            std::memcpy(backingString, rhs.data(), stringSize);
             return *this;
         }
 
         SmartString& operator=(std::string&& rhs)
         {
             initialize(rhs.length());
-            for(int i = 0; i < stringSize; i++)
-            {
-                backingString[i] = rhs[i];
-            }
+            std::memcpy(backingString, rhs.data(), stringSize);
             return *this;
         }
 
@@ -372,19 +343,16 @@ namespace Utilities
         {
             int size = calculateSize(rhs);
             initialize(size);
-            for(int i = 0; i < stringSize; i++)
-            {
-                backingString[i] = rhs[i];
-            }
+            std::memcpy(backingString, rhs, stringSize);
             return *this;
         }
 
-        SmartString& operator=(const std::stringstream& rhs)
+        inline SmartString& operator=(const std::stringstream& rhs)
         {
             return (*this = rhs.str());
         }
 
-        SmartString& operator=(std::stringstream&& rhs)
+        inline SmartString& operator=(std::stringstream&& rhs)
         {
             return (*this = rhs.str());
         }
@@ -407,7 +375,6 @@ namespace Utilities
         SmartString& prepend(const T& str)
         {
             int numCharactersToAdd = calculateSize(str);
-            int initialSize        = stringSize;
             extend(numCharactersToAdd, true);
             for(int i = 0; i < numCharactersToAdd; i++)
             {
@@ -629,12 +596,12 @@ namespace Utilities
         }
 
         template <typename T>
-        SmartString& operator+=(const T& t)
+        inline SmartString& operator+=(const T& t)
         {
             return append(t);
         }
 
-        SmartString& operator+=(const SmartString& str)
+        inline SmartString& operator+=(const SmartString& str)
         {
             return append(str);
         }
@@ -654,13 +621,13 @@ namespace Utilities
             return result;
         }
 
-        bool operator!=(const SmartString& str) const
+        inline bool operator!=(const SmartString& str) const
         {
             return !(*this == str);
         }
 
         template <typename T>
-        bool operator!=(const T& str) const
+        inline bool operator!=(const T& str) const
         {
             return !(*this == str);
         }
@@ -681,7 +648,7 @@ namespace Utilities
             return true;
         }
 
-        bool operator==(const std::stringstream& str) const
+        inline bool operator==(const std::stringstream& str) const
         {
             return (*this == str.str());
         }
@@ -744,19 +711,19 @@ namespace Utilities
             return (*this < rhs);
         }
 
-        bool operator<=(const SmartString& str) const
+        inline bool operator<=(const SmartString& str) const
         {
             return (this->str() <= str.str());
         }
 
         template <typename T>
-        bool operator<=(const T& str) const
+        inline bool operator<=(const T& str) const
         {
             SmartString rhs = str;
             return (*this <= rhs);
         }
 
-        bool operator>(const SmartString& str) const
+        inline bool operator>(const SmartString& str) const
         {
             return (this->str() > str.str());
         }
@@ -768,7 +735,7 @@ namespace Utilities
             return (*this > rhs);
         }
 
-        bool operator>=(const SmartString& str) const
+        inline bool operator>=(const SmartString& str) const
         {
             return (this->str() >= str.str());
         }
@@ -780,7 +747,7 @@ namespace Utilities
             return (*this >= rhs);
         }
 
-        char& operator[](const int index) const
+        inline char& operator[](const int index) const
         {
             return backingString[index];
         }
@@ -790,41 +757,41 @@ namespace Utilities
         {
             SmartString result(left);
             result.append(right);
-            return (T) result;
+            return static_cast<T>(result);
         }
 
         template <typename T>
-        friend bool operator==(const T& left, const SmartString& right)
+        inline friend bool operator==(const T& left, const SmartString& right)
         {
             return (right == left);
         }
 
         template <typename T>
-        friend bool operator!=(const T& left, const SmartString& right)
+        inline friend bool operator!=(const T& left, const SmartString& right)
         {
             return (right != left);
         }
 
         template <typename T>
-        friend bool operator<(const T& left, const SmartString& right)
+        inline friend bool operator<(const T& left, const SmartString& right)
         {
             return (right > left);
         }
 
         template <typename T>
-        friend bool operator>(const T& left, const SmartString& right)
+        inline friend bool operator>(const T& left, const SmartString& right)
         {
             return (right < left);
         }
 
         template <typename T>
-        friend bool operator<=(const T& left, const SmartString& right)
+        inline friend bool operator<=(const T& left, const SmartString& right)
         {
             return (right >= left);
         }
 
         template <typename T>
-        friend bool operator>=(const T& left, const SmartString& right)
+        inline friend bool operator>=(const T& left, const SmartString& right)
         {
             return (right <= left);
         }
@@ -893,7 +860,7 @@ namespace Utilities
             return false;
         }
 
-        int getPrecision() const
+        inline int getPrecision() const
         {
             return precision;
         }
@@ -919,18 +886,21 @@ namespace Utilities
         // start and end are both inclusive.
         SmartString getSubstring(const int startLocation, const int endLocation) const
         {
-            SmartString result("");
-            for(int i = startLocation; i <= endLocation; i++)
-            {
-                result.append(backingString[i]);
-            }
+            if(startLocation < 0) throw std::out_of_range("Given start location is less than 0");
+            if(endLocation > stringSize) throw std::out_of_range("Given end location is greater than the string size");
+
+            int substringSize = endLocation - startLocation + 1;
+            SmartString result;
+            result.initialize(substringSize);
+            std::memcpy(result.backingString, backingString + startLocation, substringSize);
+            result[substringSize] = '\0';
             return result;
         }
 
         template <typename T>
-        T getSubstring(const int startLocation, const int endLocation) const
+        inline T getSubstring(const int startLocation, const int endLocation) const
         {
-            return (T) getSubstring(startLocation, endLocation);
+            return static_cast<T>(getSubstring(startLocation, endLocation));
         }
 
         // Uses the Knuth-Morris-Pratt algorithm for finding the substring
@@ -969,20 +939,19 @@ namespace Utilities
             return -1;
         }
 
-        int findSubstring(const SmartString& target) const
+        inline int findSubstring(const SmartString& target) const
         {
             return findSubstring(0, target);
         }
 
         template <typename T>
-        int findSubstring(const T& target) const
+        inline int findSubstring(const T& target) const
         {
-            SmartString targ(target);
-            return findSubstring(0, targ);
+            return findSubstring(0, SmartString(target));
         }
 
         template <typename T>
-        bool contains(const T& target) const
+        inline bool contains(const T& target) const
         {
             return findSubstring(target) >= 0;
         }
@@ -1016,7 +985,7 @@ namespace Utilities
             }
             if(temp.length() > 0)
             {
-                result.push_back((T) temp);
+                result.push_back(static_cast<T>(temp));
             }
             return result;
         }
@@ -1031,7 +1000,7 @@ namespace Utilities
                 temp.append(separator);
             }
             temp.append(list[list.size() - 1]);
-            return (T) temp;
+            return static_cast<T>(temp);
         }
 
         template <typename T, typename U, typename V>
@@ -1044,22 +1013,22 @@ namespace Utilities
                 temp.append(separator);
             }
             temp.append(list[listSize - 1]);
-            return (T) temp;
+            return static_cast<T>(temp);
         }
 
-        SmartString& lstrip()
+        inline SmartString& lstrip()
         {
             lstrip(whitespace());
             return *this;
         }
 
-        SmartString& rstrip()
+        inline SmartString& rstrip()
         {
             rstrip(whitespace());
             return *this;
         }
 
-        SmartString& strip()
+        inline SmartString& strip()
         {
             lstrip(whitespace());
             rstrip(whitespace());
@@ -1093,7 +1062,7 @@ namespace Utilities
         }
 
         template <typename T>
-        SmartString& strip(const T& chars)
+        inline SmartString& strip(const T& chars)
         {
             lstrip(chars);
             rstrip(chars);
@@ -1115,17 +1084,15 @@ namespace Utilities
             return *this;
         }
 
-        SmartString& remove(const SmartString& target)
+        inline SmartString& remove(const SmartString& target)
         {
-            SmartString blank = "";
-            return replace(target, blank);
+            return replace(target, "");
         }
 
         template <typename T>
-        SmartString& remove(const T& target)
+        inline SmartString& remove(const T& target)
         {
-            SmartString targ(target);
-            return remove(targ);
+            return remove(SmartString(target));
         }
 
         SmartString& removeAll(const SmartString& target)
@@ -1140,10 +1107,9 @@ namespace Utilities
         }
 
         template <typename T>
-        SmartString& removeAll(const T& target)
+        inline SmartString& removeAll(const T& target)
         {
-            SmartString targ(target);
-            return removeAll(targ);
+            return removeAll(SmartString(target));
         }
 
         SmartString& replace(const SmartString& target, const SmartString& newSubstring)
@@ -1183,11 +1149,9 @@ namespace Utilities
         }
 
         template <typename T, typename U>
-        SmartString& replace(const T& target, const U& newSubstring)
+        inline SmartString& replace(const T& target, const U& newSubstring)
         {
-            SmartString targ(target);
-            SmartString newSubstr(newSubstring);
-            return replace(targ, newSubstr);
+            return replace(SmartString(target), SmartString(newSubstring));
         }
 
         SmartString& replaceAll(const SmartString& target, const SmartString& newSubstring)
@@ -1203,26 +1167,24 @@ namespace Utilities
         }
 
         template <typename T, typename U>
-        SmartString& replaceAll(const T& target, const U& newSubstring)
+        inline SmartString& replaceAll(const T& target, const U& newSubstring)
         {
-            SmartString targ(target);
-            SmartString newSubstr(newSubstring);
-            return replaceAll(targ, newSubstr);
+            return replaceAll(SmartString(target), SmartString(newSubstring));
         }
 
         template <typename... Args>
-        SmartString& format(Args... args)
+        inline SmartString& format(Args... args)
         {
             formatHelper(0, args...);
             return *this;
         }
 
         template <typename T, typename... Args>
-        T getFormatted(Args... args) const
+        inline T getFormatted(Args... args) const
         {
             SmartString result(*this);
             result.formatHelper(0, args...);
-            return (T) result;
+            return static_cast<T>(result);
         }
 
         template <typename T, typename U, typename... Args>
@@ -1230,15 +1192,15 @@ namespace Utilities
         {
             SmartString result(source);
             result.formatHelper(0, args...);
-            return (T) result;
+            return static_cast<T>(result);
         }
 
         // Assumes a-z and A-Z are contiguous. will break if they aren't.
         SmartString& toUpper()
         {
-            int a = (int) 'a';
-            int A = (int) 'A';
-            int z = (int) 'z';
+            int a = static_cast<int>('a');
+            int A = static_cast<int>('A');
+            int z = static_cast<int>('z');
             for(int i = 0; i < length(); i++)
             {
                 int letterVal = static_cast<int>(backingString[i]);
@@ -1253,9 +1215,9 @@ namespace Utilities
         // Assumes a-z and A-Z are contiguous. will break if they aren't.
         SmartString& toLower()
         {
-            int a = (int) 'a';
-            int A = (int) 'A';
-            int Z = (int) 'Z';
+            int a = static_cast<int>('a');
+            int A = static_cast<int>('A');
+            int Z = static_cast<int>('Z');
             for(int i = 0; i < length(); i++)
             {
                 int letterVal = static_cast<int>(backingString[i]);
@@ -1270,7 +1232,7 @@ namespace Utilities
         template <typename T>
         static bool tryConvert(const T& source, double& out)
         {
-            SmartString src = source;
+            SmartString src(source);
             if(src.isEmpty())
             {
                 return false;
@@ -1285,9 +1247,9 @@ namespace Utilities
             SmartString leftOfDecimal;
             SmartString rightOfDecimal;
             std::vector<SmartString> results = src.split<SmartString>(".");
-            double answer                    = 0;
+            double answer = 0;
 
-            if(results.size() > 2 || results.size() < 1)
+            if(results.size() > 2 || results.empty())
             {
                 return false;
             }
@@ -1332,7 +1294,7 @@ namespace Utilities
             bool result = tryConvert(source, temp);
             if(result)
             {
-                out = (float) temp;
+                out = static_cast<float>(temp);
             }
             return result;
         }
@@ -1344,7 +1306,7 @@ namespace Utilities
             bool result = tryConvert(source, temp);
             if(result)
             {
-                out = (int) temp;
+                out = static_cast<int>(temp);
             }
             return result;
         }
@@ -1358,11 +1320,13 @@ namespace Utilities
             {
                 return temp;
             }
-            throw std::invalid_argument("source string was not a valid number");
+            std::stringstream errorStream;
+            errorStream << "The given string could not be parsed into a valid number: " << source;
+            throw std::invalid_argument(errorStream.str());
         };
 
         template <typename T>
-        bool tryConvert(T& out) const
+        inline bool tryConvert(T& out) const
         {
             return tryConvert(*this, out);
         }
@@ -1376,55 +1340,52 @@ namespace Utilities
             {
                 return temp;
             }
-            throw std::invalid_argument("string was not a valid number");
+            std::stringstream errorStream;
+            errorStream << "This string could not be parsed into a valid number: " << str();
+            throw std::invalid_argument(errorStream.str());
         };
 
-        static SmartString whitespace()
+        inline static SmartString whitespace()
         {
-            SmartString result = " \t\n\r\x0b\x0c";
-            return result;
+            return SmartString(" \t\n\r\x0b\x0c");
         }
 
         template <typename T>
-        static T whitespace()
+        inline static T whitespace()
         {
-            SmartString result = " \t\n\r\x0b\x0c";
-            return (T) result;
+            return static_cast<T>(SmartString(" \t\n\r\x0b\x0c"));
         }
 
-        std::string str() const
+        inline std::string str() const
         {
             return std::string(backingString);
         }
 
-        char* c_str() const
+        inline char* c_str() const
         {
             char* result = new char[stringSize + 1];
-            for(int i = 0; i < stringSize + 1; i++)
-            {
-                result[i] = backingString[i];
-            }
+            std::memcpy(result, backingString, stringSize+1);
             return result;
         }
 
-        std::stringstream sstream() const
+        inline std::stringstream sstream() const
         {
             std::stringstream result;
             result << *this;
             return result;
         }
 
-        int length() const
+        inline int length() const
         {
             return stringSize;
         }
 
-        bool isEmpty() const
+        inline bool isEmpty() const
         {
             return stringSize == 0;
         }
 
-        size_t memoryFootPrint() const
+        inline size_t memoryFootPrint() const
         {
             return memorySize * sizeof(char);
         }

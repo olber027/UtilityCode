@@ -344,7 +344,7 @@ void SmartStringTestDriver::testMiscFunctions()
     {
         errorMessage = e.what();
     }
-    assert(std::string("source string was not a valid number"), errorMessage);
+    assert(std::string("The given string could not be parsed into a valid number: 123a"), errorMessage);
 }
 
 void SmartStringTestDriver::testFunctionPassing()
