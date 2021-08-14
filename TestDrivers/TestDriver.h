@@ -8,6 +8,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <type_traits>
 
 class TestDriver
 {
@@ -28,9 +29,10 @@ public:
 
     virtual int getPasses();
 
-    template <typename T>
-    bool assert(T expected, T actual)
+    template <typename T, typename U>
+    bool assert(T expected, U actual)
     {
+        static_assert(std::is_convertible<T, U>::value, "U must be convertible to T");
         bool result = expected == actual;
         if(result)
         {
@@ -46,9 +48,10 @@ public:
         return result;
     }
 
-    template <typename T>
-    bool assert(T expected, T actual, const char* message)
+    template <typename T, typename U>
+    bool assert(T expected, U actual, const char* message)
     {
+        static_assert(std::is_convertible<T, U>::value, "U must be convertible to T");
         bool result = expected == actual;
         if(result)
         {
@@ -65,9 +68,10 @@ public:
         return result;
     }
 
-    template <typename T>
-    bool assert_vector(const std::vector<T>& expected, const std::vector<T>& actual, const char* message)
+    template <typename T, typename U>
+    bool assert_vector(const std::vector<T>& expected, const std::vector<U>& actual, const char* message)
     {
+        static_assert(std::is_convertible<T, U>::value, "U must be convertible to T");
         total++;
         if(expected.size() != actual.size())
         {

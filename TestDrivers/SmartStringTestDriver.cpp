@@ -10,85 +10,85 @@ void SmartStringTestDriver::testConstructors()
     SmartString defaultConstructor;
     assert(0, defaultConstructor.length());
     SmartString charStarConstructor("charStarConstructor");
-    assert(std::string("charStarConstructor"), charStarConstructor.str());
+    assert("charStarConstructor", charStarConstructor);
     SmartString charConstructor('c');
     assert('c', charConstructor[0]);
     std::string var = "stringConstructor";
     SmartString stringConstructor(var);
-    assert(var, stringConstructor.str());
+    assert(var, stringConstructor);
     SmartString fillConstructor(5, 'f');
-    assert(std::string("fffff"), fillConstructor.str());
+    assert("fffff", fillConstructor);
     int count      = 0;
     char* tempFill = fillConstructor.c_str();
     while(tempFill[count++] != '\0') {}
     assert(6, count);
     delete tempFill;
     SmartString copyConstructor = fillConstructor;
-    assert(copyConstructor.str(), fillConstructor.str());
+    assert(copyConstructor, fillConstructor);
     copyConstructor = stringConstructor;
-    assert(copyConstructor.str(), stringConstructor.str());
+    assert(copyConstructor, stringConstructor);
     fillConstructor = "operator=";
-    assert(std::string("operator="), fillConstructor.str());
+    assert("operator=", fillConstructor);
     charConstructor = var;
-    assert(var, charConstructor.str());
+    assert(var, charConstructor);
 
     std::stringstream stream;
     stream << "this is some text";
     SmartString temp = stream;
     SmartString otherTemp(stream);
-    assert(std::string("this is some text"), temp.str());
-    assert(std::string("this is some text"), otherTemp.str());
+    assert("this is some text", temp);
+    assert("this is some text", otherTemp);
 }
 
 void SmartStringTestDriver::testAppendPrepend()
 {
     SmartString temp;
     temp.append('1');
-    assert(std::string("1"), temp.str());
+    assert("1", temp);
     temp.append("23");
-    assert(std::string("123"), temp.str());
+    assert("123", temp);
     std::string var = "456";
     temp.append(var);
-    assert(std::string("123456"), temp.str());
+    assert("123456", temp);
     SmartString smart = "789";
     temp.append(smart);
-    assert(std::string("123456789"), temp.str());
+    assert("123456789", temp);
     temp.prepend('0');
-    assert(std::string("0123456789"), temp.str());
+    assert("0123456789", temp);
     temp.prepend("789");
-    assert(std::string("7890123456789"), temp.str());
+    assert("7890123456789", temp);
     temp.prepend(var);
-    assert(std::string("4567890123456789"), temp.str());
+    assert("4567890123456789", temp);
     smart = "123";
     temp.prepend(smart);
-    assert(std::string("1234567890123456789"), temp.str());
+    assert("1234567890123456789", temp);
 
     temp = "";
     temp.append(1.0, 1);
-    assert(std::string("1.0"), temp.str());
+    assert("1.0", temp);
     temp.append(", ").append(-2.123456, 6);
-    assert(std::string("1.0, -2.123456"), temp.str());
+    assert("1.0, -2.123456", temp);
     temp.prepend(", ").prepend(-105.12345);
-    assert(std::string("-105.12345, 1.0, -2.123456"), temp.str());
+    assert("-105.12345, 1.0, -2.123456", temp);
 
     temp = "";
     temp.append(2.5);
-    assert(std::string("2.5"), temp.str());
+    assert("2.5", temp);
     temp += 2.5200000;
-    assert(std::string("2.52.52"), temp.str());
+    assert("2.52.52", temp);
 
     temp = "";
     temp.append(2.54234235235);
-    assert(std::string("2.54234"), temp.str());
+    assert("2.54234", temp);
 
     temp.setPrecision(2);
     temp = "";
     temp += 2.5467;
-    assert(std::string("2.54"), temp.str());
+    assert("2.54", temp);
 
     temp = "";
     temp += 2.00;
-    assert(std::string("2.0"), temp.str());
+    assert("2.0", temp);
 }
 
 void SmartStringTestDriver::testOperators()
@@ -96,35 +96,35 @@ void SmartStringTestDriver::testOperators()
     SmartString temp = "1";
     temp << "234"
          << "5";
-    assert(std::string("12345"), temp.str());
+    assert("12345", temp);
     temp << '6';
-    assert(std::string("123456"), temp.str());
+    assert("123456", temp);
     std::string var = "789";
     temp << var;
-    assert(std::string("123456789"), temp.str());
+    assert("123456789", temp);
     temp = "";
     temp << 1.23456;
-    assert(std::string("1.23456"), temp.str());
+    assert("1.23456", temp);
     SmartString test = " + 2";
     temp << test;
-    assert(std::string("1.23456 + 2"), temp.str());
+    assert("1.23456 + 2", temp);
 
     temp = "2";
     temp.prepend('1').append("345").prepend("0");
-    assert(std::string("012345"), temp.str());
+    assert("012345", temp);
 
     temp = "1";
     temp += "2";
-    assert(std::string("12"), temp.str());
+    assert("12", temp);
 
     temp = temp + "3" + '4';
-    assert(std::string("1234"), temp.str());
+    assert("1234", temp);
 
     temp = "5" + temp;
-    assert(std::string("51234"), temp.str());
+    assert("51234", temp);
 
     temp = var + temp;
-    assert(std::string("78951234"), temp.str());
+    assert("78951234", temp);
 
     assert(true, temp.contains("123"));
     assert(4, temp.findSubstring("123"));
@@ -166,80 +166,80 @@ void SmartStringTestDriver::testOperators()
 
     temp    = "bad";
     temp[0] = 'c';
-    assert(std::string("cad"), temp.str());
+    assert("cad", temp);
     temp[2] = 't';
-    assert(std::string("cat"), temp.str());
+    assert("cat", temp);
 }
 
 void SmartStringTestDriver::testReplaceAndFormat()
 {
     SmartString temp = "78951234";
     temp.replace("789", "123");
-    assert(std::string("12351234"), temp.str());
+    assert("12351234", temp);
 
     temp.replaceAll("123", "x");
-    assert(std::string("x5x4"), temp.str());
+    assert("x5x4", temp);
 
     temp = "1";
     temp << 2345;
-    assert(std::string("12345"), temp.str());
+    assert("12345", temp);
 
     SmartString formatString = "{0} {1} {2} {0}";
     formatString.format("a", "b", "c");
-    assert(std::string("a b c a"), formatString.str());
+    assert("a b c a", formatString);
 
     std::string str = (std::string) temp;
-    assert(std::string("12345"), str);
+    assert("12345", str);
 
     char* charStr = (char*) temp;
-    assert(temp.str(), std::string(charStr));
+    assert(charStr, temp);
 
     formatString = "{0} {1} {2} {0}";
     str          = formatString.getFormatted<std::string>("a", "b", "c");
     assert(std::string("a b c a"), str);
     charStr = formatString.getFormatted<char*>("a", "b", "c");
-    assert(std::string("a b c a"), std::string(charStr));
+    assert("a b c a", std::string(charStr));
     temp = formatString.getFormatted<SmartString>("a", "b", "c");
-    assert(std::string("a b c a"), temp.str());
+    assert("a b c a", temp);
 
     str = SmartString::format<std::string>(formatString, "a", "b", "c");
-    assert(std::string("a b c a"), str);
+    assert("a b c a", str);
     charStr = SmartString::format<char*>("{0} {1} {2} {0}", "a", "b", "c");
-    assert(std::string("a b c a"), std::string(charStr));
+    assert("a b c a", std::string(charStr));
     str  = "{0} {1} {2} {0}";
     temp = SmartString::format<SmartString>(str, "a", "b", "c");
-    assert(std::string("a b c a"), temp.str());
+    assert("a b c a", temp);
 }
 
 void SmartStringTestDriver::testRemove()
 {
     SmartString temp = "123411";
     temp.remove("23");
-    assert(std::string("1411"), temp.str());
+    assert("1411", temp);
     temp.removeAll("1");
-    assert(std::string("4"), temp.str());
+    assert("4", temp);
     temp = "123456";
     temp.remove(0, 0);
-    assert(std::string("23456"), temp.str());
+    assert("23456", temp);
     temp.remove(0, 2);
-    assert(std::string("56"), temp.str());
+    assert("56", temp);
     temp.remove(1, 1);
-    assert(std::string("5"), temp.str());
+    assert("5", temp);
 
     temp = " \t1234 \n";
-    assert(std::string("1234 \n"), temp.lstrip().str());
-    assert(std::string("1234"), temp.rstrip().str());
+    assert("1234 \n", temp.lstrip());
+    assert("1234", temp.rstrip());
     temp = " \t1234 \n";
-    assert(std::string("1234"), temp.strip().str());
+    assert("1234", temp.strip());
 
     temp = "aaa1234vvvv";
-    assert(std::string("1234vvvv"), temp.lstrip("a").str());
-    assert(std::string("1234"), temp.rstrip("v").str());
+    assert("1234vvvv", temp.lstrip("a"));
+    assert("1234", temp.rstrip("v"));
 
     temp = "12121";
-    assert(std::string("2121"), temp.lstrip("1").str());
-    assert(std::string("212"), temp.rstrip("1").str());
-    assert(std::string("1"), temp.strip("2").str());
+    assert("2121", temp.lstrip("1"));
+    assert("212", temp.rstrip("1"));
+    assert("1", temp.strip("2"));
 }
 
 void SmartStringTestDriver::testSubstrings()
@@ -249,32 +249,32 @@ void SmartStringTestDriver::testSubstrings()
     assert(3, temp.count("12"));
     assert(0, temp.count("3"));
     temp = "12314516";
-    assert(std::string("1"), temp.getSubstring<std::string>(0, 0));
+    assert("1", temp.getSubstring<std::string>(0, 0));
     std::vector<SmartString> list = temp.split<SmartString>("1");
-    assert(4, (int) list.size());
-    assert(std::string(""), list[0].str());
-    assert(std::string("23"), list[1].str());
-    assert(std::string("45"), list[2].str());
-    assert(std::string("6"), list[3].str());
+    assert(4, list.size());
+    assert("", list[0]);
+    assert("23", list[1]);
+    assert("45", list[2]);
+    assert("6", list[3]);
     temp = "this is a multi-line piece of text.\n";
     temp.append("it's way longer than it has any right to be.\n");
     temp.append("....that's what she said.\n");
     list = temp.split<SmartString>("\n");
-    assert(3, (int) list.size());
-    assert(std::string("this is a multi-line piece of text."), list[0].str());
-    assert(std::string("it's way longer than it has any right to be."), list[1].str());
-    assert(std::string("....that's what she said."), list[2].str());
-    std::string tempStr = SmartString::join<std::string>(list, "\n");
-    assert(std::string("this is a multi-line piece of text.\nit's way longer than it has any right to be.\n....that's what she said."), tempStr);
+    assert(3, list.size());
+    assert("this is a multi-line piece of text.", list[0]);
+    assert("it's way longer than it has any right to be.", list[1]);
+    assert("....that's what she said.", list[2]);
+    auto tempStr = SmartString::join<std::string>(list, "\n");
+    assert("this is a multi-line piece of text.\nit's way longer than it has any right to be.\n....that's what she said.", tempStr);
 
     auto array = new SmartString[3];
     for(int i = 0; i < 3; i++)
     {
         array[i] = list[i];
     }
-    SmartString result = SmartString::join<SmartString>(array, 3, "\n");
-    assert(std::string("this is a multi-line piece of text.\nit's way longer than it has any right to be.\n....that's what she said."), result.str());
-    //                  012345678910
+    auto result = SmartString::join<SmartString>(array, 3, "\n");
+    assert("this is a multi-line piece of text.\nit's way longer than it has any right to be.\n....that's what she said.", result);
+    //      012345678910
     assert(10, result.findSubstring("multi"));
     assert(2, result.findSubstring("is"));
     assert(5, result.findSubstring(4, "is"));
@@ -287,9 +287,9 @@ void SmartStringTestDriver::testMiscFunctions()
 {
     SmartString temp(".';,!@#$%aBcDeFgHiJkLmNoPqRsTuVwXyZ0123456789");
     temp.toUpper();
-    assert(std::string(".';,!@#$%ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"), temp.str());
+    assert(".';,!@#$%ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", temp);
     temp.toLower();
-    assert(std::string(".';,!@#$%abcdefghijklmnopqrstuvwxyz0123456789"), temp.str());
+    assert(".';,!@#$%abcdefghijklmnopqrstuvwxyz0123456789", temp);
 
     double val;
     bool result = SmartString::tryConvert("-1.56", val);
@@ -327,7 +327,7 @@ void SmartStringTestDriver::testMiscFunctions()
     assert((float) 12.3, floatVal);
 
     val = SmartString::convert<double>("12.5");
-    assert((double) 12.5, val);
+    assert(12.5, val);
 
     floatVal = SmartString::convert<float>("12.45");
     assert((float) 12.45, floatVal);
@@ -344,7 +344,7 @@ void SmartStringTestDriver::testMiscFunctions()
     {
         errorMessage = e.what();
     }
-    assert(std::string("The given string could not be parsed into a valid number: 123a"), errorMessage);
+    assert("The given string could not be parsed into a valid number: 123a", errorMessage);
 }
 
 void SmartStringTestDriver::testFunctionPassing()
