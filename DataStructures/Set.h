@@ -15,6 +15,32 @@ namespace Utilities
     {
         static_assert(is_equal_comparable<T>::value, "Type T must be comparable with the == operator");
 
+        struct Iterator
+        {
+            using iterator_category = typename std::vector<T>::iterator::iterator_category;
+            using difference_type   = typename std::vector<T>::iterator::difference_type;
+            using value_type        = typename std::vector<T>::iterator::value_type;
+            using pointer           = typename std::vector<T>::iterator::pointer;
+            using reference         = typename std::vector<T>::iterator::reference;
+
+            Iterator(typename std::vector<T>::iterator pos) : it(pos) {}
+
+            reference operator*() const { return *it; }
+            pointer operator->() { return it; }
+
+            // Prefix increment
+            Iterator& operator++() { return ++it; }
+
+            // Postfix increment
+            Iterator operator++(int) { Iterator tmp = *this; it++; return tmp; }
+
+            friend bool operator== (const Iterator& a, const Iterator& b) { return a.it == b.it; };
+            friend bool operator!= (const Iterator& a, const Iterator& b) { return a.it != b.it; };
+
+        private:
+            typename std::vector<T>::iterator it;
+        };
+
     private:
         std::vector<T> items;
 

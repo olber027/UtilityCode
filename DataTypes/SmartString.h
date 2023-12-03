@@ -1,9 +1,7 @@
 //
 // Created by molberding on 9/15/2017.
 //
-
-#ifndef UTILITYCODE_SMARTSTRING_H
-#define UTILITYCODE_SMARTSTRING_H
+#pragma once
 
 #include <cstring>
 #include <fstream>
@@ -12,26 +10,29 @@
 #include <string>
 #include <vector>
 #include <array>
+#include <map>
+#include <utility>
+#include <iterator>
 #include <type_traits>
 
 
 namespace Utilities
 {
-    template<typename From, typename To, typename = void>
-    struct is_castable : std::false_type { };
-
-    template<typename From, typename To>
-    struct is_castable<From, To, typename std::enable_if<std::is_convertible<
-                                 decltype(static_cast<To>(std::declval<From>())), To>::value>::type>
-                                 : std::true_type { };
-
     class SmartString
     {
     private:
+        template<typename From, typename To, typename = void>
+        struct is_castable : std::false_type { };
+
+        template<typename From, typename To>
+        struct is_castable<From, To, typename std::enable_if<std::is_convertible<
+                                     decltype(static_cast<To>(std::declval<From>())), To>::value>::type>
+            : std::true_type { };
+
         char* backingString;
-        unsigned int stringSize;
-        unsigned int precision;
-        unsigned int memorySize;
+        int stringSize;
+        int precision;
+        int memorySize;
 
         /*!
          * @brief destroys the underlying string and resets sizes. Precision is maintained.
@@ -51,7 +52,7 @@ namespace Utilities
          * @brief Destroys the existing string and creates a new one of size \p size.
          * @param size - size of string to create
          */
-        void initialize(const unsigned int size)
+        void initialize(const int size)
         {
             destroy();
             stringSize                = size;
@@ -67,14 +68,14 @@ namespace Utilities
          * @param charsToAdd - number of characters to increase the string size by
          * @param addToFront - If true, characters will be added to the front of the string
          */
-        void extend(const unsigned int charsToAdd, const bool addToFront)
+        void extend(const int charsToAdd, const bool addToFront)
         {
-            if(!charsToAdd)
+            if(charsToAdd < 1)
             {
                 return;
             }
 
-            unsigned int newSize   = stringSize + charsToAdd + 1;
+            int newSize   = stringSize + charsToAdd + 1;
             char* newBackingString = nullptr;
 
             if(memorySize <= newSize)
@@ -92,8 +93,8 @@ namespace Utilities
 
             if(newBackingString != nullptr)
             {
-                unsigned int offset = addToFront ? charsToAdd : 0;
-                for(unsigned int i = offset; i < stringSize + offset; i++)
+                int offset = addToFront ? charsToAdd : 0;
+                for(int i = offset; i < stringSize + offset; i++)
                 {
                     newBackingString[i] = backingString[i - offset];
                 }
@@ -103,7 +104,7 @@ namespace Utilities
             }
             else if(addToFront)
             {
-                for(int i = static_cast<int>(stringSize); i >= 0; i--)
+                for(int i = stringSize; i >= 0; i--)
                 {
                     backingString[i + charsToAdd] = backingString[i];
                 }
@@ -117,7 +118,7 @@ namespace Utilities
          *        will be added to the back of the string.
          * @param charsToAdd - number of characters to increase the string size by
          */
-        inline void extend(const unsigned int charsToAdd)
+        inline void extend(const int charsToAdd)
         {
             extend(charsToAdd, false);
         }
@@ -128,7 +129,7 @@ namespace Utilities
          * @param str - String to calculate the size of
          * @return The length of the string
          */
-        [[nodiscard]] static inline unsigned int calculateSize(const std::string& str)
+        [[nodiscard]] static inline int calculateSize(const std::string& str)
         {
             return str.length();
         }
@@ -139,7 +140,7 @@ namespace Utilities
          * @param str - String to calculate the size of
          * @return The length of the string
          */
-        [[nodiscard]] static inline unsigned int calculateSize(const SmartString& str)
+        [[nodiscard]] static inline int calculateSize(const SmartString& str)
         {
             return str.length();
         }
@@ -150,9 +151,9 @@ namespace Utilities
          * @param str - String to calculate the size of
          * @return The length of the string
          */
-        [[nodiscard]] static unsigned int calculateSize(const char* str)
+        [[nodiscard]] static int calculateSize(const char* str)
         {
-            unsigned int size = 0;
+            int size = 0;
             while(str[size] != '\0')
             {
                 size++;
@@ -216,10 +217,10 @@ namespace Utilities
          *        Format arguments are of the form {0}, {1}, etc.
          * @return The number of format arguments
          */
-        [[nodiscard]] unsigned int getNumArguments() const
+        [[nodiscard]] int getNumArguments() const
         {
             int location;
-            unsigned int count = 0;
+            int count = 0;
             do {
                 SmartString arg;
                 arg << "{" << count << "}";
@@ -232,12 +233,39 @@ namespace Utilities
             return count;
         }
 
+        std::vector<std::vector<int>> createBoyerMooreBadCharacterTable(const SmartString& targetWord)
+        {
+            static const int alphabetSize = 256;
+            std::vector<std::vector<int>> badCharacterTable(alphabetSize);
+
+            for(int i = 0; i < alphabetSize; i++)
+            {
+                badCharacterTable[i].assign(targetWord.length(), -1);
+            }
+
+            for(int i = 0; i < targetWord.length(); i++)
+            {
+                int previouslyEncounteredCharacterIndex = -1;
+                for(int j = i - 1; j >= 0; j--)
+                {
+                    if(targetWord[i] == targetWord[j])
+                    {
+                        previouslyEncounteredCharacterIndex = j;
+                        break;
+                    }
+                }
+                badCharacterTable[static_cast<int>(targetWord[i])][i] = previouslyEncounteredCharacterIndex;
+            }
+
+            return badCharacterTable;
+        }
+
         /*!
          * @brief Creates the pre-processing table used in the Knuth-Morris-Pratt algorithm for \p targetWord.
          * @param targetWord - The word to be searched
          * @return The pre-processing table for \p targetWord
          */
-        [[nodiscard]] static std::vector<int> createTable(const SmartString& targetWord)
+        [[nodiscard]] static std::vector<int> createKMPTable(const SmartString& targetWord)
         {
             std::vector<int> table(targetWord.length(), 0);
             table[0]             = -1;
@@ -273,8 +301,8 @@ namespace Utilities
          * @param depth - The format number to be replaced.
          * @param t - The value to replace {depth} with
          */
-        template <typename T>
-        void formatHelper(const unsigned int depth, const T& t)
+        template <unsigned int depth, typename T>
+        void formatHelper(const T& t)
         {
             static_assert(std::is_convertible<T, SmartString>::value, "T must be convertible to a SmartString");
             SmartString target;
@@ -290,21 +318,21 @@ namespace Utilities
          * @param t - the value to replace {depth} with
          * @param args - additional arguments
          */
-        template <typename T, typename... Args>
-        void formatHelper(const unsigned int depth, const T& t, Args... args)
+        template <unsigned int depth, typename T, typename... Args>
+        void formatHelper(const T& t, const Args& ...args)
         {
             static_assert(std::is_convertible<T, SmartString>::value, "T must be convertible to a SmartString");
             SmartString target;
             target << "{" << depth << "}";
             replaceAll(target, t);
-            formatHelper(depth + 1, args...);
+            formatHelper<depth + 1>(args...);
         }
 
         template<typename T>
-        SmartString& appendHelper(const T& t)
+        [[nodiscard]] SmartString& appendHelper(const T& t)
         {
-            unsigned int initialSize = stringSize;
-            unsigned int size = calculateSize(t);
+            int initialSize = stringSize;
+            int size = calculateSize(t);
             extend(size);
             std::memcpy(backingString + initialSize, getDataPointer(t), size);
             backingString[stringSize] = '\0';
@@ -312,12 +340,18 @@ namespace Utilities
         }
 
         template<typename T>
-        SmartString& prependHelper(const T& t)
+        [[nodiscard]] SmartString& prependHelper(const T& t)
         {
-            unsigned int size = calculateSize(t);
+            int size = calculateSize(t);
             extend(size, true);
             std::memcpy(backingString, getDataPointer(t), size);
             return *this;
+        }
+
+        [[nodiscard]] inline void checkBounds(const int lowerBound, const int upperBound) const
+        {
+            if(lowerBound < 0) throw std::out_of_range("Given lower bound is less than 0");
+            if(upperBound > stringSize) throw std::out_of_range("Given upper bound is greater than the string size");
         }
 
     public:
@@ -326,7 +360,7 @@ namespace Utilities
         {
             if(init.length() != 0)
             {
-                initialize(init.length());
+                initialize(static_cast<int>(init.length()));
                 std::memcpy(backingString, init.data(), stringSize);
             }
         }
@@ -334,7 +368,7 @@ namespace Utilities
         {
             if(init.length() != 0)
             {
-                initialize(init.length());
+                initialize(static_cast<int>(init.length()));
                 std::memcpy(backingString, init.data(), stringSize);
             }
         }
@@ -354,20 +388,20 @@ namespace Utilities
         }
         SmartString(const std::stringstream& init) : SmartString()
         {
-            std::string str = init.str();
+            const std::string str(init.str());
             if(str.length() != 0)
             {
-                initialize(str.length());
+                initialize(static_cast<int>(str.length()));
                 std::memcpy(backingString, str.data(), stringSize);
             }
             precision = init.precision();
         }
         SmartString(std::stringstream&& init) : SmartString()
         {
-            std::string str = init.str();
+            const std::string str(init.str());
             if(str.length() != 0)
             {
-                initialize(str.length());
+                initialize(static_cast<int>(str.length()));
                 std::memcpy(backingString, str.data(), stringSize);
             }
             precision = init.precision();
@@ -388,7 +422,7 @@ namespace Utilities
         {
             append(init);
         }
-        SmartString(const unsigned int numChars, const char fill) : SmartString()
+        SmartString(const int numChars, const char fill) : SmartString()
         {
             initialize(numChars);
             for(int i = 0; i < numChars; i++)
@@ -454,14 +488,14 @@ namespace Utilities
 
         SmartString& operator=(const std::string& rhs)
         {
-            initialize(rhs.length());
+            initialize(static_cast<int>(rhs.length()));
             std::memcpy(backingString, rhs.data(), stringSize);
             return *this;
         }
 
         SmartString& operator=(std::string&& rhs)
         {
-            initialize(rhs.length());
+            initialize(static_cast<int>(rhs.length()));
             std::memcpy(backingString, rhs.data(), stringSize);
             return *this;
         }
@@ -602,7 +636,7 @@ namespace Utilities
             double rightOfDecimal = abs(val) - abs(leftOfDecimal);
             for(int i = 0; i < valPrecision; i++)
             {
-                unsigned int digit = static_cast<unsigned int>(rightOfDecimal * 10);
+                auto digit = static_cast<unsigned int>(rightOfDecimal * 10);
                 temp.append(digitToChar(digit));
                 rightOfDecimal = (rightOfDecimal * 10) - digit;
             }
@@ -646,7 +680,7 @@ namespace Utilities
         SmartString& append(const float val, const unsigned int valPrecision)
         {
             SmartString temp;
-            unsigned int leftOfDecimal = static_cast<unsigned int>(abs(val));
+            auto leftOfDecimal = static_cast<unsigned int>(abs(val));
 
             if(val < 0)
             {
@@ -658,7 +692,7 @@ namespace Utilities
             float rightOfDecimal = val - static_cast<float>(leftOfDecimal);
             for(int i = 0; i < valPrecision; i++)
             {
-                unsigned int digit = static_cast<unsigned int>(rightOfDecimal * 10);
+                auto digit = static_cast<unsigned int>(rightOfDecimal * 10);
                 temp.append(digitToChar(digit));
                 rightOfDecimal = (rightOfDecimal * 10) - static_cast<float>(digit);
             }
@@ -889,68 +923,68 @@ namespace Utilities
             return (right <= left);
         }
 
-        friend std::ostream& operator<<(std::ostream& out, const SmartString& string)
+        friend std::ostream& operator<<(std::ostream& out, const SmartString& smartString)
         {
-            out << string.backingString;
+            out << smartString.backingString;
             return out;
         }
 
-        friend std::istream& operator>>(std::istream& in, SmartString& string)
+        friend std::istream& operator>>(std::istream& in, SmartString& smartString)
         {
             std::string temp;
             in >> temp;
-            string = SmartString(temp);
+            smartString = SmartString(temp);
             return in;
         }
 
-        friend std::ofstream& operator<<(std::ofstream& out, const SmartString& string)
+        friend std::ofstream& operator<<(std::ofstream& out, const SmartString& smartString)
         {
-            out << string.backingString;
+            out << smartString.backingString;
             return out;
         }
 
-        friend std::ifstream& operator>>(std::ifstream& in, SmartString& string)
+        friend std::ifstream& operator>>(std::ifstream& in, SmartString& smartString)
         {
             std::string temp;
             in >> temp;
-            string = SmartString(temp);
+            smartString = SmartString(temp);
             return in;
         }
 
-        friend std::fstream& operator<<(std::fstream& out, const SmartString& string)
+        friend std::fstream& operator<<(std::fstream& out, const SmartString& smartString)
         {
-            out << string.backingString;
+            out << smartString.backingString;
             return out;
         }
 
-        friend std::fstream& operator>>(std::fstream& in, SmartString& string)
+        friend std::fstream& operator>>(std::fstream& in, SmartString& smartString)
         {
             std::string temp;
             in >> temp;
-            string = SmartString(temp);
+            smartString = SmartString(temp);
             return in;
         }
 
-        friend std::stringstream& operator<<(std::stringstream& out, const SmartString& string)
+        friend std::stringstream& operator<<(std::stringstream& out, const SmartString& smartString)
         {
-            out << string.backingString;
+            out << smartString.backingString;
             return out;
         }
 
-        friend std::stringstream& operator>>(std::stringstream& in, SmartString& string)
+        friend std::stringstream& operator>>(std::stringstream& in, SmartString& smartString)
         {
             std::string temp;
             in >> temp;
-            string = SmartString(temp);
+            smartString = SmartString(temp);
             return in;
         }
 
-        inline void setPrecision(const unsigned int newPrecision)
+        inline void setPrecision(const int newPrecision)
         {
-            precision = newPrecision;
+            precision = newPrecision > 0 ? newPrecision : 1;
         }
 
-        [[nodiscard]] inline unsigned int getPrecision() const
+        [[nodiscard]] inline int getPrecision() const
         {
             return precision;
         }
@@ -974,11 +1008,11 @@ namespace Utilities
         }
 
         // start and end are both inclusive.
-        [[nodiscard]] SmartString getSubstring(const unsigned int startLocation, const unsigned int endLocation) const
+        [[nodiscard]] SmartString getSubstring(const int startLocation, const int endLocation) const
         {
-            if(endLocation > stringSize) throw std::out_of_range("Given end location is greater than the string size");
+            checkBounds(startLocation, endLocation);
 
-            unsigned int substringSize = endLocation - startLocation + 1;
+            const int substringSize = endLocation - startLocation + 1;
             SmartString result;
             result.initialize(substringSize);
             std::memcpy(result.backingString, backingString + startLocation, substringSize);
@@ -987,7 +1021,7 @@ namespace Utilities
         }
 
         template <typename T>
-        [[nodiscard]] inline T getSubstring(const unsigned int startLocation, const unsigned int endLocation) const
+        [[nodiscard]] inline T getSubstring(const int startLocation, const int endLocation) const
         {
             static_assert(is_castable<SmartString, T>::value, "SmartString must be convertible to an object of type T");
             return static_cast<T>(getSubstring(startLocation, endLocation));
@@ -1001,7 +1035,7 @@ namespace Utilities
                 return -1;
             }
 
-            std::vector<int> table = createTable(target);
+            std::vector<int> table = createKMPTable(target);
             int currentLocation    = startingLocation;
             int targetLocation     = 0;
 
@@ -1068,7 +1102,8 @@ namespace Utilities
         {
             static_assert(is_castable<SmartString, T>::value, "SmartString must be convertible to an object of type T");
             static_assert(std::is_convertible<U, SmartString>::value, "U must be convertible to a SmartString");
-            std::vector<T> result = std::vector<T>();
+
+            std::vector<T> result;
             SmartString temp(*this);
             SmartString targ(target);
             int location = temp.findSubstring(targ);
@@ -1096,9 +1131,10 @@ namespace Utilities
         template <typename T, typename U, typename V>
         [[nodiscard]] static T join(const std::vector<U>& list, const V& separator)
         {
-            static_assert(is_castable<SmartString, T>::value, "SmartString must be convertible to an object of type T");
+            static_assert(is_castable<SmartString, T>::value, "SmartString must be castable to an object of type T");
             static_assert(std::is_convertible<U, SmartString>::value, "U must be convertible to a SmartString");
             static_assert(std::is_convertible<V, SmartString>::value, "V must be convertible to a SmartString");
+
             SmartString temp;
             for(int i = 0; i < list.size() - 1; i++)
             {
@@ -1112,9 +1148,10 @@ namespace Utilities
         template <typename T, typename U, typename V>
         [[nodiscard]] static T join(const U* list, int listSize, const V& separator)
         {
-            static_assert(is_castable<SmartString, T>::value, "SmartString must be convertible to an object of type T");
+            static_assert(is_castable<SmartString, T>::value, "SmartString must be castable to an object of type T");
             static_assert(std::is_convertible<U, SmartString>::value, "U must be convertible to a SmartString");
             static_assert(std::is_convertible<V, SmartString>::value, "V must be convertible to a SmartString");
+
             SmartString temp;
             for(int i = 0; i < listSize - 1; i++)
             {
@@ -1148,7 +1185,7 @@ namespace Utilities
         SmartString& lstrip(const T& chars)
         {
             static_assert(std::is_convertible<T, SmartString>::value, "T must be convertible to a SmartString");
-            SmartString toStrip(chars);
+            const SmartString toStrip(chars);
             int index           = 0;
             while(index < stringSize && toStrip.contains(backingString[index]))
             {
@@ -1162,7 +1199,7 @@ namespace Utilities
         SmartString& rstrip(const T& chars)
         {
             static_assert(std::is_convertible<T, SmartString>::value, "T must be convertible to a SmartString");
-            SmartString toStrip(chars);
+            const SmartString toStrip(chars);
             int index           = static_cast<int>(stringSize) - 1;
             while(index >= 0 && toStrip.contains(backingString[index]))
             {
@@ -1182,17 +1219,18 @@ namespace Utilities
         }
 
         // start and end are both inclusive.
-        SmartString& remove(const unsigned int startLocation, const unsigned int endLocation)
+        SmartString& remove(const int startLocation, const int endLocation)
         {
-            SmartString temp;
-            for(unsigned int i = 0; i < length(); i++)
+            if(endLocation < startLocation) return *this;
+            checkBounds(startLocation, endLocation);
+
+            int numRemovedCharacters = (endLocation - startLocation + 1);
+            for(int j = endLocation + 1; j < stringSize; j++)
             {
-                if(i < startLocation || i > endLocation)
-                {
-                    temp.append(backingString[i]);
-                }
+                backingString[j - numRemovedCharacters] = backingString[j];
             }
-            *this = temp;
+            stringSize = stringSize - numRemovedCharacters;
+            backingString[stringSize] = '\0';
             return *this;
         }
 
@@ -1212,7 +1250,7 @@ namespace Utilities
         {
             bool changed;
             do {
-                SmartString old = *this;
+                SmartString old(*this);
                 remove(target);
                 changed = (old != *this);
             } while(changed);
@@ -1235,22 +1273,22 @@ namespace Utilities
             }
 
             // since we know target is a substring at this point, we can guarantee newSize will be at least the size of newSubstring.length()
-            unsigned int newSize = stringSize + newSubstring.length() - target.length();
+            int newSize = stringSize + newSubstring.length() - target.length();
             while(memorySize <= newSize)
             {
                 memorySize *= 2;
             }
             char* tempPointer = new char[memorySize];
 
-            for(unsigned int i = 0; i < location; i++)
+            for(int i = 0; i < location; i++)
             {
                 tempPointer[i] = backingString[i];
             }
-            for(unsigned int i = 0; i < newSubstring.length(); i++)
+            for(int i = 0; i < newSubstring.length(); i++)
             {
                 tempPointer[location + i] = newSubstring[i];
             }
-            for(unsigned int i = location + target.length(); i < stringSize; i++)
+            for(int i = location + target.length(); i < stringSize; i++)
             {
                 tempPointer[i + newSubstring.length() - target.length()] = backingString[i];
             }
@@ -1292,40 +1330,40 @@ namespace Utilities
         }
 
         template <typename... Args>
-        inline SmartString& format(Args... args)
+        inline SmartString& format(const Args& ... args)
         {
-            formatHelper(0, args...);
+            formatHelper<0>(args...);
             return *this;
         }
 
         template <typename T, typename... Args>
-        [[nodiscard]] inline T getFormatted(Args... args) const
+        [[nodiscard]] inline T getFormatted(const Args& ... args) const
         {
             static_assert(is_castable<SmartString, T>::value, "SmartString must be convertible to an object of type T");
             SmartString result(*this);
-            result.formatHelper(0, args...);
+            result.formatHelper<0>(args...);
             return static_cast<T>(result);
         }
 
         template <typename T, typename U, typename... Args>
-        static T format(const U& source, Args... args)
+        static T format(const U& source, const Args& ... args)
         {
             static_assert(is_castable<SmartString, T>::value, "SmartString must be convertible to an object of type T");
             static_assert(std::is_convertible<U, SmartString>::value, "U must be convertible to a SmartString");
             SmartString result(source);
-            result.formatHelper(0, args...);
+            result.formatHelper<0>(args...);
             return static_cast<T>(result);
         }
 
         // Assumes a-z and A-Z are contiguous. will break if they aren't.
         SmartString& toUpper()
         {
-            auto a = static_cast<unsigned int>('a');
-            auto A = static_cast<unsigned int>('A');
-            auto z = static_cast<unsigned int>('z');
+            constexpr auto a = static_cast<int>('a');
+            constexpr auto A = static_cast<int>('A');
+            constexpr auto z = static_cast<int>('z');
             for(unsigned int i = 0; i < length(); i++)
             {
-                auto letterVal = static_cast<unsigned int>(static_cast<unsigned char>(backingString[i]));
+                const auto letterVal = static_cast<int>(static_cast<unsigned char>(backingString[i]));
                 if(letterVal >= a && letterVal <= z)
                 {
                     backingString[i] = static_cast<char>(letterVal - a + A);
@@ -1337,12 +1375,12 @@ namespace Utilities
         // Assumes a-z and A-Z are contiguous. will break if they aren't.
         SmartString& toLower()
         {
-            auto a = static_cast<unsigned int>('a');
-            auto A = static_cast<unsigned int>('A');
-            auto Z = static_cast<unsigned int>('Z');
-            for(unsigned int i = 0; i < length(); i++)
+            constexpr auto a = static_cast<int>('a');
+            constexpr auto A = static_cast<int>('A');
+            constexpr auto Z = static_cast<int>('Z');
+            for(int i = 0; i < length(); i++)
             {
-                auto letterVal = static_cast<unsigned int>(static_cast<unsigned char>(backingString[i]));
+                const auto letterVal = static_cast<int>(static_cast<unsigned char>(backingString[i]));
                 if(letterVal >= A && letterVal <= Z)
                 {
                     backingString[i] = static_cast<char>(letterVal - A + a);
@@ -1484,7 +1522,7 @@ namespace Utilities
             return result;
         }
 
-        [[nodiscard]] inline unsigned int length() const
+        [[nodiscard]] inline int length() const
         {
             return stringSize;
         }
@@ -1500,5 +1538,3 @@ namespace Utilities
         }
     };
 }// namespace Utilities
-
-#endif//UTILITYCODE_SMARTSTRING_H
