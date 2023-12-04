@@ -81,8 +81,8 @@ void SmartStringTestDriver::testAppendPrepend()
     temp.append(2.54234235235);
     assert("2.54234", temp);
 
-    temp.setPrecision(2);
     temp = "";
+    temp.setPrecision(2);
     temp += 2.5467;
     assert("2.54", temp);
 
